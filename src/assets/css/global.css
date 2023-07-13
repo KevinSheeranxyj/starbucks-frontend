@@ -1,0 +1,136 @@
+/* 全局样式表 */
+html,
+body,
+#app {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  min-width: 500px;
+  text-align: left;
+  /*font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, SimSun, sans-serif;*/
+  font-family: Metropolis,"Avenir Next","Helvetica Neue",Arial,sans-serif;
+  overflow: hidden;
+}
+.el-button--small{
+  font-size: 14px;
+}
+
+.el-button-group {
+  padding-bottom: 10px;
+  float: right;
+}
+.el-breadcrumb {
+  margin-bottom: 15px;
+}
+
+.el-card {
+  /* box-shadow: 0 1px 1px rgba(0, 0, 0, 0.15) !important; */
+}
+.el-card__body {
+  /* padding: 10px; */
+}
+
+.el-table {
+  margin-top: 0;
+}
+
+.el-pagination {
+  margin-top: 0;
+}
+.el-cascader {
+  width: 100%;
+}
+.el-cascader-menu {
+  height: 300px;
+}
+
+textarea {
+  font-family: 'Helvetica Neue', Helvetica, 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', '微软雅黑', Arial,
+    sans-serif;
+}
+
+/* elementUI对话框样式 */
+/* .el-dialog__header {
+  padding: 10px 20px 10px;
+  background-color: #f2f2f2;
+  border-radius: 2px;
+  color: #606266;
+} */
+/* .el-dialog__headerbtn {
+  position: absolute;
+  top: 13px;
+  right: 16px;
+  padding: 0;
+  background: 0 0;
+  border: none;
+  outline: 0;
+  cursor: pointer;
+  font-size: 16px;
+} */
+.el-dialog__body {
+  padding: 10px 10px 10px;
+  color: #606266;
+  font-size: 14px;
+  word-break: break-all;
+}
+.el-dialog__footer {
+  padding: 10px 20px 10px;
+  text-align: right;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+/* elementUI表格样式 */
+.el-table .cell {
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.el-table--border .el-table__cell:first-child .cell {
+  padding-left: 0px;
+}
+
+/*.el-scrollbar {*/
+/*  height: auto;*/
+/*}*/
+
+/* elementUI form表单样式 */
+.el-form-item--mini.el-form-item,
+.el-form-item--small.el-form-item {
+  margin-bottom: 13px;
+}
+
+/* .el-form--inline .el-input--mini .el-input__inner {
+  width: 184px;
+}
+.el-form--inline .el-date-editor {
+  width: 184px;
+} */
+
+.el-form-item--mini .el-form-item__error {
+  padding-top: 0;
+}
+
+.el-form-item__label {
+  font-size: 14px;
+  padding: 0;
+  margin-right: 10px;
+}
+
+/* 适用于中文的两端对齐 */
+.el-form-item__label {
+  /* text-align: justify;
+  text-align: end;
+  text-align-last: justify;
+  text-justify: distribute; */
+}
+
+.el-form-item {
+  margin-right: 20px;
+}
+
+.cell .el-link {
+  cursor: pointer;
+  font-size: 12px;
+  font-weight: 500;
+}

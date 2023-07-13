@@ -1,0 +1,104 @@
+<template>
+  <el-dialog v-model="dialogVisible"
+             :title="dialogParams.title"
+             :width="dialogParams.width"
+             :fullscreen="dialogParams.fullscreen">
+    <!-- 表单组件 -->
+    <compo-form :formParams="dialogParams.form" formType="dialog" ref="compoFormRef">
+      <template #formDefinedSlot="slotProps">
+        <slot name="dialogFormSlot" :prop="slotProps.prop"></slot>
+      </template>
+    </compo-form>
+
+    <slot name="dialogSlot"></slot>
+
+    <div class="dialog-footer">
+      <el-button @click="closeDialog()">取 消</el-button>
+      <!-- 自定义按钮 插槽 -->
+      <slot name="dialogButtonSlot"></slot>
+      <el-button v-if="dialogParams.button!==false" type="primary" plain @click="confirm()" :loading=dialogLoading>确 定</el-button>
+    </div>
+  </el-dialog>
+</template>
+
+<script>
+export default {
+  name: 'compoDialog',
+  props: {
+    dialogParams: { type: Object },
+  },
+  components: {},
+  emits: ['confirmSuccess'],
+  data() {
+    return {
+      dialogForm: {},
+      dialogVisible: false,
+      dialogLoading: false,
+    };
+  },
+
+  created() {},
+
+  methods: {
+    /**
+     * 打开对话框
+     */
+    openDialog() {
+      this.dialogVisible = true;
+    },
+
+    // 获取表单组件form对象
+    getForm() {
+      return this.$refs.compoFormRef.getForm();
+    },
+
+    // 设置表单组件form对象
+    setForm(form) {
+      this.$refs.compoFormRef.setForm(form);
+    },
+
+    // 重置表单组件form对象
+    reset(resetFrom) {
+      this.$refs.compoFormRef.reset(resetFrom);
+    },
+
+    /**
+     * 关闭对话框
+     */
+    closeDialog() {
+      this.dialogVisible = false;
+      this.reset();
+    },
+
+    /**
+     * 确定
+     */
+    confirm() {
+      // 表单检验
+      this.$refs.compoFormRef.validate(async (valid) => {
+        if (valid) {
+          this.dialogForm = this.getForm();
+          this.dialogLoading = true;
+          const { data: res } = await this.$http.post(this.dialogParams.url, this.dialogForm);
+          this.dialogLoading = false;
+          if (!res.success) {
+            return this.$message.error(res.msg);
+          }
+
+          this.closeDialog();
+          this.reset();
+          // 通知主页面成功
+          this.$emit('confirmSuccess', '');
+        }
+      });
+    },
+  },
+};
+</script>
+
+<style lang="scss" scoped>
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+</style>

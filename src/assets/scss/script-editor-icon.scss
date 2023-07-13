@@ -1,0 +1,145 @@
+.ztree {
+  li {
+    line-height: 20px;
+
+    ul {
+      // margin: 0;
+      // padding: 0;
+    }
+
+    a {
+      text-decoration: none;
+      width: 100%;
+      height: 20px;
+      padding-top: 0px;
+    }
+    a:hover {
+      text-decoration: none;
+    }
+    a.curSelectedNode {
+      background-color: #2675bf;
+      border: 0;
+      color: #efefdf;
+      line-height: 20px;
+      height: 20px;
+      opacity: 1;
+    }
+
+    a.tmpTargetNode_inner {
+      background-color: #abf0ff;
+      border: 0;
+      // color: white !important;
+      line-height: 20px;
+      height: 20px;
+      opacity: 1;
+    }
+
+    // 左侧展开收起图标
+    span.button {
+      width: 20px;
+      height: 20px;
+      background-image: url('~@/assets/img/ztree/left_menuForOutLook.png');
+    }
+    span.button.root_open,
+    span.button.center_open,
+    span.button.bottom_open {
+      background-position: 0 -1px;
+    }
+    span.button.root_close,
+    span.button.center_close,
+    span.button.bottom_close {
+      background-position: -18px -1px;
+    }
+
+    // 节点图标
+    span.button.testPlan_ico_docu,
+    span.button.testPlan_ico_open,
+    span.button.testPlan_ico_close {
+      margin-right: 2px;
+      background: url('~@/assets/img/jmeter/testPlan.png') no-repeat scroll 0 0 transparent;
+      background-size: cover;
+      vertical-align: middle;
+    }
+
+    span.button.threadGroup_ico_docu,
+    span.button.threadGroup_ico_open,
+    span.button.threadGroup_ico_close {
+      margin-right: 2px;
+      background: url('~@/assets/img/jmeter/threadGroup.png') no-repeat scroll 0 0 transparent;
+      background-size: cover;
+      vertical-align: middle;
+    }
+
+    span.button.controller_ico_docu,
+    span.button.controller_ico_open,
+    span.button.controller_ico_close {
+      margin-right: 2px;
+      background: url('~@/assets/img/jmeter/controller.png') no-repeat scroll 0 0 transparent;
+      background-size: cover;
+      vertical-align: middle;
+    }
+
+    span.button.sampler_ico_open,
+    span.button.sampler_ico_close,
+    span.button.sampler_ico_docu {
+      margin-right: 2px;
+      background: url('~@/assets/img/jmeter/sampler.png') no-repeat scroll 0 0 transparent;
+      background-size: cover;
+      vertical-align: middle;
+    }
+
+    span.button.assertion_ico_docu,
+    span.button.assertion_ico_open,
+    span.button.assertion_ico_close {
+      margin-right: 2px;
+      background: url('~@/assets/img/jmeter/assertion.png') no-repeat scroll 0 0 transparent;
+      background-size: cover;
+      vertical-align: middle;
+    }
+
+    span.button.config_ico_docu,
+    span.button.config_ico_open,
+    span.button.config_ico_close {
+      margin-right: 2px;
+      background: url('~@/assets/img/jmeter/config.png') no-repeat scroll 0 0 transparent;
+      background-size: cover;
+      vertical-align: middle;
+    }
+
+    span.button.postProcessor_ico_docu,
+    span.button.postProcessor_ico_open,
+    span.button.postProcessor_ico_close {
+      margin-right: 2px;
+      background: url('~@/assets/img/jmeter/postProcessor.png') no-repeat scroll 0 0 transparent;
+      background-size: cover;
+      vertical-align: middle;
+    }
+
+    span.button.preProcessor_ico_docu,
+    span.button.preProcessor_ico_open,
+    span.button.preProcessor_ico_close {
+      margin-right: 2px;
+      background: url('~@/assets/img/jmeter/preProcessor.png') no-repeat scroll 0 0 transparent;
+      background-size: cover;
+      vertical-align: middle;
+    }
+
+    span.button.timer_ico_docu,
+    span.button.timer_ico_open,
+    span.button.timer_ico_close {
+      margin-right: 2px;
+      background: url('~@/assets/img/jmeter/timer.png') no-repeat scroll 0 0 transparent;
+      background-size: cover;
+      vertical-align: middle;
+    }
+
+    span.button.listener_ico_docu,
+    span.button.listener_ico_open,
+    span.button.listener_ico_close {
+      margin-right: 2px;
+      background: url('~@/assets/img/jmeter/listener.png') no-repeat scroll 0 0 transparent;
+      background-size: cover;
+      vertical-align: middle;
+    }
+  }
+}

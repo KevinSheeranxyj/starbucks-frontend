@@ -1,0 +1,56 @@
+.test-element-pane {
+  width: calc(100% - 20px);
+  height: calc(100% - 15px);
+  margin: 10px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+
+  .base-pane {
+    height: 110px;
+
+    .test-element-name {
+      margin: 0 0 10px 0;
+      font-size: 16px;
+    }
+  }
+
+  .custom-pane {
+    flex: 1;
+    width: 100%;
+    overflow: auto;
+
+    fieldset {
+      border-radius: 2px;
+      border: 1px solid #dcdfe6;
+      border-left: 0;
+      border-right: 0;
+      border-bottom: 0;
+      margin: 10px 0 0 0;
+      padding: 10px 0 0 10px;
+
+      legend {
+        font-size: 12px;
+        color: #606266;
+      }
+    }
+
+    .custom-pane-item {
+      h2 {
+        height: 24px;
+        margin: 0 0 10px 0;
+        font-size: 14px;
+        border-bottom: 1px dashed #b6b6b6;
+      }
+
+      .item-pane {
+        width: 100%;
+        height: calc(100% - 35px);
+      }
+    }
+  }
+
+  :deep(.el-divider--horizontal) {
+    margin: 5px;
+  }
+}
