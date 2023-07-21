@@ -18,6 +18,9 @@ import {
   Bell,
   MuteNotification,
   SwitchButton,
+  OfficeBuilding,
+  List,
+  Clock
 } from '@element-plus/icons-vue';
 import { markRaw } from 'vue';
 
@@ -35,7 +38,7 @@ const menu = [
       { icon: Switch, title: '交换机', path: '/device/switch' },
       { icon: Monitor, title: '无线AP', path: '/device/wireless' },
       { icon: Platform, title: '客户端', path: '/device/client' },
-      { icon: SwitchButton, title: '门店重启', path: '/device/restart', role: 'L1' },
+      { icon: SwitchButton, title: '门店重启', path: '/device/restart', role: 'L1' }
     ]
   },
   {
@@ -48,11 +51,27 @@ const menu = [
       { icon: Bell, title: '告警配置', path: '/monitor/alarmConfig' },
       { icon: MuteNotification, title: '告警忽略', path: '/monitor/alarmIgnoreConfig' },
       { icon: AlarmClock, title: '定时任务', path: '/system/job' },
-      { icon: Message, title: '任务记录', path: '/system/jobLog' },
-    ],
+      { icon: Message, title: '任务记录', path: '/system/jobLog' }
+    ]
   },
   {
     index: '04',
+    icon: OfficeBuilding,
+    title: 'org管理',
+    children: [
+      { icon: List, title: 'org信息', path: '/org/info' }
+    ]
+  },
+  {
+    index: '05',
+    icon: Document,
+    title: '日志管理',
+    children: [
+      { icon: Clock, title: '变更记录', path: '/logs/history' }
+    ]
+  },
+  {
+    index: '06',
     icon: Setting,
     title: '系统管理',
     children: [
@@ -60,9 +79,9 @@ const menu = [
       { icon: User, title: '角色管理', path: '/system/role' },
       { icon: House, title: '资源管理', path: '/system/resource' },
       { icon: Notebook, title: '字典管理', path: '/system/dict' },
-      { icon: Coin, title: 'redis管理', path: '/system/redis' },
-    ],
-  },
+      { icon: Coin, title: 'redis管理', path: '/system/redis' }
+    ]
+  }
 ];
 
 // 调用markRaw处理每个icon组件，消除警告

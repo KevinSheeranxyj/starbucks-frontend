@@ -1,8 +1,8 @@
 <template>
   <!-- 表格组件 -->
   <compo-table
-      :tableParams="table"
-      ref="compoTableRef"
+    ref="compoTableRef"
+    :table-params="table"
   >
     <!-- 按钮插槽 -->
     <template #buttonSlot>
@@ -37,41 +37,42 @@
       </div>
     </template>
 
-  </compo-table>
-
-  <el-dialog
-      v-model="alarmDialogVisible"
-      :title="alarmDialogTitle"
-      width="30%"
-  >
-    <span style="color:rgb(217,217,217);" v-html="alarmDialogText"></span>
-    <template #footer>
-        <el-button type="primary" plain @click="alarmDialogVisible = false">
-          关 闭
-        </el-button>
+    <template #dialog>
+      <el-dialog
+        v-model="alarmDialogVisible"
+        :title="alarmDialogTitle"
+        width="30%"
+      >
+        <span style="color:rgb(217,217,217);" v-html="alarmDialogText"></span>
+        <template #footer>
+          <el-button type="primary" plain @click="alarmDialogVisible = false">
+            关 闭
+          </el-button>
+        </template>
+      </el-dialog>
     </template>
-  </el-dialog>
+  </compo-table>
 </template>
 
 <script setup>
-import {ref, reactive, onMounted, computed, onActivated,} from 'vue';
-import tool from "@/utils/tool";
-import http from "@/utils/http";
-import {ElMessage} from "element-plus/lib/components";
-import {createEnum} from "@/utils/enums";
-import {useRoute} from "vue-router";
+import {ref, reactive, onMounted, computed, onActivated } from 'vue';
+import tool from '@/utils/tool';
+import http from '@/utils/http';
+import {ElMessage} from 'element-plus/lib/components';
+import {createEnum} from '@/utils/enums';
+import {useRoute} from 'vue-router';
 
 const route = useRoute();
 const compoTableRef = ref(null);
 const alarmStatusOptions = reactive([
-  {label: '待确认', value: 'WAITING',},
-  {label: '已解决', value: 'RESOLVED',},
-  {label: '已忽略', value: 'IGNORE',},
+  {label: '待确认', value: 'WAITING' },
+  {label: '已解决', value: 'RESOLVED' },
+  {label: '已忽略', value: 'IGNORE' }
 ]);
 const notificationStatusOptions = reactive([
-  {label: '待通知', value: 'WAITING',},
-  {label: '通知成功', value: 'SUCCESS',},
-  {label: '通知失败', value: 'FAIL',},
+  {label: '待通知', value: 'WAITING' },
+  {label: '通知成功', value: 'SUCCESS' },
+  {label: '通知失败', value: 'FAIL' }
 ]);
 const alarmDialogVisible = ref(false)
 const alarmDialogText = ref('')
@@ -81,46 +82,59 @@ const alarmDialogTitle = ref('')
 const columns = [
   {label: '告警配置ID', prop: 'alarmCfgId', width: '70px'},
   {label: '告警名称', prop: 'alarmName', minWidth: '120px'},
-  {label: '通知状态', prop: 'notificationStatus', width: '70px',},
+  {label: '通知状态', prop: 'notificationStatus', width: '70px' },
   {
     label: '告警状态', prop: 'alarmStatus', type: 'select', width: '70px',
-    config: {options: alarmStatusOptions},
+    config: {options: alarmStatusOptions}
   },
-  {label: '告警时间', prop: 'alarmTime', width: '150px',},
-  {label: '告警内容', prop: 'alarmText', minWidth: '200px',},
-  {label: '处理人', prop: 'updatedBy', width: '100px',},
-  {label: '处理时间', prop: 'updatedAt', width: '150px',},
+  {label: '告警时间', prop: 'alarmTime', width: '150px' },
+  {label: '告警内容', prop: 'alarmText', minWidth: '200px' },
+  {label: '网络', prop: 'network', minWidth: '200px' },
+  {label: '路由器', prop: 'router', minWidth: '120px' },
+  {label: '交换机', prop: 'switch', minWidth: '120px' },
+  {label: '无线AP', prop: 'wireless', minWidth: '100px' },
+  {label: '客户端', prop: 'client', minWidth: '120px' },
+  {label: '处理人', prop: 'updatedBy', width: '100px' },
+  {label: '处理时间', prop: 'updatedAt', width: '150px' }
 ];
 
 // 查询表单
 const queryForm = [
-  {label: '告警配置ID', prop: 'alarmCfgId', type: 'input',},
+  {label: '告警配置ID', prop: 'alarmCfgId', type: 'input' },
   {
     label: '告警状态', prop: 'alarmStatusList', type: 'select',
-    config: {options: alarmStatusOptions, multiple: true, collapseTags: true},
+    config: {options: alarmStatusOptions, multiple: true, collapseTags: true}
   },
+  {label: '网络', prop: 'network', type: 'input'},
+  {label: '路由器', prop: 'router', type: 'input'},
+  {label: '交换机', prop: 'switch', type: 'input'},
+  {label: '无线AP', prop: 'wireless', type: 'input'},
+  {label: '客户端', prop: 'client', type: 'input'},
   {
     label: '开始日期', prop: 'startDate', type: 'date',
-    config: {valueFormat: "YYYY-MM-DD"},
+    config: {valueFormat: 'YYYY-MM-DD'}
   },
   {label: '结束日期', prop: 'endDate', type: 'date',
-    config: {valueFormat: "YYYY-MM-DD"},
-  },
+    config: {valueFormat: 'YYYY-MM-DD'}
+  }
 ];
 
 const table = {
   query: {
     url: '/alarm/log/table',
-    form: {formItems: queryForm},
+    form: {formItems: queryForm}
+  },
+  export: {
+    url: '/alarm/log/export'
   },
   columns: columns,
   config: {
     page: true,
-    multipleTable: true,
+    multipleTable: true
   },
   update: {
-    url: '/alarm/log/update',
-  },
+    url: '/alarm/log/update'
+  }
 };
 
 /**
@@ -129,7 +143,7 @@ const table = {
 function initQuery() {
   const queryForm = {
     startDate: tool.dateFormat(new Date(), 'yyyy-MM-dd'),
-    endDate: tool.dateFormat(new Date(), 'yyyy-MM-dd'),
+    endDate: tool.dateFormat(new Date(), 'yyyy-MM-dd')
   };
   compoTableRef.value.setForm(queryForm);
   queryTable();
@@ -200,7 +214,6 @@ async function batchUpdate(alarmStatus) {
   queryTable();
 }
 
-
 /**
  * 文本仅截取前100个字符
  */
@@ -214,7 +227,7 @@ function sliceStr(text) {
   return text;
 }
 
-function openAlarmDialog(row){
+function openAlarmDialog(row) {
   alarmDialogVisible.value = true;
   alarmDialogTitle.value = row.alarmName;
   alarmDialogText.value = row.alarmText;
@@ -229,7 +242,7 @@ function setupState() {
     const queryForm = {
       alarmCfgId: query.alarmCfgId,
       startDate: query.startDate,
-      endDate: query.endDate,
+      endDate: query.endDate
     };
     // 设置查询表单
     compoTableRef.value.setForm(queryForm);

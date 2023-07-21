@@ -1,10 +1,12 @@
 <template>
-  <el-dialog v-model="dialogVisible"
-             :title="dialogParams.title"
-             :width="dialogParams.width"
-             :fullscreen="dialogParams.fullscreen">
+  <el-dialog
+    v-model="dialogVisible"
+    :title="dialogParams.title"
+    :width="dialogParams.width"
+    :fullscreen="dialogParams.fullscreen"
+  >
     <!-- 表单组件 -->
-    <compo-form :formParams="dialogParams.form" formType="dialog" ref="compoFormRef">
+    <compo-form ref="compoFormRef" :form-params="dialogParams.form" form-type="dialog">
       <template #formDefinedSlot="slotProps">
         <slot name="dialogFormSlot" :prop="slotProps.prop"></slot>
       </template>
@@ -16,24 +18,24 @@
       <el-button @click="closeDialog()">取 消</el-button>
       <!-- 自定义按钮 插槽 -->
       <slot name="dialogButtonSlot"></slot>
-      <el-button v-if="dialogParams.button!==false" type="primary" plain @click="confirm()" :loading=dialogLoading>确 定</el-button>
+      <el-button v-if="dialogParams.button!==false" type="primary" plain :loading="dialogLoading" @click="confirm()">确 定</el-button>
     </div>
   </el-dialog>
 </template>
 
 <script>
 export default {
-  name: 'compoDialog',
-  props: {
-    dialogParams: { type: Object },
-  },
+  name: 'CompoDialog',
   components: {},
-  emits: ['confirmSuccess'],
+  props: {
+    dialogParams: { type: Object }
+  },
+  emits: ['confirmSuccess', 'initDialog'],
   data() {
     return {
       dialogForm: {},
       dialogVisible: false,
-      dialogLoading: false,
+      dialogLoading: false
     };
   },
 
@@ -44,6 +46,7 @@ export default {
      * 打开对话框
      */
     openDialog() {
+      this.$emit('initDialog');
       this.dialogVisible = true;
     },
 
@@ -75,7 +78,7 @@ export default {
      */
     confirm() {
       // 表单检验
-      this.$refs.compoFormRef.validate(async (valid) => {
+      this.$refs.compoFormRef.validate(async(valid) => {
         if (valid) {
           this.dialogForm = this.getForm();
           this.dialogLoading = true;
@@ -91,8 +94,8 @@ export default {
           this.$emit('confirmSuccess', '');
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

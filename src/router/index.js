@@ -1,7 +1,6 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Layout from '@/layout';
 
-
 /**
  * 页面配置
  */
@@ -14,12 +13,12 @@ export const layoutRoutes = [
     name: 'Home',
     meta: {
       title: '概览',
-      unsearchable: true,
+      unsearchable: true
     },
-    component: () => import('@/views/Home'),
+    component: () => import('@/views/Home')
   },
 
-  /**************************************/
+  /** ************************************/
   /**
    * 监控管理
    */
@@ -27,37 +26,37 @@ export const layoutRoutes = [
     path: 'device/network',
     name: 'network',
     meta: { title: '网络' },
-    component: () => import('@/views/device/network'),
+    component: () => import('@/views/device/network')
   },
   {
     path: 'device/router',
     name: 'router',
     meta: { title: '路由器' },
-    component: () => import('@/views/device/router'),
+    component: () => import('@/views/device/router')
   },
   {
     path: 'device/switch',
     name: 'switch',
     meta: { title: '交换机' },
-    component: () => import('@/views/device/switch'),
+    component: () => import('@/views/device/switch')
   },
   {
     path: 'device/wireless',
     name: 'wireless',
     meta: { title: '无线AP' },
-    component: () => import('@/views/device/wireless'),
+    component: () => import('@/views/device/wireless')
   },
   {
     path: 'device/client',
     name: 'client',
     meta: { title: '客户端' },
-    component: () => import('@/views/device/client'),
+    component: () => import('@/views/device/client')
   },
   {
     path: 'device/restart',
     name: 'restart',
-    meta: { title: '门店重启',},
-    component: () => import('@/views/device/restart'),
+    meta: { title: '门店重启' },
+    component: () => import('@/views/device/restart')
   },
 
   /**
@@ -67,25 +66,39 @@ export const layoutRoutes = [
     path: 'monitor/alarmCount',
     name: 'alarmCount',
     meta: { title: '告警统计' },
-    component: () => import('@/views/monitor/alarmCount'),
+    component: () => import('@/views/monitor/alarmCount')
   },
   {
     path: 'monitor/alarmLog',
     name: 'alarmLog',
     meta: { title: '告警记录' },
-    component: () => import('@/views/monitor/alarmLog'),
+    component: () => import('@/views/monitor/alarmLog')
   },
   {
     path: 'monitor/alarmConfig',
     name: 'alarmConfig',
     meta: { title: '告警配置' },
-    component: () => import('@/views/monitor/alarmConfig'),
+    component: () => import('@/views/monitor/alarmConfig')
   },
   {
     path: 'monitor/alarmIgnoreConfig',
     name: 'alarmIgnoreConfig',
     meta: { title: '告警忽略' },
-    component: () => import('@/views/monitor/alarmIgnoreConfig'),
+    component: () => import('@/views/monitor/alarmIgnoreConfig')
+  },
+
+  {
+    path: 'org/info',
+    name: 'orgInfo',
+    meta: { title: 'org信息' },
+    component: () => import('@/views/org/info')
+  },
+
+  {
+    path: 'logs/history',
+    name: 'logsHistory',
+    meta: { title: '日志变更记录' },
+    component: () => import('@/views/logs/history')
   },
 
   /**
@@ -95,44 +108,44 @@ export const layoutRoutes = [
     path: 'system/user',
     name: 'UserManager',
     meta: { title: '用户管理' },
-    component: () => import('@/views/system/user'),
+    component: () => import('@/views/system/user')
   },
   {
     path: 'system/role',
     name: 'RoleManager',
     meta: { title: '角色管理' },
-    component: () => import('@/views/system/role'),
+    component: () => import('@/views/system/role')
   },
   {
     path: 'system/resource',
     name: 'resource',
     meta: { title: '资源管理' },
-    component: () => import('@/views/system/resource'),
+    component: () => import('@/views/system/resource')
   },
   {
     path: 'system/job',
     name: 'job',
     meta: { title: '定时任务' },
-    component: () => import('@/views/system/job'),
+    component: () => import('@/views/system/job')
   },
   {
     path: 'system/jobLog',
     name: 'jobLog',
     meta: { title: '任务记录' },
-    component: () => import('@/views/system/jobLog'),
+    component: () => import('@/views/system/jobLog')
   },
   {
     path: 'system/dict',
     name: 'dict',
     meta: { title: '字典管理' },
-    component: () => import('@/views/system/dict'),
+    component: () => import('@/views/system/dict')
   },
   {
     path: 'system/redis',
     name: 'redis',
     meta: { title: 'Redis管理' },
-    component: () => import('@/views/system/redis'),
-  },
+    component: () => import('@/views/system/redis')
+  }
 ];
 
 /**
@@ -141,23 +154,23 @@ export const layoutRoutes = [
 export const constantRoutes = [
   {
     path: '/',
-    redirect: '/home',
+    redirect: '/home'
   },
   {
     path: '/login',
     meta: {
       title: '登录',
-      guest: true,
+      guest: true
     },
-    component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue'),
+    component: () => import(/* webpackChunkName: "login" */ '@/views/Login.vue')
   },
   {
     path: '/404',
     meta: {
       title: '404',
-      guest: true,
+      guest: true
     },
-    component: () => import(/* webpackChunkName: "About" */ '@/views/common/error/404.vue'),
+    component: () => import(/* webpackChunkName: "About" */ '@/views/common/error/404.vue')
   },
 
   {
@@ -168,15 +181,15 @@ export const constantRoutes = [
       {
         path: '/redirect/:path(.*)',
         meta: { title: '刷新中' },
-        component: () => import('@/views/common/redirect'),
-      },
-    ],
+        component: () => import('@/views/common/redirect')
+      }
+    ]
   },
   {
     path: '/',
     component: Layout,
-    children: layoutRoutes,
-  },
+    children: layoutRoutes
+  }
 ];
 
 /**
@@ -189,7 +202,7 @@ const routes = [
 
 const router = createRouter({
   history: createWebHashHistory(),
-  routes: constantRoutes.concat(routes),
+  routes: constantRoutes.concat(routes)
 });
 
 export default router;

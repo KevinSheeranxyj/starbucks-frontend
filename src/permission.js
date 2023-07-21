@@ -23,7 +23,7 @@ async function refreshUserInfo(errHandler, successHandler) {
   const userInfo = {
     username: res.data.username,
     account: res.data.email,
-    roles: res.data.roleList,
+    roles: res.data.roleList
   };
   store.dispatch('user/refreshUserInfo', userInfo);
   successHandler();
@@ -43,7 +43,7 @@ function getParentRoute(route) {
 // 离线本地调试将此方法返回true
 function debug() {
   return false;
-   // return true;
+  // return true;
 }
 
 router.beforeEach((to, from, next) => {
@@ -53,13 +53,13 @@ router.beforeEach((to, from, next) => {
   }
   // 不允许跳转到menuPage路由
   const parentRoute = getParentRoute(from);
-  if (parentRoute && parentRoute.name == to.name) {
+  if (parentRoute && parentRoute.name === to.name) {
     return;
   }
 
   NProgress.start();
 
-  //未匹配到路由跳转404页面
+  // 未匹配到路由跳转404页面
   if (to.matched.length === 0) {
     next(`/404`);
     return;
@@ -89,7 +89,7 @@ router.beforeEach((to, from, next) => {
       }, next);
     }
   } else {
-    if (to.path == '/login') {
+    if (to.path === '/login') {
       next();
     } else {
       ElMessage.error('登录失效，请重新登录！');
