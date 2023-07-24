@@ -6,9 +6,9 @@
       <!-- 表单组件 -->
       <compo-form
         v-if="tableParams.query.form"
-        :formParams="tableParams.query.form"
-        formType="table"
         ref="compoFormRef"
+        :form-params="tableParams.query.form"
+        form-type="table"
         class="compo-form"
         @changeSelect="changeSelect"
         @remoteMethod="remoteMethod"
@@ -18,6 +18,7 @@
         <el-button v-if="tableParams.query.form.formItems" type="primary" plain @click="query()">查 询</el-button>
         <el-button v-if="tableParams.query.reset!==false" @click="reset">重 置</el-button>
         <el-button v-if="tableParams.delete" type="danger" plain @click="batchUpdate('archiveFlag', 1)">删 除</el-button>
+        <el-button v-if="tableParams.export" type="primary" plain @click="exportData()">导 出</el-button>
         <!-- 自定义按钮 插槽 -->
         <slot name="buttonSlot"></slot>
       </el-button-group>
@@ -25,178 +26,177 @@
 
     <template #body>
       <el-table
-        height="100%"
-        v-loading="loading"
         ref="multipleTable"
-        :data="this.tableData"
-        @cell-click="cellClick"
-        @selection-change="handleSelectionChange"
-        @expand-change="expandChange"
+        v-loading="loading"
+        height="100%"
+        :data="tableData"
         border
         :stripe="tableParams.config.stripe!==false"
         :span-method="spanMethod"
         :show-summary="tableParams.config.showSummary"
         :summary-method="summaryMethod"
         :header-cell-style="{'height': '35px'}"
+        @cell-click="cellClick"
+        @selection-change="handleSelectionChange"
+        @expand-change="expandChange"
       >
         <!-- 多选框 -->
         <el-table-column v-if="tableParams.config.multipleTable" align="center" type="selection"></el-table-column>
-
-        <template v-for="(item, index) in tableParams.columns" :key="index">
-          <el-table-column
-            :prop="item.prop"
-            :label="item.label"
-            :width="item.width"
-            :min-width="item.minWidth"
-            :show-overflow-tooltip="item.showOverflowTooltip ? true : false"
-            :align="item.align ? item.align : 'center'"
-            :header-align="item.headerAlign ? item.headerAlign : 'center'"
-            :sortable="item.sortable"
-            :type="item.type"
-          >
-            <!-- 单元格：不可编辑 -->
-            <template v-if="!item.type || item.type === 'text'" #default="scope">
-              <!-- 文本样式 插槽 -->
-              <slot name="tableTextSlot" :scope="scope" :prop="item.prop" :cellValue="scope.row[scope.column.property]">
+        <el-table-column
+          v-for="(item, index) in tableParams.columns"
+          :key="index"
+          :prop="item.prop"
+          :label="item.label"
+          :width="item.width"
+          :min-width="item.minWidth"
+          :show-overflow-tooltip="item.showOverflowTooltip ? true : false"
+          :align="item.align ? item.align : 'center'"
+          :header-align="item.headerAlign ? item.headerAlign : 'center'"
+          :sortable="item.sortable"
+          :type="item.type"
+        >
+          <!-- 单元格：不可编辑 -->
+          <template v-if="!item.type || item.type === 'text'" #default="scope">
+            <!-- 文本样式 插槽 -->
+            <slot name="tableTextSlot" :scope="scope" :prop="item.prop" :cellValue="scope.row[scope.column.property]">
+              {{ scope.row[scope.column.property] }}
+            </slot>
+          </template>
+          <!-- 单元格：支持输入框编辑  -->
+          <template v-else-if="item.type === 'input'" #default="scope">
+            <el-input
+              v-if="getCellEditFlag(scope.row, scope.column)"
+              ref="cellInput"
+              v-model="scope.row[scope.column.property]"
+              :type="item.config.type"
+              :placeholder="item.config.placeholder"
+              @blur="updateCell(scope.row, scope.column)"
+            ></el-input>
+            <div v-else>
+              <!-- 输入文本样式 插槽 -->
+              <slot
+                name="tableInputSlot"
+                :scope="scope"
+                :prop="item.prop"
+                :cellValue="scope.row[scope.column.property]"
+              >
                 {{ scope.row[scope.column.property] }}
               </slot>
-            </template>
-            <!-- 单元格：支持输入框编辑  -->
-            <template v-else-if="item.type === 'input'" #default="scope">
-              <el-input
-                v-if="getCellEditFlag(scope.row, scope.column)"
-                @blur="updateCell(scope.row, scope.column)"
-                v-model="scope.row[scope.column.property]"
-                :type="item.config.type"
-                :placeholder="item.config.placeholder"
-                ref="cellInput"
-              ></el-input>
-              <div v-else>
-                <!-- 输入文本样式 插槽 -->
-                <slot
-                  name="tableInputSlot"
-                  :scope="scope"
-                  :prop="item.prop"
-                  :cellValue="scope.row[scope.column.property]"
-                >
-                  {{ scope.row[scope.column.property] }}
-                </slot>
-              </div>
-            </template>
-            <!-- 单元格：支持下拉框编辑  -->
-            <template v-else-if="item.type === 'select'" #default="scope">
-              <el-select
-                v-if="getCellEditFlag(scope.row, scope.column)"
-                v-model="scope.row[scope.column.property]"
-                :placeholder="item.config.placeholder"
-                :filterable="item.config.filterable === false ? false : true"
-                :clearable="item.config.clearable === false ? false : true"
-                :multiple="item.config.multiple"
-                :collapse-tags="item.config.collapseTags"
-                @change="updateCell(scope.row, scope.column)"
-                @visible-change="visibleChange"
-                ref="cellSelection"
-                :remote="item.config.remote === false ? false : true"
-                :remote-method="item.config.remoteMethod"
-                :loading="item.config.loading"
+            </div>
+          </template>
+          <!-- 单元格：支持下拉框编辑  -->
+          <template v-else-if="item.type === 'select'" #default="scope">
+            <el-select
+              v-if="getCellEditFlag(scope.row, scope.column)"
+              ref="cellSelection"
+              v-model="scope.row[scope.column.property]"
+              :placeholder="item.config.placeholder"
+              :filterable="item.config.filterable === false ? false : true"
+              :clearable="item.config.clearable === false ? false : true"
+              :multiple="item.config.multiple"
+              :collapse-tags="item.config.collapseTags"
+              :remote="item.config.remote === false ? false : true"
+              :remote-method="item.config.remoteMethod"
+              :loading="item.config.loading"
+              @change="updateCell(scope.row, scope.column)"
+              @visible-change="visibleChange"
+            >
+              <el-option
+                v-for="config in item.config.options"
+                :key="config.value"
+                :label="config.label"
+                :value="config.value"
               >
-                <el-option
-                  v-for="item in item.config.options"
-                  :key="item.value"
-                  :label="item.label"
-                  :value="item.value"
-                >
-                </el-option>
-              </el-select>
-              <div v-else>
-                <!-- 下拉文本样式 插槽 -->
-                <slot
-                  name="tableSelectSlot"
-                  :scope="scope"
-                  :prop="item.prop"
-                  :cellValue="scope.row[scope.column.property]"
-                >
-                  {{ $tool.getLabelByValue(item.config.options, scope.row[scope.column.property]) }}
-                </slot>
-              </div>
-            </template>
-            <template v-else-if="item.type === 'secondarySelect'" #default="scope">
-              <el-select
-                v-if="getCellEditFlag(scope.row, scope.column)"
-                v-model="scope.row[scope.column.property]"
-                :placeholder="item.config.placeholder"
-                :filterable="item.config.filterable === false ? false : true"
-                :clearable="item.config.clearable === false ? false : true"
-                :multiple="item.config.multiple"
-                :collapse-tags="item.config.collapseTags"
-                @change="updateCell(scope.row, scope.column)"
-                @visible-change="visibleChange"
-                ref="cellSelection"
+              </el-option>
+            </el-select>
+            <div v-else>
+              <!-- 下拉文本样式 插槽 -->
+              <slot
+                name="tableSelectSlot"
+                :scope="scope"
+                :prop="item.prop"
+                :cellValue="scope.row[scope.column.property]"
               >
-                <el-option v-for="item in secondaryOptions" :key="item.value" :label="item.label" :value="item.value">
-                </el-option>
-              </el-select>
-              <div v-else>
-                {{ getSecondaryValue(scope.row, scope.column) }}
-              </div>
-            </template>
-            <!-- 单元格：支持日期选择 -->
-            <template v-else-if="['date', 'datetime'].includes(item.type)" #default="scope">
-              <el-date-picker
-                v-if="getCellEditFlag(scope.row, scope.column)"
-                v-model="scope.row[scope.column.property]"
-                :type="item.type"
-                :clearable="item.config.clearable!==false"
-                :placeholder="item.config.placeholder"
-                @blur="updateCell(scope.row, scope.column)"
-                ref="datePicker"
+                {{ $tool.getLabelByValue(item.config.options, scope.row[scope.column.property]) }}
+              </slot>
+            </div>
+          </template>
+          <template v-else-if="item.type === 'secondarySelect'" #default="scope">
+            <el-select
+              v-if="getCellEditFlag(scope.row, scope.column)"
+              ref="cellSelection"
+              v-model="scope.row[scope.column.property]"
+              :placeholder="item.config.placeholder"
+              :filterable="item.config.filterable === false ? false : true"
+              :clearable="item.config.clearable === false ? false : true"
+              :multiple="item.config.multiple"
+              :collapse-tags="item.config.collapseTags"
+              @change="updateCell(scope.row, scope.column)"
+              @visible-change="visibleChange"
+            >
+              <el-option v-for="secondaryOption in secondaryOptions" :key="secondaryOption.value" :label="secondaryOption.label" :value="secondaryOption.value">
+              </el-option>
+            </el-select>
+            <div v-else>
+              {{ getSecondaryValue(scope.row, scope.column) }}
+            </div>
+          </template>
+          <!-- 单元格：支持日期选择 -->
+          <template v-else-if="['date', 'datetime'].includes(item.type)" #default="scope">
+            <el-date-picker
+              v-if="getCellEditFlag(scope.row, scope.column)"
+              ref="datePicker"
+              v-model="scope.row[scope.column.property]"
+              :type="item.type"
+              :clearable="item.config.clearable!==false"
+              :placeholder="item.config.placeholder"
+              @blur="updateCell(scope.row, scope.column)"
+            >
+            </el-date-picker>
+            <div v-else>
+              <!-- 日期样式 插槽 -->
+              <slot
+                name="tableDateSlot"
+                :scope="scope"
+                :prop="item.prop"
+                :cellValue="scope.row[scope.column.property]"
               >
-              </el-date-picker>
-              <div v-else>
-                <!-- 日期样式 插槽 -->
-                <slot
-                  name="tableDateSlot"
-                  :scope="scope"
-                  :prop="item.prop"
-                  :cellValue="scope.row[scope.column.property]"
-                >
-                  {{ $tool.dateFormat(scope.row[scope.column.property], item.config.style) }}
-                </slot>
-              </div>
-            </template>
-            <!-- 单元格：开关  -->
-            <template v-else-if="item.type === 'switch'" #default="scope">
-              <el-switch
-                @change="updateCell(scope.row, scope.column)"
-                v-model="scope.row[scope.column.property]"
-                :active-value="item.config.activeValue ? item.config.activeValue : 1"
-                :inactive-value="item.config.inactiveValue ? item.config.inactiveValue : 0"
-              >
-              </el-switch>
-            </template>
-            <!-- 展开行 -->
-            <template v-else-if="item.type === 'expand'" #default="scope">
-              <slot name="tableExpandSlot" :scope="scope" :prop="item.prop"> </slot>
-            </template>
-            <!-- 自定义列 -->
-            <template v-else-if="item.type === 'defined'" #default="scope">
-              <slot name="tableDefinedSlot" :scope="scope" :prop="item.prop"> </slot>
-            </template>
-          </el-table-column>
-        </template>
+                {{ $tool.dateFormat(scope.row[scope.column.property], item.config.style) }}
+              </slot>
+            </div>
+          </template>
+          <!-- 单元格：开关  -->
+          <template v-else-if="item.type === 'switch'" #default="scope">
+            <el-switch
+              v-model="scope.row[scope.column.property]"
+              :active-value="item.config.activeValue ? item.config.activeValue : 1"
+              :inactive-value="item.config.inactiveValue ? item.config.inactiveValue : 0"
+              @change="updateCell(scope.row, scope.column)"
+            >
+            </el-switch>
+          </template>
+          <!-- 展开行 -->
+          <template v-else-if="item.type === 'expand'" #default="scope">
+            <slot name="tableExpandSlot" :scope="scope" :prop="item.prop"> </slot>
+          </template>
+          <!-- 自定义列 -->
+          <template v-else-if="item.type === 'defined'" #default="scope">
+            <slot name="tableDefinedSlot" :scope="scope" :prop="item.prop"> </slot>
+          </template>
+        </el-table-column>
       </el-table>
     </template>
 
     <template #footer>
       <el-pagination
         v-if="tableParams.config.page"
+        :current-page="page"
+        :page-sizes="[10, 20, 50, 100]"
+        :page-size="limit"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="total"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
-        :current-page="this.page"
-        :page-sizes="[10, 20, 50, 100]"
-        :page-size="this.limit"
-        layout="total, sizes, prev, pager, next, jumper"
-        :total="this.total"
       >
       </el-pagination>
     </template>
@@ -211,9 +211,9 @@
 import SingleDataView from '@/components/SingleDataView';
 
 export default {
-  name: 'compoTable',
-  props: { tableParams: Object, spanMethod: Function, summaryMethod: Function, expandChange: Function },
+  name: 'CompoTable',
   components: { SingleDataView },
+  props: { tableParams: Object, spanMethod: Function, summaryMethod: Function, expandChange: Function },
   emits: ['updateSuccess', 'querySuccess', 'changeSelect', 'remoteMethod'],
 
   data() {
@@ -242,9 +242,12 @@ export default {
       // 二级下拉选项
       secondaryOptions: [],
       // 所有子集字典
-      allSubsetDict: [],
+      allSubsetDict: []
     };
   },
+
+  // 计算属性
+  computed: {},
 
   // 定义生命周期函数，在页面创建时候就去做一些事情
   created() {
@@ -258,15 +261,12 @@ export default {
     document.body.style.setProperty('--el-fill-color-lighter', '#111');
   },
 
-  // 计算属性
-  computed: {},
-
   methods: {
     /**
      * 校验表格列参数
      */
     checkColumnParams(params) {
-      for (let i in params) {
+      for (const i in params) {
         // 判断参数是否存在'config'，无则新增
         if (['input', 'select', 'date', 'datetime', 'switch', 'secondarySelect'].includes(params[i].type)) {
           if (!params[i].config) {
@@ -307,7 +307,7 @@ export default {
      * 查询
      */
     query(form) {
-      this.$refs.compoFormRef.validate(async (valid) => {
+      this.$refs.compoFormRef.validate(async(valid) => {
         if (valid) {
           // 如果无form对象，则从表单组件获取
           if (form) {
@@ -337,6 +337,32 @@ export default {
           this.ids = '';
 
           this.$emit('querySuccess', this.tableData);
+        }
+      });
+    },
+
+    exportData(form) {
+      this.$refs.compoFormRef.validate(async(valid) => {
+        if (valid) {
+          // 如果无form对象，则从表单组件获取
+          if (form) {
+            if (form.isTrusted) {
+              this.queryForm = this.$refs.compoFormRef.getForm();
+            } else {
+              this.queryForm = form;
+            }
+          } else {
+            this.queryForm = this.$refs.compoFormRef.getForm();
+          }
+          this.loading = true;
+          const { data: res } = await this.$http.post(
+            this.tableParams.export.url,
+            this.queryForm
+          );
+          this.loading = false;
+          if (!res.success) {
+            return this.$message.error(res.msg);
+          }
         }
       });
     },
@@ -373,9 +399,9 @@ export default {
      */
     getTableIds() {
       this.ids = '';
-      for (let i in this.multipleSelection) {
-        let id = this.multipleSelection[i].id;
-        if (this.ids == '') {
+      for (const i in this.multipleSelection) {
+        const id = this.multipleSelection[i].id;
+        if (this.ids === '') {
           this.ids = id;
         } else {
           this.ids = this.ids + ',' + id;
@@ -402,9 +428,9 @@ export default {
       this.$confirm('此操作将永久删除选中数据, 是否继续?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
-        type: 'warning',
+        type: 'warning'
       })
-        .then(async () => {
+        .then(async() => {
           this.getTableIds();
 
           const body = {};
@@ -505,7 +531,7 @@ export default {
           res.body.forEach((o) => {
             this.secondaryOptions.push({
               label: o.desc,
-              value: o.code,
+              value: o.code
             });
           });
         }
@@ -553,8 +579,8 @@ export default {
      * 更新单元格
      */
     updateCell(row, column) {
-      let key = column.property;
-      let value = row[column.property];
+      const key = column.property;
+      const value = row[column.property];
       const id = column.id + '_' + row.id;
       // 单元格内容不变，则不更新
       if (this.beforeValue === value && this.beforeEditingCellId === id) {
@@ -566,7 +592,7 @@ export default {
       body['id'] = row.id;
       body[key] = value;
       // 如果value类型是Object，且是数组，判断为单元格为下拉多选，不初始化单元格编辑状态
-      if (typeof value == 'object' && Object.prototype.toString.call(value) === '[object Array]') {
+      if (typeof value === 'object' && Object.prototype.toString.call(value) === '[object Array]') {
         this.update(body);
       } else {
         this.update(body);
@@ -597,8 +623,8 @@ export default {
      */
     remoteMethod(prop, val) {
       this.$emit('remoteMethod', prop, val);
-    },
-  },
+    }
+  }
 };
 </script>
 

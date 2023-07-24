@@ -1,15 +1,15 @@
 <template>
   <!-- 表格组件 -->
   <compo-table
-      :tableParams="table"
-      ref="compoTableRef"
-      @changeSelect="changeSelect"
-      @remoteMethod="remoteMethod"
-      @reset="afterReset"
+    ref="compoTableRef"
+    :table-params="table"
+    @changeSelect="changeSelect"
+    @remoteMethod="remoteMethod"
+    @reset="afterReset"
   >
     <!-- 按钮插槽 -->
     <template #buttonSlot>
-      <el-button type="primary" plain @click="syncNetwork" :loading="syncLoading">同 步</el-button>
+      <el-button type="primary" plain :loading="syncLoading" @click="syncNetwork">同 步</el-button>
       <el-button type="primary" plain @click="openHistoryDialog">查询历史</el-button>
     </template>
 
@@ -46,9 +46,9 @@
 
     <template #dialog>
       <!-- 对话框组件 -->
-      <compo-dialog :dialogParams="historyDialog" ref="historyDialogRef">
+      <compo-dialog ref="historyDialogRef" :dialog-params="historyDialog">
         <template #dialogSlot>
-          <div v-loading="chartLoading" id="areaChart" style="height: 400px"></div>
+          <div id="areaChart" v-loading="chartLoading" style="height: 400px"></div>
         </template>
         <template #dialogButtonSlot>
           <el-button type="primary" plain @click="queryHistoryData">查 询</el-button>
@@ -62,11 +62,11 @@
 <script setup>
 import {reactive, ref, onMounted, computed, onActivated, h} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
-import http from "@/utils/http";
+import http from '@/utils/http';
 import {ElMessage, ElMessageBox} from 'element-plus/lib/components';
-import tool from "@/utils/tool";
-import {createEnumByOptions} from "@/utils/enums";
-import * as echarts from "echarts";
+import tool from '@/utils/tool';
+import {createEnumByOptions} from '@/utils/enums';
+import * as echarts from 'echarts';
 import {getOrganizationOptions, getNetworkOptions, getDeviceOptions, getTagTypeByStatus, getTimespanOptions} from './device';
 
 const router = useRouter();
@@ -76,9 +76,9 @@ const compoTableRef = ref(null);
 const historyDialogRef = ref(null);
 const syncLoading = ref(false);
 const selected = reactive({
-  networkId: "",
-  organizationId: "",
-  serial: "",
+  networkId: '',
+  organizationId: '',
+  serial: ''
 });
 const organizationOptions = reactive([]);
 const networkOptions = reactive([]);
@@ -88,21 +88,23 @@ const deviceStatusOptions = reactive([]);
 const macOptions = reactive([]);
 const publicIpOptions = reactive([]);
 const importantOptions = reactive([
-  {label: "是", value: "1"},
-  {label: "否", value: "0"},
+  {label: '是', value: '1'},
+  {label: '否', value: '0'}
 ]);
 const dataTypeOptions = reactive([
-  {label: "2.4G信道利用率", value: "utilization2g"},
-  {label: "5G信道利用率", value: "utilization5g"},
-  {label: "信噪比", value: "snr"},
-  {label: "信号强度", value: "rssi"},
-  {label: "延时", value: "latency"},
+  {label: '2.4G信道利用率', value: 'utilization2g'},
+  {label: '5G信道利用率', value: 'utilization5g'},
+  {label: '信噪比', value: 'snr'},
+  {label: '信号强度', value: 'rssi'},
+  {label: '延时', value: 'latency'},
+  {label: '流量', value: 'traffic'},
+  {label: '终端连接数', value: 'connectClientNum'}
 ]);
 const timespanOptions = reactive([]);
 const resolutionOptions = reactive([
   {label: '10分钟', value: 600},
-  {label: "1小时", value: 3600},
-  {label: "1天", value: 86400},
+  {label: '1小时', value: 3600},
+  {label: '1天', value: 86400}
 ]);
 const chartLoading = ref(false);
 // 远程选项
@@ -129,55 +131,55 @@ const columns = [
   {label: '状态', prop: 'status', sortable: true, width: '60px'},
   {
     label: '自定义状态', prop: 'customStatus', type: 'select',
-    config: {options: deviceStatusOptions, },
+    config: {options: deviceStatusOptions }
   },
-  {label: '关注', prop: 'importantFlag', type: 'switch', sortable: true, width: '60px',},
+  {label: '关注', prop: 'importantFlag', type: 'switch', sortable: true, width: '60px' },
   {label: '组织', prop: 'organizationId', sortable: true, width: '150px', showOverflowTooltip: true},
   {label: '网络', prop: 'networkName', sortable: true, minWidth: '220px', showOverflowTooltip: true},
   {label: '无线AP', prop: 'name', sortable: true, width: '100px', showOverflowTooltip: true},
-  {label: '序列', prop: 'serial', width: '120px',},
-  {label: '终端数量', prop: 'connectClientNum', sortable: true, width: '80px',},
+  {label: '序列', prop: 'serial', width: '120px' },
+  {label: '终端数量', prop: 'connectClientNum', sortable: true, width: '80px' },
   {label: '告警类型', prop: 'alertType', minWidth: '120px', showOverflowTooltip: true},
-  {label: '信噪比/dB', prop: 'snr', sortable: true, width: '100px',},
-  {label: '信号强度/dBm', prop: 'rssi', sortable: true, width: '110px',},
-  {label: '延时/ms', prop: 'latency', sortable: true, width: '80px',},
-  {label: '2.4G信道利用率', prop: 'utilization2g', sortable: true, width: '120px',},
-  {label: '5G信道利用率', prop: 'utilization5g', sortable: true, width: '120px',},
-  {label: 'MAC', prop: 'mac', width: '105px',},
-  {label: '公网IP', prop: 'publicIp', width: '100px',},
-  {label: 'LAN IP', prop: 'lanIp', width: '100px',},
-  {label: '网关', prop: 'gateway', width: '100px',},
+  {label: '信噪比/dB', prop: 'snr', sortable: true, width: '100px' },
+  {label: '信号强度/dBm', prop: 'rssi', sortable: true, width: '110px' },
+  {label: '延时/ms', prop: 'latency', sortable: true, width: '80px' },
+  {label: '2.4G信道利用率', prop: 'utilization2g', sortable: true, width: '120px' },
+  {label: '5G信道利用率', prop: 'utilization5g', sortable: true, width: '120px' },
+  {label: 'MAC', prop: 'mac', width: '105px' },
+  {label: '公网IP', prop: 'publicIp', width: '100px' },
+  {label: 'LAN IP', prop: 'lanIp', width: '100px' },
+  {label: '网关', prop: 'gateway', width: '100px' }
 ];
 
 // 查询表单
 const queryForm = [
   {
     label: '组织', prop: 'organizationId', type: 'select',
-    config: {options: organizationOptions},
+    config: {options: organizationOptions}
   },
   {
     label: '网络', prop: 'networkId', type: 'select',
-    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
   },
   {
     label: '无线AP', prop: 'name', type: 'select',
-    config: {options: remoteNameOptions, remote: true, placeholder: '请输入',},
+    config: {options: remoteNameOptions, remote: true, placeholder: '请输入' }
   },
   {
     label: '关注', prop: 'importantFlag', type: 'select',
-    config: {options: importantOptions},
+    config: {options: importantOptions}
   },
   {
     label: '序列', prop: 'serial', type: 'select',
-    config: {options: remoteSerialOptions, remote: true, placeholder: '请输入',},
+    config: {options: remoteSerialOptions, remote: true, placeholder: '请输入' }
   },
   {
     label: '状态', prop: 'statusList', type: 'select',
-    config: {options: deviceStatusOptions, multiple: true, collapseTags: true},
+    config: {options: deviceStatusOptions, multiple: true, collapseTags: true}
   },
   {
     label: 'MAC', prop: 'mac', type: 'select',
-    config: {options: remoteMacOptions, remote: true, placeholder: '请输入',},
+    config: {options: remoteMacOptions, remote: true, placeholder: '请输入' }
   },
   // {
   // label: '公网IP', prop: 'publicIp', type: 'select',
@@ -185,56 +187,56 @@ const queryForm = [
   // },
   {
     label: '信噪比 ≤', prop: 'snr', type: 'input',
-    config: {placeholder: 'dB'},
+    config: {placeholder: 'dB'}
   },
   {
     label: '信号强度 ≤', prop: 'rssi', type: 'input',
-    config: {placeholder: 'dBm'},
+    config: {placeholder: 'dBm'}
   },
   {
     label: '延时 ≥', prop: 'latency', type: 'input',
-    config: {placeholder: 'ms'},
+    config: {placeholder: 'ms'}
   },
-  {label: '2.4G信道 ≥', prop: 'utilization2g', type: 'input',},
-  {label: '5G信道 ≥', prop: 'utilization5g', type: 'input',},
+  {label: '2.4G信道 ≥', prop: 'utilization2g', type: 'input' },
+  {label: '5G信道 ≥', prop: 'utilization5g', type: 'input' }
 ];
 
 const table = {
   query: {
     url: '/device/wireless/table',
-    form: {formItems: queryForm},
+    form: {formItems: queryForm}
   },
   columns: columns,
   config: {
     page: true,
-    multipleTable: true,
+    multipleTable: true
   },
   update: {
-    url: '/device/update',
-  },
+    url: '/device/update'
+  }
 
 };
 
 const historyForm = [
   {
     label: '数据类型', prop: 'wirelessDataType', type: 'select', fixedSpan: 6,
-    config: {options: dataTypeOptions, clearable: false},
+    config: {options: dataTypeOptions, clearable: false}
   },
   {
     label: '时间范围', prop: 'timespan', type: 'select', fixedSpan: 6,
-    config: {options: timespanOptions, clearable: false},
+    config: {options: timespanOptions, clearable: false}
   },
   {
     label: '时间间隔', prop: 'resolution', type: 'select', fixedSpan: 6,
-    config: {options: resolutionOptions, clearable: false},
-  },
+    config: {options: resolutionOptions, clearable: false}
+  }
 ]
 
 const historyDialog = {
   title: '历史数据查询',
   form: {formItems: historyForm},
   button: false,
-  fullscreen: true,
+  fullscreen: true
 }
 
 /**
@@ -246,7 +248,7 @@ function changeSelect(prop, val) {
     getDeviceOptions({'organizationId': val, productType: 'wireless'}, deviceNameOptions, deviceSerialOptions, macOptions, publicIpOptions);
   } else if (prop === 'networkId') {
     getDeviceOptions({'networkId': val, productType: 'wireless'}, deviceNameOptions, deviceSerialOptions, macOptions, publicIpOptions);
-    if(val === ''){
+    if (val === '') {
       remoteNetworkOptions.length = 0;
     }
   }
@@ -268,7 +270,7 @@ function remoteMethod(prop, val) {
     } else if (prop === 'publicIp') {
       tool.getRemoteOptions(val, remotePublicIpOptions, publicIpOptions);
     }
-  } else if(typeof val == 'undefined'){
+  } else if (typeof val === 'undefined') {
     if (prop === 'networkId') {
       remoteNetworkOptions.length = 0;
     } else if (prop === 'name') {
@@ -309,10 +311,10 @@ async function syncNetwork() {
   ElMessageBox({
     title: '同步被选中网络的无线AP信息',
     message: h('p', null, [
-      h('p', null, "网络：" + selection[0].networkName),
+      h('p', null, '网络：' + selection[0].networkName)
     ]),
-    confirmButtonText: '确定',
-  }).then(async () => {
+    confirmButtonText: '确定'
+  }).then(async() => {
     const {data: res} = await http.post('/device/wireless/sync', {
       networkIds: [selection[0].networkId],
       organizationId: selection[0].organizationId
@@ -340,7 +342,7 @@ async function openHistoryDialog() {
   await historyDialogRef.value.setForm({
     resolution: 600,
     timespan: 86400,
-    wirelessDataType: 'utilization2g',
+    wirelessDataType: 'utilization2g'
   });
 
   if (selected.serial !== selection[0].serial) {
@@ -363,7 +365,7 @@ async function queryHistoryData() {
     networkId: selected.networkId,
     deviceSerial: selected.serial,
     timespan: form.timespan,
-    wirelessDataType: form.wirelessDataType,
+    wirelessDataType: form.wirelessDataType
   }
   const {data: res} = await http.post('/device/wireless/history', historyBody);
   chartLoading.value = false;
@@ -371,9 +373,9 @@ async function queryHistoryData() {
     return ElMessage.error(res.msg);
   }
   const chart = {
-      title: dataTypeEnum.value.getDescFromValue(form.wirelessDataType),
-      data: [],
-      xAxis: [],
+    title: dataTypeEnum.value.getDescFromValue(form.wirelessDataType),
+    data: [],
+    xAxis: []
   };
 
   res.data.forEach((history) => {
@@ -393,7 +395,7 @@ function getAreaChart(chart) {
   chartOption.setOption({
     tooltip: {
       trigger: 'axis',
-      position: function (pt) {
+      position: function(pt) {
         return [pt[0], '10%'];
       }
     },
@@ -404,7 +406,7 @@ function getAreaChart(chart) {
     xAxis: {
       type: 'category',
       boundaryGap: false,
-      data: chart.xAxis,
+      data: chart.xAxis
     },
     yAxis: {
       type: 'value',
@@ -455,11 +457,11 @@ function getAreaChart(chart) {
 const routerNetworkPage = (row) => {
   const routeParams = {
     networkId: row.networkId,
-    networkName: row.networkName,
+    networkName: row.networkName
   }
   router.push({
     name: 'network',
-    params: routeParams,
+    params: routeParams
   });
 };
 
@@ -470,12 +472,12 @@ const routerNetworkPage = (row) => {
 const routerClientPage = (row) => {
   const routeParams = {
     recentDeviceType: 'wireless',
-    deviceSerial: row.serial,
+    deviceSerial: row.serial
   }
 
   router.push({
     name: 'client',
-    params: routeParams,
+    params: routeParams
   });
 };
 
@@ -491,7 +493,7 @@ async function setupState() {
     const queryForm = {
       serial: serial,
       networkId: networkId,
-      statusList: query.status ? [query.status] : null,
+      statusList: query.status ? [query.status] : null
     };
     // 设置查询表单
     compoTableRef.value.setForm(queryForm);
@@ -502,7 +504,7 @@ async function setupState() {
       changeSelect('networkId', networkId);
       remoteNetworkOptions.length = 0;
     }
-    if(serial){
+    if (serial) {
       getDeviceOptions({productType: 'wireless'}, deviceNameOptions, deviceSerialOptions, macOptions, publicIpOptions);
     }
   }

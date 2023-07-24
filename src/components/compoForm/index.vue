@@ -1,84 +1,90 @@
 <template>
   <el-form
-      ref="formRef"
-      :model="form"
-      :inline="inline"
-      :label-width="this.labelWidth"
-      :label-position="this.labelPosition"
-      class="compo-form-container"
+    ref="formRef"
+    :model="form"
+    :inline="inline"
+    :label-width="labelWidth"
+    :label-position="labelPosition"
+    class="compo-form-container"
   >
     <el-row :gutter="1">
-      <template v-for="(item, index) in formItems" :key="index">
-        <el-col :span="item.span">
-          <el-form-item :label="item.label" :prop="item.prop" :rules="item.rules">
-            <!-- 输入框 -->
-            <template v-if="item.type === 'input'">
-              <el-input
-                  v-model="form[item.prop]"
-                  :placeholder="item.config.placeholder"
-                  :clearable="item.config.clearable!==false"
-                  :type="item.config.type"
-              ></el-input>
-            </template>
-            <!-- 选择器 -->
-            <template v-else-if="item.type === 'select'">
-              <el-select
-                  v-model="form[item.prop]"
-                  :placeholder="item.config.placeholder"
-                  :filterable="item.config.filterable!==false"
-                  :clearable="item.config.clearable!==false"
-                  :allow-create="item.config.allowCreate"
-                  :multiple="item.config.multiple"
-                  :collapse-tags="item.config.collapseTags"
-                  @change="((value)=>{changeSelect(item.prop, value)})"
-                  :remote="item.config.remote"
-                  :remote-method="((value)=>{remoteMethod(item.prop, value)})"
-                  style="width: 100%"
+      <el-col v-for="(item, index) in formItems" :key="index" :span="item.span">
+        <el-form-item :label="item.label" :prop="item.prop" :rules="item.rules">
+          <!-- 输入框 -->
+          <template v-if="item.type === 'input'">
+            <el-input
+              v-model="form[item.prop]"
+              :placeholder="item.config.placeholder"
+              :clearable="item.config.clearable!==false"
+              :type="item.config.type"
+            ></el-input>
+          </template>
+          <!-- 选择器 -->
+          <template v-else-if="item.type === 'select'">
+            <el-select
+              v-model="form[item.prop]"
+              :placeholder="item.config.placeholder"
+              :filterable="item.config.filterable!==false"
+              :clearable="item.config.clearable!==false"
+              :allow-create="item.config.allowCreate"
+              :multiple="item.config.multiple"
+              :collapse-tags="item.config.collapseTags"
+              :remote="item.config.remote"
+              :remote-method="((value)=>{remoteMethod(item.prop, value)})"
+              style="width: 100%"
+              @change="((value)=>{changeSelect(item.prop, value)})"
+            >
+              <el-option
+                v-for="option in item.config.options"
+                :key="option.value"
+                :label="option.label"
+                :value="option.value"
               >
-                <el-option
-                    v-for="item in item.config.options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                >
-                </el-option>
-              </el-select>
-            </template>
-            <!-- 日期选择期 -->
-            <template v-else-if="['date', 'datetime'].includes(item.type)">
-              <el-date-picker
-                  v-model="form[item.prop]"
-                  :type="item.type"
-                  :placeholder="item.config.placeholder"
-                  :clearable="item.config.clearable!==false"
-                  :value-format="item.config.valueFormat"
-                  style="width: 100%"
-              >
-              </el-date-picker>
-            </template>
-            <!-- 开关 -->
-            <template v-else-if="item.type === 'switch'">
-              <el-switch
-                  v-model="form[item.prop]"
-                  :active-value="item.config.activeValue ? item.config.activeValue : 1"
-                  :inactive-value="item.config.inactiveValue ? item.config.inactiveValue : 0"
-              >
-              </el-switch>
-            </template>
-            <template v-else-if="item.type === 'defined'">
-              <slot name="formDefinedSlot" :prop="item.prop"></slot>
-            </template>
-          </el-form-item>
-        </el-col>
-      </template>
+              </el-option>
+            </el-select>
+          </template>
+          <!-- 日期选择期 -->
+          <template v-else-if="['date', 'datetime'].includes(item.type)">
+            <el-date-picker
+              v-model="form[item.prop]"
+              :type="item.type"
+              :placeholder="item.config.placeholder"
+              :clearable="item.config.clearable!==false"
+              :value-format="item.config.valueFormat"
+              style="width: 100%"
+            >
+            </el-date-picker>
+          </template>
+          <!-- 开关 -->
+          <template v-else-if="item.type === 'switch'">
+            <el-switch
+              v-model="form[item.prop]"
+              :active-value="item.config.activeValue ? item.config.activeValue : 1"
+              :inactive-value="item.config.inactiveValue ? item.config.inactiveValue : 0"
+            >
+            </el-switch>
+          </template>
+          <template v-else-if="item.type === 'defined'">
+            <slot name="formDefinedSlot" :prop="item.prop"></slot>
+          </template>
+        </el-form-item>
+      </el-col>
     </el-row>
   </el-form>
 </template>
 
 <script>
 export default {
-  name: 'compoForm',
-  props: {formParams: Object, formType: String},
+  name: 'CompoForm',
+  props: {
+    formParams: {
+      type: Object,
+      default: () => {}
+    },
+    formType: {
+      type: String,
+      default: null
+    }},
   emits: [],
 
   data() {
@@ -90,8 +96,14 @@ export default {
       // 标签跨度
       labelWidth: 70,
       // 标签对齐方式
-      labelPosition: 'right',
+      labelPosition: 'right'
     };
+  },
+
+  watch: {
+    formParams(val) {
+      this.formItems = this.initFormItems(val.formItems);
+    }
   },
 
   created() {
@@ -99,6 +111,11 @@ export default {
     this.labelWidth = this.formParams.labelWidth ? this.formParams.labelWidth : this.labelWidth;
     this.labelPosition = this.formParams.labelPosition ? this.formParams.labelPosition : this.labelPosition;
     this.formItems = this.initFormItems(this.formParams.formItems);
+    this.$nextTick(() => {
+      setTimeout(() => {
+        this.$refs.formRef.clearValidate();
+      }, 100);
+    })
   },
 
   mounted() {
@@ -116,11 +133,11 @@ export default {
      */
     getSpan() {
       // 屏幕宽度
-      let windowWidth = document.documentElement.clientWidth;
+      const windowWidth = document.documentElement.clientWidth;
       // 栅格占据的列数
       let span = 24 / Math.floor(windowWidth / 310);
       // 对话框栅格占据的列数
-      if (this.formType == 'dialog') {
+      if (this.formType === 'dialog') {
         span = span * 2;
         span = span > 12 ? 12 : span;
       }
@@ -132,15 +149,15 @@ export default {
      */
     initFormItems(formItems) {
       // 判断是否对话框表单
-      if (this.formType == 'dialog') {
+      if (this.formType === 'dialog') {
         // 非行内表单模式
         this.inline = false;
       }
 
       // 根据屏幕宽度计算 栅格占据的列数
-      let span = this.getSpan();
+      const span = this.getSpan();
 
-      for (let i in formItems) {
+      for (const i in formItems) {
         const row = formItems[i];
         // 判断是否设置'config'
         if (['input', 'select', 'date', 'datetime', 'switch'].includes(row.type)) {
@@ -167,8 +184,8 @@ export default {
      * 重新布局表单
      */
     relayout(formItems) {
-      let span = this.getSpan();
-      for (let i in formItems) {
+      const span = this.getSpan();
+      for (const i in formItems) {
         const row = formItems[i];
         row['span'] = row.fixedSpan ? row.fixedSpan : span;
       }
@@ -186,6 +203,9 @@ export default {
       } else {
         this.form = resetFrom;
       }
+      setTimeout(() => {
+        this.$refs.formRef.clearValidate();
+      }, 100);
     },
 
     /**
@@ -200,25 +220,26 @@ export default {
      */
     setForm(form) {
       const that = this;
-      this.$nextTick(() => that.form = form)
+      this.$nextTick(() => {
+        that.form = form
+      })
     },
 
     /**
      * 表单验证
      */
     validate(valid) {
-      console.log(1, valid);
       return this.$refs.formRef.validate(valid);
     },
 
-    changeSelect(prop, val){
+    changeSelect(prop, val) {
       this.$emit('changeSelect', prop, val);
     },
 
-    remoteMethod(prop, val){
+    remoteMethod(prop, val) {
       this.$emit('remoteMethod', prop, val);
-    },
-  },
+    }
+  }
 };
 </script>
 

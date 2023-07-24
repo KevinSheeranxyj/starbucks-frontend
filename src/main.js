@@ -32,7 +32,7 @@ import CodeDiff from 'v-code-diff';
 
 const app = createApp(App);
 
-app.component('editor', Editor);
+app.component('Editor', Editor);
 app.use(router);
 app.use(store);
 app.use(CodeDiff);
@@ -41,7 +41,7 @@ installFontawesome(app);
 installMitt(app);
 
 // 注册一个全局自定义指令“v-focus”，用于获取焦点
-app.directive('focus', function (el) {
+app.directive('focus', function(el) {
   el.querySelector('input').focus();
 });
 
@@ -51,7 +51,7 @@ app.config.globalProperties.$http = http;
 app.config.globalProperties.$tool = tool;
 // app.config.globalProperties.$mitt = mitt();
 
-//注册全局组件
-app.component('compoTable', compoTable);
-app.component('compoForm', compoForm);
-app.component('compoDialog', compoDialog);
+// 注册全局组件
+app.component('CompoTable', compoTable);
+app.component('CompoForm', compoForm);
+app.component('CompoDialog', compoDialog);

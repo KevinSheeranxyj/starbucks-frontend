@@ -1,9 +1,9 @@
 // 导入axios包
-import axios from 'axios';
-import { ElMessage } from 'element-plus/lib/components';
-import NProgress from 'nprogress';
+import axios from 'axios'
+import { ElMessage } from 'element-plus/lib/components'
+import NProgress from 'nprogress'
 
-const Qs = require('qs');
+const Qs = require('qs')
 
 //  配置请求的根路径
 let host = window.location.host; // 主机(主机名+端口号)(localhost:8080)
