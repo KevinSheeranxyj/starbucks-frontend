@@ -15,7 +15,7 @@ if (reg.test(host)) {
   // axios.defaults.baseURL = 'http://merakimonitor.starbucks.net';
 } else {
   // 动态请求地址
-  axios.defaults.baseURL = 'http://merakimonitor.starbucks.net';
+  axios.defaults.baseURL = 'http://localhost:8082';
 }
 
 // 允许携带cookie
