@@ -97,8 +97,8 @@ const dataTypeOptions = reactive([
   {label: '信噪比', value: 'snr'},
   {label: '信号强度', value: 'rssi'},
   {label: '延时', value: 'latency'},
-  {label: '流量', value: 'traffic'},
-  {label: '终端连接数', value: 'connectClientNum'}
+  {label: 'AP流量', value: 'traffic'},
+  {label: 'AP连接数', value: 'connectClientNum'}
 ]);
 const timespanOptions = reactive([]);
 const resolutionOptions = reactive([

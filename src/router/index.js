@@ -97,8 +97,65 @@ export const layoutRoutes = [
   {
     path: 'logs/history',
     name: 'logsHistory',
-    meta: { title: '日志变更记录' },
+    meta: { title: '变更日志' },
     component: () => import('@/views/logs/history')
+  },
+
+  {
+    path: 'stock/list',
+    name: 'stockList',
+    meta: { title: '库存信息' },
+    component: () => import('@/views/stock/list')
+  },
+  {
+    path: 'stock/device-history',
+    name: 'deviceHistory',
+    meta: { title: '设备历史记录' },
+    component: () => import('@/views/stock/device-history')
+  },
+
+  {
+    path: 'templete/list',
+    name: 'templeteList',
+    meta: { title: '模板信息' },
+    component: () => import('@/views/templete/list')
+  },
+
+  {
+    path: 'network/list',
+    name: 'networkList',
+    meta: { title: '网络基本信息' },
+    component: () => import('@/views/network/list')
+  },
+  {
+    path: 'network/location',
+    name: 'networkLocation',
+    meta: { title: '地理位置信息' },
+    component: () => import('@/views/network/location')
+  },
+  {
+    path: 'network/vlan',
+    name: 'networkVlan',
+    meta: { title: '子网管理' },
+    component: () => import('@/views/network/vlan')
+  },
+  {
+    path: 'network/switch',
+    name: 'networkSwitch',
+    meta: { title: '交换机管理' },
+    component: () => import('@/views/network/switch')
+  },
+  {
+    path: 'network/switch-templete',
+    name: 'networkSwitchTemplete',
+    meta: { title: '交换机模板管理' },
+    component: () => import('@/views/network/switch-templete')
+  },
+  {
+    path: 'network/switch-templete-history',
+    name: 'networkSwitchTempleteHistory',
+    meta: { title: '交换机模板历史' },
+    component: () => import('@/views/network/switch-templete-history')
   },
 
   /**

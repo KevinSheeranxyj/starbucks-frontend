@@ -20,7 +20,10 @@ import {
   SwitchButton,
   OfficeBuilding,
   List,
-  Clock
+  Clock,
+  HomeFilled,
+  Tickets,
+  Location
 } from '@element-plus/icons-vue';
 import { markRaw } from 'vue';
 
@@ -59,7 +62,7 @@ const menu = [
     icon: OfficeBuilding,
     title: 'org管理',
     children: [
-      { icon: List, title: 'org信息', path: '/org/info' }
+      { icon: List, title: '信息维护', path: '/org/info' }
     ]
   },
   {
@@ -67,11 +70,40 @@ const menu = [
     icon: Document,
     title: '日志管理',
     children: [
-      { icon: Clock, title: '变更记录', path: '/logs/history' }
+      { icon: Clock, title: '变更日志', path: '/logs/history' }
     ]
   },
   {
     index: '06',
+    icon: HomeFilled,
+    title: '库存管理',
+    children: [
+      { icon: List, title: '信息管理', path: '/stock/list' },
+      { icon: Clock, title: '设备历史记录', path: '/stock/device-history' }
+    ]
+  },
+  {
+    index: '07',
+    icon: Tickets,
+    title: '模板管理',
+    children: [
+      { icon: List, title: '信息管理', path: '/templete/list' }
+    ]
+  },
+  {
+    index: '08',
+    icon: DataLine,
+    title: '网络管理',
+    children: [
+      { icon: List, title: '基本信息', path: '/network/list' },
+      { icon: Location, title: '地理位置信息', path: '/network/location' },
+      { icon: DataLine, title: '子网管理', path: '/network/vlan' },
+      { icon: Switch, title: '交换机管理', path: '/network/switch' },
+      { icon: Tickets, title: '交换机模板管理', path: '/network/switch-templete' }
+    ]
+  },
+  {
+    index: '09',
     icon: Setting,
     title: '系统管理',
     children: [

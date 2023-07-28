@@ -88,7 +88,7 @@ const organizationTypeOptions = reactive([
 ]);
 const channelOptions = reactive([
   {label: '邮件', value: 'MAIL' },
-  {label: '无', value: 'NONE' }
+  {label: '不通知', value: 'NONE' }
 ]);
 
 const operatorOptions = reactive([

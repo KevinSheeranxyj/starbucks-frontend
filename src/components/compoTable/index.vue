@@ -23,8 +23,19 @@
         <slot name="buttonSlot"></slot>
       </el-button-group>
     </template>
-
     <template #body>
+      <el-popover v-if="tableParams.hideAllowed" placement="bottom-end" :offset="0" :show-arrow="false" :width="120" trigger="click">
+        <template #reference>
+          <div class="table-right-icons">
+            <el-icon :size="20"><Rank /></el-icon>
+          </div>
+        </template>
+        <el-checkbox-group v-model="checkedCols">
+          <el-checkbox v-for="col in tableParams.columns" :key="col.prop" :label="col.prop">{{
+            col.label
+          }}</el-checkbox>
+        </el-checkbox-group>
+      </el-popover>
       <el-table
         ref="multipleTable"
         v-loading="loading"
@@ -43,7 +54,7 @@
         <!-- 多选框 -->
         <el-table-column v-if="tableParams.config.multipleTable" align="center" type="selection"></el-table-column>
         <el-table-column
-          v-for="(item, index) in tableParams.columns"
+          v-for="(item, index) in tableParams.columns.filter(column => checkedCols?.includes(column.prop))"
           :key="index"
           :prop="item.prop"
           :label="item.label"
@@ -209,10 +220,13 @@
 
 <script>
 import SingleDataView from '@/components/SingleDataView';
+import {
+  Rank
+} from '@element-plus/icons-vue';
 
 export default {
   name: 'CompoTable',
-  components: { SingleDataView },
+  components: { SingleDataView, Rank },
   props: { tableParams: Object, spanMethod: Function, summaryMethod: Function, expandChange: Function },
   emits: ['updateSuccess', 'querySuccess', 'changeSelect', 'remoteMethod'],
 
@@ -242,7 +256,8 @@ export default {
       // 二级下拉选项
       secondaryOptions: [],
       // 所有子集字典
-      allSubsetDict: []
+      allSubsetDict: [],
+      checkedCols: []
     };
   },
 
@@ -259,6 +274,7 @@ export default {
   mounted() {
     // 修改斑马纹样式
     document.body.style.setProperty('--el-fill-color-lighter', '#111');
+    this.checkedCols = this.tableParams.columns?.map(a => a.prop) || [];
   },
 
   methods: {
@@ -628,5 +644,10 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
+.table-right-icons {
+  color: #CFD3DC;
+  text-align: right;
+  cursor: pointer;
+}
 </style>

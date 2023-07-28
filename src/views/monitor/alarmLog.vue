@@ -3,6 +3,8 @@
   <compo-table
     ref="compoTableRef"
     :table-params="table"
+    @remoteMethod="remoteMethod"
+    @reset="afterReset"
   >
     <!-- 按钮插槽 -->
     <template #buttonSlot>
@@ -61,6 +63,7 @@ import http from '@/utils/http';
 import {ElMessage} from 'element-plus/lib/components';
 import {createEnum} from '@/utils/enums';
 import {useRoute} from 'vue-router';
+import {getNetworkOptions} from '../device/device';
 
 const route = useRoute();
 const compoTableRef = ref(null);
@@ -74,28 +77,41 @@ const notificationStatusOptions = reactive([
   {label: '通知成功', value: 'SUCCESS' },
   {label: '通知失败', value: 'FAIL' }
 ]);
+const networkOptions = reactive([]);
+const routerOptions = reactive([]);
+const switchOptions = reactive([]);
+const wirelessOptions = reactive([]);
+const clientOptions = reactive([]);
+
 const alarmDialogVisible = ref(false)
 const alarmDialogText = ref('')
 const alarmDialogTitle = ref('')
 
+// 远程选项
+const remoteNetworkOptions = reactive([]);
+const remoteRouterOptions = reactive([]);
+const remoteSwitchOptions = reactive([]);
+const remoteWirelessOptions = reactive([]);
+const remoteClientOptions = reactive([]);
+
 // 表格列
 const columns = [
-  {label: '告警配置ID', prop: 'alarmCfgId', width: '70px'},
+  {label: '告警配置ID', prop: 'alarmCfgId', minWidth: '70px'},
   {label: '告警名称', prop: 'alarmName', minWidth: '120px'},
-  {label: '通知状态', prop: 'notificationStatus', width: '70px' },
+  {label: '通知状态', prop: 'notificationStatus', minWidth: '70px' },
   {
-    label: '告警状态', prop: 'alarmStatus', type: 'select', width: '70px',
+    label: '告警状态', prop: 'alarmStatus', type: 'select', minWidth: '70px',
     config: {options: alarmStatusOptions}
   },
-  {label: '告警时间', prop: 'alarmTime', width: '150px' },
+  {label: '告警时间', prop: 'alarmTime', minWidth: '150px' },
   {label: '告警内容', prop: 'alarmText', minWidth: '200px' },
   {label: '网络', prop: 'network', minWidth: '200px' },
   {label: '路由器', prop: 'router', minWidth: '120px' },
   {label: '交换机', prop: 'switch', minWidth: '120px' },
   {label: '无线AP', prop: 'wireless', minWidth: '100px' },
   {label: '客户端', prop: 'client', minWidth: '120px' },
-  {label: '处理人', prop: 'updatedBy', width: '100px' },
-  {label: '处理时间', prop: 'updatedAt', width: '150px' }
+  {label: '处理人', prop: 'updatedBy', minWidth: '100px' },
+  {label: '处理时间', prop: 'updatedAt', minWidth: '150px' }
 ];
 
 // 查询表单
@@ -105,11 +121,22 @@ const queryForm = [
     label: '告警状态', prop: 'alarmStatusList', type: 'select',
     config: {options: alarmStatusOptions, multiple: true, collapseTags: true}
   },
-  {label: '网络', prop: 'network', type: 'input'},
-  {label: '路由器', prop: 'router', type: 'input'},
-  {label: '交换机', prop: 'switch', type: 'input'},
-  {label: '无线AP', prop: 'wireless', type: 'input'},
-  {label: '客户端', prop: 'client', type: 'input'},
+  {
+    label: '网络', prop: 'networkId', type: 'select',
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
+  },
+  {
+    label: '路由器', prop: 'router', type: 'input'
+  },
+  {
+    label: '交换机', prop: 'switch', type: 'input'
+  },
+  {
+    label: '无线AP', prop: 'wireless', type: 'input'
+  },
+  {
+    label: '客户端', prop: 'client', type: 'input'
+  },
   {
     label: '开始日期', prop: 'startDate', type: 'date',
     config: {valueFormat: 'YYYY-MM-DD'}
@@ -128,6 +155,7 @@ const table = {
     url: '/alarm/log/export'
   },
   columns: columns,
+  hideAllowed: true,
   config: {
     page: true,
     multipleTable: true
@@ -145,6 +173,7 @@ function initQuery() {
     startDate: tool.dateFormat(new Date(), 'yyyy-MM-dd'),
     endDate: tool.dateFormat(new Date(), 'yyyy-MM-dd')
   };
+  getNetworkOptions(null, networkOptions);
   compoTableRef.value.setForm(queryForm);
   queryTable();
 }
@@ -154,6 +183,53 @@ function initQuery() {
  */
 function queryTable() {
   compoTableRef.value.query();
+}
+
+function remoteMethod(prop, val) {
+  console.log(prop, val, networkOptions)
+  if (val) {
+    switch (prop) {
+      case 'networkId':
+        tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
+        break;
+      case 'router':
+        tool.getRemoteOptions(val, remoteRouterOptions, routerOptions);
+        break;
+      case 'switch':
+        tool.getRemoteOptions(val, remoteSwitchOptions, switchOptions);
+        break;
+      case 'wireless':
+        tool.getRemoteOptions(val, remoteWirelessOptions, wirelessOptions);
+        break;
+      case 'client':
+        tool.getRemoteOptions(val, remoteClientOptions, clientOptions);
+        break;
+      default:
+    }
+  } else if (typeof val === 'undefined') {
+    switch (prop) {
+      case 'networkId':
+        remoteNetworkOptions.length = 0;
+        break;
+      case 'router':
+        remoteRouterOptions.length = 0;
+        break;
+      case 'switch':
+        remoteSwitchOptions.length = 0;
+        break;
+      case 'wireless':
+        remoteWirelessOptions.length = 0;
+        break;
+      case 'client':
+        remoteClientOptions.length = 0;
+        break;
+      default:
+    }
+  }
+}
+
+function afterReset() {
+  getNetworkOptions(null, networkOptions);
 }
 
 const getTagTypeByAlarmStatus = (value) => {
