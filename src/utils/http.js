@@ -10,12 +10,11 @@ let host = window.location.host; // 主机(主机名+端口号)(localhost:8080)
 let reg = /^localhost+/;
 if (reg.test(host)) {
   // 若本地项目调试使用
-  // axios.defaults.baseURL = 'http://localhost';
-  axios.defaults.baseURL = 'http://localhost:8082';
+  axios.defaults.baseURL = 'http://localhost';
   // axios.defaults.baseURL = 'http://merakimonitor.starbucks.net';
 } else {
   // 动态请求地址
-  axios.defaults.baseURL = 'http://localhost:8082';
+  axios.defaults.baseURL = 'http://116.62.112.199/starbucks';
 }
 
 // 允许携带cookie
