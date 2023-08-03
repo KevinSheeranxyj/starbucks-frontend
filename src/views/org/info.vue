@@ -26,8 +26,8 @@ const organizationTypeEnum = computed(() => {
 
 // 表格列
 const columns = [
+  {label: 'Organization ID', prop: 'organizationId'},
   {label: '名称', prop: 'name'},
-  {label: 'ID', prop: 'id'},
   {
     label: '组织类型', prop: 'organizationType'
   },
@@ -112,7 +112,7 @@ async function del(row) {
   deleteLoading.value = true;
   const { data: res } = await http.post(
     '/organization/delete',
-    {organizationId: row.id}
+    {organizationId: row.organizationId}
   );
   deleteLoading.value = false;
   if (!res.success) {

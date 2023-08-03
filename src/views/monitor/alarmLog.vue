@@ -105,11 +105,20 @@ const columns = [
   },
   {label: '告警时间', prop: 'alarmTime', minWidth: '150px' },
   {label: '告警内容', prop: 'alarmText', minWidth: '200px' },
-  {label: '网络', prop: 'network', minWidth: '200px' },
+  {label: '网络名称', prop: 'networkName', minWidth: '200px' },
+  {label: '无线AP', prop: 'wireless', minWidth: '100px' },
+  {label: '序列号', prop: 'serial', minWidth:  '120px'},
   {label: '路由器', prop: 'router', minWidth: '120px' },
   {label: '交换机', prop: 'switch', minWidth: '120px' },
-  {label: '无线AP', prop: 'wireless', minWidth: '100px' },
   {label: '客户端', prop: 'client', minWidth: '120px' },
+  {label: '2.4G信道利用率', prop: 'utilization2g', minWidth:  '120px'},
+  {label: '5G信道利用率', prop: 'utilization5g', minWidth:  '120px'},
+  {label: '连接终端数量', prop: 'connectClientNum', minWidth:  '120px'},
+  {label: 'Mac地址', prop: 'mac', minWidth:  '120px'},
+  {label: '流量', prop: 'netflow', minWidth:  '120px'},
+  // {label: '信噪比', prop: 'snr', minWidth:  '120px'},
+  {label: '信号强度', prop: 'rssi', minWidth:  '120px'},
+  // {label: '延迟', prop: 'latency', minWidth:  '120px'},
   {label: '处理人', prop: 'updatedBy', minWidth: '100px' },
   {label: '处理时间', prop: 'updatedAt', minWidth: '150px' }
 ];
@@ -122,7 +131,7 @@ const queryForm = [
     config: {options: alarmStatusOptions, multiple: true, collapseTags: true}
   },
   {
-    label: '网络', prop: 'networkId', type: 'select',
+    label: '网络名称', prop: 'networkId', type: 'select',
     config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
   },
   {
@@ -133,6 +142,9 @@ const queryForm = [
   },
   {
     label: '无线AP', prop: 'wireless', type: 'input'
+  },
+  {
+    label: '序列号', prop: 'serial', type: 'input'
   },
   {
     label: '客户端', prop: 'client', type: 'input'
