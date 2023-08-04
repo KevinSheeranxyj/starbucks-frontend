@@ -16,7 +16,7 @@ const columns = [
   {label: '网络', prop: 'network'},
   {label: '交换机', prop: 'switch'},
   {label: '型号', prop: 'model'},
-  {label: '交换机模板', prop: 'templete'}
+  {label: '交换机模板', prop: 'template'}
 ];
 
 // 查询表单
@@ -31,7 +31,7 @@ const queryForm = [
     label: '型号', prop: 'model', type: 'input'
   },
   {
-    label: '交换机模板', prop: 'templete', type: 'input'
+    label: '交换机模板', prop: 'template', type: 'input'
   }
 ];
 
@@ -74,7 +74,7 @@ function remoteMethod(prop, val) {
 }
 
 function toHistory() {
-  router.push('/network/switch-templete-history')
+  router.push('/network/switch-template-history')
 }
 
 onMounted(() => {

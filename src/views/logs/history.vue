@@ -40,7 +40,21 @@ const columns = [
 
 // 查询表单
 const queryForm = [
-
+  {
+    label: 'ID', prop: 'id', type: 'input'
+  },
+  {
+    label: '页面', prop: 'page', type: 'input'
+  },
+  {
+    label: '操作', prop: 'action', type: 'input'
+  },
+  {
+    label: '结果', prop: 'result', type: 'input'
+  },
+  {
+    label: '操作时间', prop: 'createdAt', type: 'input'
+  }
 ];
 
 const getTagTypeByArchiveFlag = (value) => {

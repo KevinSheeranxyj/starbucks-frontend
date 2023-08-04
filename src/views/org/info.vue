@@ -24,9 +24,10 @@ const organizationTypeEnum = computed(() => {
   return createEnum(enumData);
 });
 
-// 表格列
+// 表格列operateLog/list
 const columns = [
-  {label: 'Organization ID', prop: 'organizationId'},
+  {label: 'ID', prop: 'id'},
+  {label: '组织 ID', prop: 'organizationId'},
   {label: '名称', prop: 'name'},
   {
     label: '组织类型', prop: 'organizationType'
@@ -40,7 +41,7 @@ const queryForm = [
     label: '名称', prop: 'name', type: 'input'
   },
   {
-    label: 'ID', prop: 'id', type: 'input'
+    label: '组织 ID', prop: 'organizationId', type: 'input'
   },
   {
     label: '组织类型', prop: 'organizationType', type: 'select',
@@ -100,7 +101,8 @@ async function openUpdateDialog(row) {
   // 调用对话框组件，打开对话框后，再传参给对话框表单
   await updateDialogRef.value.openDialog();
   const body = {
-    organizationId: row.id,
+    id: row.id,
+    organizationId: row.organizationId,
     name: row.name,
     organizationType: row.organizationType
   }
@@ -112,13 +114,14 @@ async function del(row) {
   deleteLoading.value = true;
   const { data: res } = await http.post(
     '/organization/delete',
-    {organizationId: row.organizationId}
+    {organizationId: row.organizationId, id: row.id}
   );
   deleteLoading.value = false;
   if (!res.success) {
     return ElMessage.error('删除失败');
   }
   ElMessage.success('删除成功');
+  queryTable();
 }
 
 /**

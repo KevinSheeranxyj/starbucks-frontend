@@ -115,10 +115,10 @@ export const layoutRoutes = [
   },
 
   {
-    path: 'templete/list',
-    name: 'templeteList',
+    path: 'template/list',
+    name: 'templateList',
     meta: { title: '模板信息' },
-    component: () => import('@/views/templete/list')
+    component: () => import('@/views/template/list')
   },
 
   {
@@ -146,13 +146,13 @@ export const layoutRoutes = [
     component: () => import('@/views/network/switch')
   },
   {
-    path: 'network/switch-templete',
+    path: 'network/switch-template',
     name: 'networkSwitchTemplete',
     meta: { title: '交换机模板管理' },
     component: () => import('@/views/network/switch-templete')
   },
   {
-    path: 'network/switch-templete-history',
+    path: 'network/switch-template-history',
     name: 'networkSwitchTempleteHistory',
     meta: { title: '交换机模板历史' },
     component: () => import('@/views/network/switch-templete-history')
