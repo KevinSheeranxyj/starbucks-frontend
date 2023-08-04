@@ -139,7 +139,6 @@ const columns = [
   {label: '无线AP', prop: 'name', sortable: true, width: '100px', showOverflowTooltip: true},
   {label: '序列', prop: 'serial', width: '120px' },
   {label: '终端数量', prop: 'connectClientNum', sortable: true, width: '80px' },
-  {label: '告警类型', prop: 'alertType', minWidth: '120px', showOverflowTooltip: true},
   {label: '信噪比/dB', prop: 'snr', sortable: true, width: '100px' },
   {label: '信号强度/dBm', prop: 'rssi', sortable: true, width: '110px' },
   {label: '延时/ms', prop: 'latency', sortable: true, width: '80px' },
