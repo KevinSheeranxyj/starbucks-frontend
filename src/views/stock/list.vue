@@ -10,7 +10,7 @@ const compoTableRef = ref(null);
 const columns = [
   {label: 'mac地址', prop: 'mac'},
   {label: '序列号', prop: 'serial'},
-  {label: '归属网络', prop: 'network'},
+  {label: '归属网络', prop: 'networkName'},
   {label: '型号', prop: 'model'},
   {label: '申领时间', prop: 'claimedTime'}
 ];
@@ -22,7 +22,7 @@ const queryForm = [
 
 const table = {
   query: {
-    url: '/device/switch/table',
+    url: '/device/inventory/table',
     form: {formItems: queryForm}
   },
   columns: columns,
