@@ -215,7 +215,11 @@ const defaultAddForm = [
   {
     label: '告警对象', prop: 'alarmObject', type: 'select', rules: true, fixedSpan: 24,
     config: {options: emailOptions, multiple: true, collapseTags: true, allowCreate: true}
-  }
+  },
+  {
+    label: '监控范围', prop: `monitorRange`, type: 'select', rules: true, fixedSpan: 24,
+    config: {options: monitorRangeOptions}
+  },
 ]
 
 const extraItems = ref([])
@@ -244,12 +248,8 @@ const updateDialog = computed(() => ({
 
 function addItems() {
   extraItems.value = extraItems.value.concat([{
-    label: '检查项', prop: `checkField${extraItems.value.length ? extraItems.value.length / 4 : ''}`, type: 'select', rules: true, fixedSpan: 12,
+    label: '检查项', prop: `checkField${extraItems.value.length ? extraItems.value.length / 4 : ''}`, type: 'select', rules: true, fixedSpan: 24,
     config: {options: fieldOptions}
-  },
-  {
-    label: '监控范围', prop: `monitorRange${extraItems.value.length ? extraItems.value.length / 4 : ''}`, type: 'select', rules: true, fixedSpan: 12,
-    config: {options: monitorRangeOptions}
   },
   {
     label: '运算符', prop: `thresholdOperator${extraItems.value.length ? extraItems.value.length / 4 : ''}`, type: 'select', rules: true, fixedSpan: 12,
@@ -259,6 +259,7 @@ function addItems() {
     label: '阈值', prop: `highThreshold${extraItems.value.length ? extraItems.value.length / 4 : ''}`, type: 'input', rules: true, fixedSpan: 12,
     config: {placeholder: '请输入整数'}
   }])
+  console.log(extraItems.value)
 }
 
 /**

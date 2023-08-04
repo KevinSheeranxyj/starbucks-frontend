@@ -87,7 +87,7 @@ const menu = [
     icon: Tickets,
     title: '模板管理',
     children: [
-      { icon: List, title: '信息管理', path: '/templete/list' }
+      { icon: List, title: '信息管理', path: '/template/list' }
     ]
   },
   {
@@ -99,7 +99,7 @@ const menu = [
       { icon: Location, title: '地理位置信息', path: '/network/location' },
       { icon: DataLine, title: '子网管理', path: '/network/vlan' },
       { icon: Switch, title: '交换机管理', path: '/network/switch' },
-      { icon: Tickets, title: '交换机模板管理', path: '/network/switch-templete' }
+      { icon: Tickets, title: '交换机模板管理', path: '/network/switch-template' }
     ]
   },
   {

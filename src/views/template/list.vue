@@ -11,7 +11,7 @@ const organizationOptions = reactive([]);
 // 表格列
 const columns = [
   {label: '网络', prop: 'network'},
-  {label: '模板', prop: 'templete'},
+  {label: '模板', prop: 'template'},
   {label: '时间', prop: 'createdTime'}
 ];
 

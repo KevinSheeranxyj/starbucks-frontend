@@ -14,7 +14,7 @@ const syncLoading = ref(false);
 // 表格列
 const columns = [
   {label: '网络', prop: 'network'},
-  {label: '对应模板', prop: 'templete'},
+  {label: '对应模板', prop: 'template'},
   {label: '网络类型', prop: 'type'}
 ];
 
@@ -25,7 +25,7 @@ const queryForm = [
     config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
   },
   {
-    label: '模板', prop: 'templete', type: 'input'
+    label: '模板', prop: 'template', type: 'input'
   },
   {
     label: '网络类型', prop: 'type', type: 'input'

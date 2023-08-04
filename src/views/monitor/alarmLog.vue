@@ -26,6 +26,11 @@
           {{ notificationStatusEnum.getDescFromValue(slotProps.cellValue) }}
         </el-tag>
       </div>
+      <div v-else-if="slotProps.prop === 'alarmType'">
+        <el-tag :type="getTagTypeByAlarmType(slotProps.cellValue)">
+          {{ alarmTypeEnum.getDescFromValue(slotProps.cellValue) }}
+        </el-tag>
+      </div>
       <div v-else-if="slotProps.prop === 'updatedAt'">
         {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
       </div>
@@ -77,6 +82,12 @@ const notificationStatusOptions = reactive([
   {label: '通知成功', value: 'SUCCESS' },
   {label: '通知失败', value: 'FAIL' }
 ]);
+const alarmTypeOptions = reactive([
+  {label: '网络', value: '1' },
+  {label: '路由器', value: '2' },
+  {label: '无线AP', value: '3' },
+  {label: '客户端', value: '4' }
+]);
 const networkOptions = reactive([]);
 const routerOptions = reactive([]);
 const switchOptions = reactive([]);
@@ -104,13 +115,9 @@ const columns = [
     config: {options: alarmStatusOptions}
   },
   {label: '告警时间', prop: 'alarmTime', minWidth: '150px' },
-  {label: '告警内容', prop: 'alarmText', minWidth: '200px' },
   {label: '网络名称', prop: 'networkName', minWidth: '200px' },
-  {label: '无线AP', prop: 'wireless', minWidth: '100px' },
   {label: '序列号', prop: 'serial', minWidth:  '120px'},
-  {label: '路由器', prop: 'router', minWidth: '120px' },
-  {label: '交换机', prop: 'switch', minWidth: '120px' },
-  {label: '客户端', prop: 'client', minWidth: '120px' },
+  {label: '设备类型', prop: 'alarmType', minWidth: '120px' },
   {label: '2.4G信道利用率', prop: 'utilization2g', minWidth:  '120px'},
   {label: '5G信道利用率', prop: 'utilization5g', minWidth:  '120px'},
   {label: '连接终端数量', prop: 'connectClientNum', minWidth:  '120px'},
@@ -266,6 +273,18 @@ const getTagTypeByNotificationStatus = (value) => {
   }
 };
 
+const getTagTypeByAlarmType = (value) => {
+  if (value === '1') {
+    return '网络';
+  } else if (value === '2') {
+    return '路由器';
+  } else if (value === '3') {
+    return '无线AP';
+  } else if (value === '4') {
+    return '客户端';
+  }
+};
+
 const alarmStatusEnum = computed(() => {
   const enumData = {};
   alarmStatusOptions.forEach((o) => {
@@ -277,6 +296,14 @@ const alarmStatusEnum = computed(() => {
 const notificationStatusEnum = computed(() => {
   const enumData = {};
   notificationStatusOptions.forEach((o) => {
+    enumData[o.label] = [o.value, o.label];
+  });
+  return createEnum(enumData);
+});
+
+const alarmTypeEnum = computed(() => {
+  const enumData = {};
+  alarmTypeOptions.forEach((o) => {
     enumData[o.label] = [o.value, o.label];
   });
   return createEnum(enumData);
@@ -329,7 +356,7 @@ function setupState() {
     const query = route.params;
     const queryForm = {
       alarmCfgId: query.alarmCfgId,
-      startDate: query.startDate,
+      startDaate: query.startDate,
       endDate: query.endDate
     };
     // 设置查询表单
