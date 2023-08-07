@@ -55,6 +55,9 @@
       <compo-dialog ref="addDialogRef" :dialog-params="addDialog" @initDialog="initDialog" @confirmSuccess="addSuccess">
         <template #dialogSlot>
           <el-button class="add-button" type="primary" plain @click="addItems">+</el-button>
+          <template v-if="extraItems.length > 3">
+            <el-button class="minus-button" type="primary" plain @click="removeItems">-</el-button>
+          </template>
         </template>
       </compo-dialog>
       <!-- 更新对话框 -->
@@ -62,6 +65,9 @@
                     @initDialog="initDialog" @confirmSuccess="updateSuccess">
         <template #dialogSlot>
           <el-button class="add-button" type="primary" plain @click="addItems">+</el-button>
+          <template v-if="extraItems.length > 3">
+            <el-button class="minus-button" type="primary" plain @click="removeItems">-</el-button>
+          </template>
         </template>
       </compo-dialog>
     </template>
@@ -247,10 +253,6 @@ const updateDialog = computed(() => ({
   }
 }))
 
-const resemble = computed(() => {
-    extraItems.value
-    });
-
 function addItems() {
   extraItems.value = extraItems.value.concat([{
     label: '检查项', prop: `checkField${extraItems.value.length ? extraItems.value.length / 4 : ''}`, type: 'select', rules: true, fixedSpan: 24,
@@ -264,7 +266,12 @@ function addItems() {
     label: '阈值', prop: `highThreshold${extraItems.value.length ? extraItems.value.length / 4 : ''}`, type: 'input', rules: true, fixedSpan: 12,
     config: {placeholder: '请输入整数'}
   }])
-  console.log(extraItems.value)
+}
+
+function removeItems() {
+  for(let i=0; i < 3; i++) {
+    extraItems.value.pop();
+  }
 }
 
 /**
