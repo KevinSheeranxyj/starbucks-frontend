@@ -52,7 +52,35 @@ export default {
 
     // 获取表单组件form对象
     getForm() {
-      return this.$refs.compoFormRef.getForm();
+      // console.log(this.$refs.compoFormRef.form)
+      let finalForm = {}
+      const obj = this.$refs.compoFormRef.form;
+      const filtered = Object.entries(obj)
+          .filter(([key]) => key.startsWith('checkField') ||
+              key.startsWith('thresholdOperator') ||
+              key.startsWith('highThreshold'))
+          .map(([key, value]) => ({key, value}));
+      const alarmConfigDetailDTOList = [];
+      let currentObj = {};
+      if (Array.isArray(filtered) && filtered.length >= 0) {
+        filtered.forEach(item => {
+          if(item.key.startsWith('checkField')) {
+            currentObj.checkField = item.value;
+          } else if(item.key.startsWith('thresholdOperator')) {
+            currentObj.thresholdOperator = item.value;
+          } else if(item.key.startsWith('highThreshold')) {
+            currentObj.highThreshold = Number(item.value);
+            alarmConfigDetailDTOList.push(currentObj);
+            currentObj = {};
+          }
+        });
+      }
+      finalForm = {
+        ...this.$refs.compoFormRef.getForm(),
+        alarmConfigDetailDTOList
+      };
+
+      return finalForm;
     },
 
     // 设置表单组件form对象

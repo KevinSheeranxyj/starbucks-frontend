@@ -147,15 +147,15 @@ export const layoutRoutes = [
   },
   {
     path: 'network/switch-template',
-    name: 'networkSwitchTemplete',
+    name: 'networkSwitchTemplate',
     meta: { title: '交换机模板管理' },
-    component: () => import('@/views/network/switch-templete')
+    component: () => import('@/views/network/switch-template.vue')
   },
   {
     path: 'network/switch-template-history',
-    name: 'networkSwitchTempleteHistory',
+    name: 'networkSwitchTemplateHistory',
     meta: { title: '交换机模板历史' },
-    component: () => import('@/views/network/switch-templete-history')
+    component: () => import('@/views/network/switch-template-history.vue')
   },
 
   /**

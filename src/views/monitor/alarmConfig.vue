@@ -58,7 +58,8 @@
         </template>
       </compo-dialog>
       <!-- 更新对话框 -->
-      <compo-dialog ref="updateDialogRef" :dialog-params="updateDialog" @initDialog="initDialog" @confirmSuccess="updateSuccess">
+      <compo-dialog ref="updateDialogRef" :dialog-params="updateDialog"
+                    @initDialog="initDialog" @confirmSuccess="updateSuccess">
         <template #dialogSlot>
           <el-button class="add-button" type="primary" plain @click="addItems">+</el-button>
         </template>
@@ -245,6 +246,10 @@ const updateDialog = computed(() => ({
     ]
   }
 }))
+
+const resemble = computed(() => {
+    extraItems.value
+    });
 
 function addItems() {
   extraItems.value = extraItems.value.concat([{
