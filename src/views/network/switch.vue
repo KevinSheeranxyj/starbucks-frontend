@@ -9,7 +9,7 @@ const compoTableRef = ref(null);
 // 表格列
 const columns = [
   {label: '公网IP', prop: 'publicIp', minWidth: '100px'},
-  {label: 'Vlan', prop: 'vlan', minWidth: '100px'},
+  {label: 'VLAN', prop: 'vlan', minWidth: '100px'},
   {label: 'LAN IP', prop: 'lanIp', minWidth: '100px'},
   {label: '网关', prop: 'gateway', minWidth: '100px'}
 ];

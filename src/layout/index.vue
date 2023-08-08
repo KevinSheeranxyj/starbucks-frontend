@@ -32,10 +32,16 @@
         <div class="scroll-container">
           <el-scrollbar>
             <el-menu :collapse="isCollapse" :collapse-transition="false">
-              <el-menu-item index="01" @click="routeHome">
-                <el-icon><Menu /></el-icon>
-                <span>首页</span>
-              </el-menu-item>
+             <el-menu-item-group>
+               <el-menu-item index="1-1" @click="routeHome">
+                 <el-icon><Menu /></el-icon>
+                 <span>首页</span>
+               </el-menu-item>
+               <el-menu-item index="1-2" @click="routeStore">
+                 <el-icon><Menu /></el-icon>
+                 <span>门店操作</span>
+               </el-menu-item>
+             </el-menu-item-group>
 
               <el-sub-menu v-for="subMenuData in menuData" :index="subMenuData.index" :key="subMenuData.index">
                 <template #title>
@@ -227,13 +233,21 @@ export default {
     /**
      * 首页跳转
      */
-    routeHome(){
+    routeHome() {
       const roles = this.$store.state.user.roles;
       if (roles.length === 1 && roles[0] === 'L1') {
         this.$router.push('/device/restart');
       } else {
         this.$router.push('/home');
       }
+    },
+
+    /**
+     * 门店跳转
+     *
+     */
+    routeStore() {
+
     },
 
     refreshCurrentTag() {

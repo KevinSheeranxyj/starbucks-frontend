@@ -113,6 +113,12 @@ const menu = [
       { icon: Notebook, title: '字典管理', path: '/system/dict' },
       { icon: Coin, title: 'redis管理', path: '/system/redis' }
     ]
+  },
+  {
+    index: '10',
+    icon: Setting,
+    title: '门店操作',
+    children: []
   }
 ];
 

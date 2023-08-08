@@ -13,28 +13,27 @@ const syncLoading = ref(false);
 
 // 表格列
 const columns = [
-  {label: '网络', prop: 'network'},
-  {label: '对应模板', prop: 'template'},
-  {label: '网络类型', prop: 'type'}
+  {label: '网络ID', prop: 'networkId'},
+  {label: '网络名', prop: 'networkName'},
+  {label: '原模板', prop: 'orgTemplateName'},
+  {label: '新模板', prop: 'tagTemplateName'},
+  {label: '归档标识', prop: 'archiveFlag'}
 ];
 
 // 查询表单
 const queryForm = [
   {
-    label: '网络', prop: 'networkId', type: 'select',
+    label: '网络ID', prop: 'networkId', type: 'select',
     config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
   },
   {
-    label: '模板', prop: 'template', type: 'input'
+    label: '模板', prop: 'tagTemplateName', type: 'input'
   },
-  {
-    label: '网络类型', prop: 'type', type: 'input'
-  }
 ];
 
 const table = {
   query: {
-    url: '/device/switch/table',
+    url: '/network/networkTemplateHistory',
     form: {formItems: queryForm}
   },
   columns: columns,

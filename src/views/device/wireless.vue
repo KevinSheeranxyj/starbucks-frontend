@@ -147,7 +147,10 @@ const columns = [
   {label: 'MAC', prop: 'mac', width: '105px' },
   {label: '公网IP', prop: 'publicIp', width: '100px' },
   {label: 'LAN IP', prop: 'lanIp', width: '100px' },
-  {label: '网关', prop: 'gateway', width: '100px' }
+  {label: '网关', prop: 'gateway', width: '100px' },
+  {label: '地理位置信息', prop: 'region', minWidth: '100px',},
+  {label: '掩码', prop: 'mask', minWidth: '100px',},
+  {label: 'DNS配置信息', prop: 'dns', minWidth: '100px',},
 ];
 
 // 查询表单
@@ -379,6 +382,7 @@ async function queryHistoryData() {
 
   res.data.forEach((history) => {
     chart.data.push(history.value);
+    // chart.data.push(history.value1);
     chart.xAxis.push(history.endTime);
   })
 
