@@ -17,6 +17,15 @@ export const layoutRoutes = [
     },
     component: () => import('@/views/Home')
   },
+  {
+    path: '/store/main-store',
+    name: 'MainStore',
+    meta: {
+      title: '门店操作',
+      unsearchable: true
+    },
+    component: () => import('@/views/store/MainStore')
+  },
 
   /** ************************************/
   /**

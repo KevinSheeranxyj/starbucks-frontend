@@ -114,12 +114,6 @@ const menu = [
       { icon: Coin, title: 'redis管理', path: '/system/redis' }
     ]
   },
-  {
-    index: '10',
-    icon: Setting,
-    title: '门店操作',
-    children: []
-  }
 ];
 
 // 调用markRaw处理每个icon组件，消除警告

@@ -356,7 +356,7 @@ function getDevicesChart() {
  * 统计设备数
  */
 async function countDevice() {
-  const {data: res} = await http.post('/network/device/count', {organizationId: orgId.value});
+  const {data: res} = await http.post('/network/device/count', {organizationType: orgId.value});
 
   if (!res.success) {
     return ElMessage.error(res.msg);

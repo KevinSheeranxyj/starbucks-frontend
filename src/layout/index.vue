@@ -108,7 +108,7 @@
 
 <script>
 import menu from '../menu';
-import { mapGetters } from 'vuex';
+import {mapGetters} from 'vuex';
 import { AppMain, TagsView } from './components';
 import {
   Menu,
@@ -247,7 +247,7 @@ export default {
      *
      */
     routeStore() {
-
+      window.open(window.location.origin + '#/store/main-store')
     },
 
     refreshCurrentTag() {
@@ -436,7 +436,7 @@ $app-bg-transparent: #000;
         align-items: center;
 
         .logo-img {
-          width: 60%;
+          width: 50%;
         }
       }
 
