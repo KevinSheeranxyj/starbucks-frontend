@@ -153,11 +153,8 @@ const columns = [
   {label: '监控对象', prop: 'beanName', width: '60px'},
   {label: '监控范围', prop: 'monitorRange', width: '80px', showOverflowTooltip: true},
   {label: '告警名称', prop: 'alarmName', minWidth: '120px', showOverflowTooltip: true},
-  {label: '检查项', prop: 'checkField', minWidth: '100px'},
   // {label: '内容模板', prop: 'alarmTemplate', minWidth: '200px'},
   // {label: '渠道告警等级', prop: 'channelAlarmLevel', width: '80px',},
-  {label: '阈值运算符', prop: 'thresholdOperator', width: '70px' },
-  {label: '阈值', prop: 'highThreshold', width: '60px' },
   // {label: '渠道类型', prop: 'channelType', width: '60px',},
   {label: '告警对象', prop: 'alarmObject', width: '170px' },
   {
@@ -254,24 +251,25 @@ const updateDialog = computed(() => ({
 }))
 
 function addItems() {
-  extraItems.value = extraItems.value.concat([{
-    label: '检查项', prop: `checkField${extraItems.value.length ? extraItems.value.length / 4 : ''}`, type: 'select', rules: true, fixedSpan: 24,
+  const index = Date.now();
+ extraItems.value.push(
+     {
+    label: '检查项', prop: `checkField${index}`, type: 'select', rules: true, fixedSpan: 24,
     config: {options: fieldOptions}
-  },
-  {
-    label: '运算符', prop: `thresholdOperator${extraItems.value.length ? extraItems.value.length / 4 : ''}`, type: 'select', rules: true, fixedSpan: 12,
+    },
+    {
+    label: '运算符', prop: `thresholdOperator${index}`, type: 'select', rules: true, fixedSpan: 12,
     config: {options: operatorOptions}
-  },
-  {
-    label: '阈值', prop: `highThreshold${extraItems.value.length ? extraItems.value.length / 4 : ''}`, type: 'input', rules: true, fixedSpan: 12,
+    },
+    {
+    label: '阈值', prop: `highThreshold${index}`, type: 'input', rules: true, fixedSpan: 12,
     config: {placeholder: '请输入整数'}
-  }])
+  }
+  );
 }
 
 function removeItems() {
-  for(let i=0; i < 3; i++) {
-    extraItems.value.pop();
-  }
+    extraItems.value = extraItems.value.slice(0, -3);
 }
 
 /**
