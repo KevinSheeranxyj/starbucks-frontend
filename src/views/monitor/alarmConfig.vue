@@ -36,6 +36,12 @@
           <br>
         </span>
       </div>
+      <div v-else-if="slotProps.prop === 'alarmConfigDetailDTOList'">
+        <span v-for="(item, index) in slotProps.cellValue" :key="index">
+          {{ item.checkField}}, {{item.highThreshold}}, {{item.thresholdOperator}}
+          <br>
+        </span>
+      </div>
     </template>
 
     <!-- 自定义列插槽 -->
@@ -52,7 +58,7 @@
 
     <template #dialog>
       <!-- 新增对话框 -->
-      <compo-dialog ref="addDialogRef" :dialog-params="addDialog" @initDialog="initDialog" @confirmSuccess="addSuccess">
+      <compo-dialog ref="addDialogRef" :dialog-params="addDialog" @initDialog="initAddDialog" @confirmSuccess="addSuccess">
         <template #dialogSlot>
           <el-button class="add-button" type="primary" plain @click="addItems">+</el-button>
           <template v-if="extraItems.length > 3">
@@ -62,7 +68,7 @@
       </compo-dialog>
       <!-- 更新对话框 -->
       <compo-dialog ref="updateDialogRef" :dialog-params="updateDialog"
-                    @initDialog="initDialog" @confirmSuccess="updateSuccess">
+                    @initDialog="initUpdateDialog" @confirmSuccess="updateSuccess">
         <template #dialogSlot>
           <el-button class="add-button" type="primary" plain @click="addItems">+</el-button>
           <template v-if="extraItems.length > 3">
@@ -153,6 +159,7 @@ const columns = [
   {label: '监控对象', prop: 'beanName', width: '60px'},
   {label: '监控范围', prop: 'monitorRange', width: '80px', showOverflowTooltip: true},
   {label: '告警名称', prop: 'alarmName', minWidth: '120px', showOverflowTooltip: true},
+  {label: '规则明细(检查项，阈值，操作符)', prop: 'alarmConfigDetailDTOList', minWidth: '120px', showOverflowTooltip: true},
   // {label: '内容模板', prop: 'alarmTemplate', minWidth: '200px'},
   // {label: '渠道告警等级', prop: 'channelAlarmLevel', width: '80px',},
   // {label: '渠道类型', prop: 'channelType', width: '60px',},
@@ -303,6 +310,7 @@ async function openUpdateDialog(row) {
     highThreshold: row.highThreshold,
     channelType: row.channelType,
     alarmObject: JSON.parse(row.alarmObject),
+    alarmConfigDetailDTOList: row.alarmConfigDetailDTOList,
     monitorStartTime: row.monitorStartTime,
     monitorRange: row.monitorRange
   }
@@ -325,7 +333,12 @@ function updateSuccess() {
   queryTable()
 }
 
-function initDialog() {
+function initUpdateDialog(row) {
+  extraItems.value = [];
+  addItems();
+}
+
+function initAddDialog() {
   extraItems.value = [];
   addItems();
 }

@@ -83,14 +83,6 @@ const menu = [
     ]
   },
   {
-    index: '07',
-    icon: Tickets,
-    title: '模板管理',
-    children: [
-      { icon: List, title: '信息管理', path: '/template/list' }
-    ]
-  },
-  {
     index: '08',
     icon: DataLine,
     title: '网络管理',

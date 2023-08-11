@@ -103,9 +103,10 @@ const columns = [
   {label: '公网IP', prop: 'publicIp', minWidth: '100px',},
   {label: 'LAN IP', prop: 'lanIp', minWidth: '100px',},
   {label: '网关', prop: 'gateway', minWidth: '100px',},
-  {label: '地理位置信息', prop: 'region', minWidth: '100px',},
+  {label: '地理位置信息', prop: 'address', minWidth: '100px',},
   {label: '掩码', prop: 'mask', minWidth: '100px',},
-  {label: 'DNS配置信息', prop: 'dns', minWidth: '100px',},
+  {label: '主DNS', prop: 'primaryDns', minWidth: '100px',},
+  {label: '次DNS', prop: 'secondaryDns', minWidth: '100px',},
 ];
 
 // 查询表单
