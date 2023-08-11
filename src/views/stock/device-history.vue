@@ -12,9 +12,9 @@ const networkOptions = reactive([]);
 
 // 表格列
 const columns = [
-  {label: 'SN', prop: 'sn'},
+  {label: 'SN', prop: 'serial'},
   {label: 'mac地址', prop: 'mac'},
-  {label: '网络', prop: 'network'},
+  {label: '网络', prop: 'networkName'},
   {label: '型号', prop: 'model'},
   {label: '时间', prop: 'createdTime'}
 ];
