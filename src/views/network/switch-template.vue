@@ -13,8 +13,8 @@ const networkOptions = reactive([]);
 
 // 表格列
 const columns = [
-  {label: '网络', prop: 'network'},
-  {label: '交换机', prop: 'switch'},
+  {label: '网络', prop: 'networkName'},
+  {label: '交换机', prop: 'name'},
   {label: '型号', prop: 'model'},
   {label: '交换机模板', prop: 'template'}
 ];
