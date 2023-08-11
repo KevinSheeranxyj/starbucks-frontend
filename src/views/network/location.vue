@@ -14,7 +14,7 @@ const syncLoading = ref(false);
 // 表格列
 const columns = [
   {label: '网络', prop: 'networkName'},
-  {label: '设备名', prop: 'device'},
+  {label: '设备名', prop: 'name'},
   {label: '设备型号', prop: 'model'},
   {label: '设备SN', prop: 'serial'},
   {label: '地理位置', prop: 'address'}
