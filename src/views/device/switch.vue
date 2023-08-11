@@ -99,7 +99,6 @@ const columns = [
   {label: '交换机', prop: 'name', sortable: true, minWidth: '120px', showOverflowTooltip: true},
   {label: '序列', prop: 'serial', minWidth: '120px',},
   {label: '终端数量', prop: 'connectClientNum', width: '60px',},
-  {label: '告警类型', prop: 'alertType', minWidth: '120px', showOverflowTooltip: true},
   {label: 'MAC', prop: 'mac', minWidth: '105px',},
   {label: '公网IP', prop: 'publicIp', minWidth: '100px',},
   {label: 'LAN IP', prop: 'lanIp', minWidth: '100px',},
