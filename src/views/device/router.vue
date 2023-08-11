@@ -149,6 +149,7 @@ const columns = [
   {label: '终端数量', prop: 'connectClientNum', width: '60px'},
   {label: 'WAN口状态', prop: 'wanStatus', width: '80px'},
   {label: 'WAN口离线时长', prop: 'wanOfflineDuration', minWidth: '110px'},
+  {label: '地理位置信息', prop: 'address', minWidth: '100px',},
   {label: 'MAC', prop: 'mac', minWidth: '105px'},
   {label: '公网IP', prop: 'publicIp', minWidth: '100px'},
 ];
