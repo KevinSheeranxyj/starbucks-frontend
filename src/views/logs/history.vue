@@ -26,7 +26,6 @@ const archiveFlagEnum = computed(() => {
 
 // 表格列
 const columns = [
-  {label: 'ID', prop: 'id'},
   {label: '页面', prop: 'page'},
   {label: '操作', prop: 'action', minWidth: '120px'},
   {label: '接口路径', prop: 'path', minWidth: '180px'},
@@ -40,9 +39,6 @@ const columns = [
 
 // 查询表单
 const queryForm = [
-  {
-    label: 'ID', prop: 'id', type: 'input'
-  },
   {
     label: '页面', prop: 'page', type: 'input'
   },

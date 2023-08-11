@@ -13,19 +13,13 @@ const syncLoading = ref(false);
 
 // 表格列
 const columns = [
-  {label: '网络ID', prop: 'networkId'},
-  {label: '网络名', prop: 'networkName'},
+  {label: '网络', prop: 'networkName'},
   {label: '原模板', prop: 'orgTemplateName'},
-  {label: '新模板', prop: 'tagTemplateName'},
-  {label: '归档标识', prop: 'archiveFlag'}
+  {label: '新模板', prop: 'tagTemplateName'}
 ];
 
 // 查询表单
 const queryForm = [
-  {
-    label: '网络ID', prop: 'networkId', type: 'select',
-    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
-  },
   {
     label: '模板', prop: 'tagTemplateName', type: 'input'
   },
