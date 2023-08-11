@@ -11,7 +11,7 @@ const syncLoading = ref(false);
 
 // 表格列
 const columns = [
-  {label: '网络', prop: 'network'},
+  {label: '网络', prop: 'networkName'},
   {label: 'Vlan2', prop: 'vlan2'},
   {label: 'Vlan98', prop: 'vlan98'},
   {label: 'Vlan99', prop: 'vlan99'},
@@ -51,7 +51,7 @@ const queryForm = [
 
 const table = {
   query: {
-    url: '/device/switch/table',
+    url: '/network/vlan/table',
     form: {formItems: queryForm}
   },
   export: {
