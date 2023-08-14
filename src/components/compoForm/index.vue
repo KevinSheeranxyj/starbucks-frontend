@@ -144,6 +144,20 @@ export default {
       return span;
     },
 
+
+    extractDefaultValues(formItems) {
+      let defaultValues = {};
+      console.log(formItems);
+      let array = [];
+      formItems.forEach((item) => {
+        if (item.config && 'defaultValue' in item.config) {
+          defaultValues[item.prop] = item.config['defaultValue'];
+          array.push(defaultValues);
+        }
+      });
+      return defaultValues;
+    },
+
     /**
      * 初始化表单项
      */
@@ -177,6 +191,10 @@ export default {
         // 判断是否设置 栅格列数'fixedSpan'
         row['span'] = row.fixedSpan ? row.fixedSpan : span;
       }
+      this.form = this.extractDefaultValues(formItems);
+
+
+      console.log(this.form);
       return formItems;
     },
 
@@ -221,7 +239,9 @@ export default {
     setForm(form) {
       const that = this;
       this.$nextTick(() => {
-        that.form = form
+        // that.form = form
+        this.form = {...this.form, ...form};
+        console.log(this.form);
       })
     },
 

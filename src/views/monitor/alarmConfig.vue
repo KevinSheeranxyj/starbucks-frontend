@@ -27,9 +27,6 @@
       <div v-else-if="slotProps.prop === 'beanName'">
         {{ classEnum.getDescFromValue(slotProps.cellValue) }}
       </div>
-      <div v-else-if="slotProps.prop === 'checkField'">
-        {{ fieldEnum.getDescFromValue(slotProps.cellValue) }}
-      </div>
       <div v-else-if="slotProps.prop === 'alarmObject'">
         <span v-for="(item, index) in JSON.parse(slotProps.cellValue)" :key="index">
           {{ item }}
@@ -305,15 +302,32 @@ async function openUpdateDialog(row) {
     alarmTemplate: row.alarmTemplate,
     organizationType: row.organizationType,
     beanName: row.beanName,
-    checkField: row.checkField,
-    thresholdOperator: row.thresholdOperator,
-    highThreshold: row.highThreshold,
+    // checkField: row.checkField,
+    // thresholdOperator: row.thresholdOperator,
+    // highThreshold: row.highThreshold,
     channelType: row.channelType,
     alarmObject: JSON.parse(row.alarmObject),
     alarmConfigDetailDTOList: row.alarmConfigDetailDTOList,
     monitorStartTime: row.monitorStartTime,
     monitorRange: row.monitorRange
   }
+  row.alarmConfigDetailDTOList.map((i) => {
+    const index = Date.now();
+    extraItems.value.push(
+        {
+          label: '检查项', prop: `checkField${index}`, type: 'select', rules: true, fixedSpan: 24,
+          config: {options: fieldOptions, defaultValue: i.checkField}
+        },
+        {
+          label: '运算符', prop: `thresholdOperator${index}`, type: 'select', rules: true, fixedSpan: 12,
+          config: {options: operatorOptions, defaultValue: i.thresholdOperator}
+        },
+        {
+          label: '阈值', prop: `highThreshold${index}`, type: 'input', rules: true, fixedSpan: 12,
+          config: {placeholder: '请输入整数', defaultValue: i.highThreshold}
+        }
+    );
+  });
   updateDialogRef.value.setForm(body);
 }
 
@@ -333,9 +347,40 @@ function updateSuccess() {
   queryTable()
 }
 
-function initUpdateDialog(row) {
+function initUpdateDialog() {
   extraItems.value = [];
-  addItems();
+}
+
+function mockArray() {
+  // 使用时间戳作为唯一标识符
+  for (let i = 0; i < 2; i++) {
+    extraItems.value.push(
+        {
+          label: '检查项',
+          prop: `checkField${index}`,
+          type: 'select',
+          rules: true,
+          fixedSpan: 24,
+          config:"utilization2g",
+        },
+        {
+          label: '运算符',
+          prop: `thresholdOperator${index}`,
+          type: 'select',
+          rules: true,
+          fixedSpan: 12,
+          config: ">",
+        },
+        {
+          label: '阈值',
+          prop: `highThreshold${index}`,
+          type: 'input',
+          rules: true,
+          fixedSpan: 12,
+          config: 32
+        }
+    )
+  }
 }
 
 function initAddDialog() {
@@ -370,6 +415,14 @@ const classEnum = computed(() => {
 const fieldEnum = computed(() => {
   const enumData = {};
   fieldOptions.forEach((o) => {
+    enumData[o.label] = [o.value, o.label];
+  });
+  return createEnum(enumData);
+});
+
+const operatorsEnum = computed(() => {
+  const enumData = {};
+  operatorOptions.forEach((o) => {
     enumData[o.label] = [o.value, o.label];
   });
   return createEnum(enumData);
