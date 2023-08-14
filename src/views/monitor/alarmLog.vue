@@ -31,6 +31,9 @@
           {{ alarmTypeEnum.getDescFromValue(slotProps.cellValue) }}
         </el-tag>
       </div>
+      <div v-else-if="slotProps.prop === 'organizationId'">
+        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+      </div>
       <div v-else-if="slotProps.prop === 'updatedAt'">
         {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
       </div>
@@ -66,9 +69,9 @@ import {ref, reactive, onMounted, computed, onActivated } from 'vue';
 import tool from '@/utils/tool';
 import http from '@/utils/http';
 import {ElMessage} from 'element-plus/lib/components';
-import {createEnum} from '@/utils/enums';
+import {createEnum, createEnumByOptions} from '@/utils/enums';
 import {useRoute} from 'vue-router';
-import {getNetworkOptions} from '../device/device';
+import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 
 const route = useRoute();
 const compoTableRef = ref(null);
@@ -93,6 +96,7 @@ const routerOptions = reactive([]);
 const switchOptions = reactive([]);
 const wirelessOptions = reactive([]);
 const clientOptions = reactive([]);
+const organizationOptions = reactive([]);
 
 const alarmDialogVisible = ref(false)
 const alarmDialogText = ref('')
@@ -132,6 +136,10 @@ const columns = [
 
 // 查询表单
 const queryForm = [
+  {
+    label: '组织', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions, value: 97},
+  },
   {label: '告警配置ID', prop: 'alarmCfgId', type: 'input' },
   {
     label: '告警状态', prop: 'alarmStatusList', type: 'select',
@@ -293,6 +301,10 @@ const alarmStatusEnum = computed(() => {
   return createEnum(enumData);
 });
 
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
+
 const notificationStatusEnum = computed(() => {
   const enumData = {};
   notificationStatusOptions.forEach((o) => {
@@ -367,6 +379,7 @@ function setupState() {
 
 onMounted(() => {
   initQuery();
+  getOrganizationOptions(organizationOptions);
 });
 
 onActivated(() => {

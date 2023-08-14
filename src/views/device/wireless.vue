@@ -158,7 +158,7 @@ const columns = [
 const queryForm = [
   {
     label: '组织', prop: 'organizationId', type: 'select',
-    config: {options: organizationOptions}
+    config: {options: organizationOptions, defaultValue: 76}
   },
   {
     label: '网络', prop: 'networkId', type: 'select',
@@ -377,6 +377,9 @@ async function queryHistoryData() {
   }
   const chart = {
     title: dataTypeEnum.value.getDescFromValue(form.wirelessDataType),
+    title1: '上行流量',
+    title2: '下行流量',
+    title3: '总流量',
     valueData: [],
     value2Data: [],
     value3Data: [],
@@ -387,7 +390,11 @@ async function queryHistoryData() {
   chart.valueData = res.data.map(item => item.value);
   chart.value2Data = res.data.map(item => item.value2);
   chart.value3Data = res.data.map(item => item.value3);
-  getAPUsageAreaChart(chart);
+  if (res.data.every(item => item.value2 == null) && res.data.every(item => item.value3 == null)) {
+    getAreaChart(chart);
+  } else {
+    getAPUsageAreaChart(chart);
+  }
 
 }
 
@@ -427,7 +434,7 @@ function getAPUsageAreaChart(chart) {
     ],
     series: [
       {
-        name: chart.title,
+        name: chart.title1,
         type: 'line',
         symbol: 'none',
         sampling: 'lttb',
@@ -449,7 +456,7 @@ function getAPUsageAreaChart(chart) {
         data: chart.valueData
       },
       {
-        name: '',
+        name: chart.title2,
         type: 'line',
         symbol: 'none',
         sampling: 'lttb',
@@ -471,7 +478,7 @@ function getAPUsageAreaChart(chart) {
         data: chart.value2Data
       },
       {
-        name: 'Total Usage',
+        name: chart.title3,
         type: 'line',
         symbol: 'none',
         sampling: 'lttb',

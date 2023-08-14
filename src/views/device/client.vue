@@ -30,6 +30,9 @@
           {{ slotProps.cellValue }}
         </el-link>
       </div>
+      <div v-else-if="slotProps.prop === 'organizationId'">
+        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+      </div>
 
     </template>
 
@@ -57,7 +60,7 @@ import {ElMessage, ElMessageBox} from 'element-plus/lib/components';
 import tool from "@/utils/tool";
 import {createEnumByOptions} from "@/utils/enums";
 import * as echarts from "echarts";
-import {getTimespanOptions} from './device';
+import {getOrganizationOptions, getTimespanOptions} from './device';
 
 const router = useRouter();
 const route = useRoute();
@@ -122,8 +125,18 @@ const columns = [
   // {label: '5G信道利用率', prop: 'utilization5g', sortable: true,},
 ];
 
+const organizationOptions = reactive([]);
+
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
+
 // 查询表单
 const queryForm = [
+  {
+    label: '组织', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions, defaultValue: 97},
+  },
   {
     label: '网络', prop: 'networkId', type: 'select',
     config: {options: networkOptions, },
@@ -571,6 +584,7 @@ onMounted(() => {
   tool.getOptions(deviceTypeOptions, 'DEVICE_TYPE');
   getTimespanOptions(timespanOptions);
   getOfficeNetworkOptions(networkOptions);
+  getOrganizationOptions(organizationOptions);
 
   if (Object.keys(route.params).length <= 0) {
     getClientOptions({});

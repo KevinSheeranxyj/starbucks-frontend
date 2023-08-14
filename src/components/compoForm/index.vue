@@ -111,6 +111,10 @@ export default {
     this.labelWidth = this.formParams.labelWidth ? this.formParams.labelWidth : this.labelWidth;
     this.labelPosition = this.formParams.labelPosition ? this.formParams.labelPosition : this.labelPosition;
     this.formItems = this.initFormItems(this.formParams.formItems);
+
+    // Extract and assign default values to the form object
+    this.form = this.extractDefaultValues(this.formItems);
+
     this.$nextTick(() => {
       setTimeout(() => {
         this.$refs.formRef.clearValidate();
@@ -149,7 +153,15 @@ export default {
       let defaultValues = {};
       formItems.forEach((item) => {
         if (item.config && 'defaultValue' in item.config) {
-          defaultValues[item.prop] = item.config['defaultValue'];
+          if (item.type === 'select' && Array.isArray(item.config.options)) {
+            const defaultValue = item.config.defaultValue;
+            const matchingOption = item.config.options.find(option => option.value === defaultValue);
+            if (matchingOption) {
+              defaultValues[item.prop] = defaultValue;
+            }
+          } else {
+            defaultValues[item.prop] = item.config.defaultValue;
+          }
         }
       });
       return defaultValues;
@@ -164,7 +176,6 @@ export default {
         // 非行内表单模式
         this.inline = false;
       }
-
       // 根据屏幕宽度计算 栅格占据的列数
       const span = this.getSpan();
 

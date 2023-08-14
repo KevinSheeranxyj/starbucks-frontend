@@ -35,9 +35,12 @@
       </div>
       <div v-else-if="slotProps.prop === 'alarmConfigDetailDTOList'">
         <span v-for="(item, index) in slotProps.cellValue" :key="index">
-          {{ item.checkField}}, {{item.highThreshold}}, {{item.thresholdOperator}}
+          {{ fieldEnum.getDescFromValue(item.checkField)}}  {{item.thresholdOperator}}  {{item.highThreshold}}
           <br>
         </span>
+      </div>
+      <div v-else-if="slotProps.prop === 'organizationId'">
+        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
       </div>
     </template>
 
@@ -83,8 +86,9 @@ import {ref, reactive, onMounted, computed } from 'vue';
 import {useRouter} from 'vue-router';
 import http from '@/utils/http';
 import {ElMessage} from 'element-plus/lib/components';
-import {createEnum} from '@/utils/enums';
+import {createEnum, createEnumByOptions} from '@/utils/enums';
 import tool from '@/utils/tool';
+import {getOrganizationOptions} from "@/views/device/device";
 
 const compoTableRef = ref(null);
 const addDialogRef = ref(null);
@@ -123,6 +127,7 @@ const fieldOptions = reactive([
   {label: '信噪比', value: 'snr' },
   {label: '流量', value: 'traffic'}
 ]);
+const organizationOptions = reactive([]);
 
 const router = useRouter();
 
@@ -156,7 +161,7 @@ const columns = [
   {label: '监控对象', prop: 'beanName', width: '60px'},
   {label: '监控范围', prop: 'monitorRange', width: '80px', showOverflowTooltip: true},
   {label: '告警名称', prop: 'alarmName', minWidth: '120px', showOverflowTooltip: true},
-  {label: '规则明细(检查项，阈值，操作符)', prop: 'alarmConfigDetailDTOList', minWidth: '120px', showOverflowTooltip: true},
+  {label: '规则明细(检查项 操作符 阈值)', prop: 'alarmConfigDetailDTOList', minWidth: '120px', showOverflowTooltip: true},
   // {label: '内容模板', prop: 'alarmTemplate', minWidth: '200px'},
   // {label: '渠道告警等级', prop: 'channelAlarmLevel', width: '80px',},
   // {label: '渠道类型', prop: 'channelType', width: '60px',},
@@ -170,6 +175,10 @@ const columns = [
 
 // 查询表单
 const queryForm = [
+  {
+    label: '组织', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions, value: 97},
+  },
   {
     label: '告警名称', prop: 'alarmName', type: 'select',
     config: {options: alarmOptions}
@@ -378,6 +387,10 @@ const classEnum = computed(() => {
   return createEnum(enumData);
 });
 
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
+
 const fieldEnum = computed(() => {
   const enumData = {};
   fieldOptions.forEach((o) => {
@@ -423,6 +436,7 @@ onMounted(() => {
   queryTable();
   getUserOptions();
   getAlarmOptions();
+  getOrganizationOptions(organizationOptions);
   tool.getOptions(classOptions, 'BEAN_NAME');
 });
 
