@@ -147,12 +147,9 @@ export default {
 
     extractDefaultValues(formItems) {
       let defaultValues = {};
-      console.log(formItems);
-      let array = [];
       formItems.forEach((item) => {
         if (item.config && 'defaultValue' in item.config) {
           defaultValues[item.prop] = item.config['defaultValue'];
-          array.push(defaultValues);
         }
       });
       return defaultValues;
@@ -193,8 +190,6 @@ export default {
       }
       this.form = this.extractDefaultValues(formItems);
 
-
-      console.log(this.form);
       return formItems;
     },
 
