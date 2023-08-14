@@ -377,17 +377,123 @@ async function queryHistoryData() {
   }
   const chart = {
     title: dataTypeEnum.value.getDescFromValue(form.wirelessDataType),
-    data: [],
+    valueData: [],
+    value2Data: [],
+    value3Data: [],
     xAxis: []
   };
 
-  res.data.forEach((history) => {
-    chart.data.push(history.value);
-    // chart.data.push(history.value1);
-    chart.xAxis.push(history.endTime);
-  })
+  chart.xAxis = res.data.map(item => item.endTime);
+  chart.valueData = res.data.map(item => item.value);
+  chart.value2Data = res.data.map(item => item.value2);
+  chart.value3Data = res.data.map(item => item.value3);
+  getAPUsageAreaChart(chart);
 
-  getAreaChart(chart);
+}
+
+function getAPUsageAreaChart(chart) {
+  const chartDom = document.getElementById('areaChart');
+  const chartOption = echarts.init(chartDom);
+  chartOption.setOption({
+    tooltip: {
+      trigger: 'axis',
+      position: function(pt) {
+        return [pt[0], '10%'];
+      }
+    },
+    title: {
+      left: 'center',
+      text: chart.title
+    },
+    xAxis: {
+      type: 'category',
+      boundaryGap: false,
+      data: chart.xAxis
+    },
+    yAxis: {
+      type: 'value',
+      boundaryGap: [0, '100%']
+    },
+    dataZoom: [
+      {
+        type: 'inside',
+        start: 0,
+        end: 100
+      },
+      {
+        start: 0,
+        end: 10
+      }
+    ],
+    series: [
+      {
+        name: chart.title,
+        type: 'line',
+        symbol: 'none',
+        sampling: 'lttb',
+        itemStyle: {
+          color: 'rgb(255, 70, 131)'
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            {
+              offset: 0,
+              color: 'rgb(68, 206, 255)'
+            },
+            {
+              offset: 1,
+              color: 'rgb(70, 158, 255)'
+            }
+          ])
+        },
+        data: chart.valueData
+      },
+      {
+        name: '',
+        type: 'line',
+        symbol: 'none',
+        sampling: 'lttb',
+        itemStyle: {
+          color: 'rgb(70, 158, 255)'
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            {
+              offset: 0,
+              color: 'rgb(68, 206, 255)'
+            },
+            {
+              offset: 1,
+              color: 'rgb(70, 158, 255)'
+            }
+          ])
+        },
+        data: chart.value2Data
+      },
+      {
+        name: 'Total Usage',
+        type: 'line',
+        symbol: 'none',
+        sampling: 'lttb',
+        itemStyle: {
+          color: 'rgb(131, 70, 255)'
+        },
+        areaStyle: {
+          color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            {
+              offset: 0,
+              color: 'rgb(255, 206, 68)'
+            },
+            {
+              offset: 1,
+              color: 'rgb(255, 158, 70)'
+            }
+          ])
+        },
+        data: chart.value3Data
+      }
+    ]
+  });
 }
 
 /**
@@ -448,7 +554,7 @@ function getAreaChart(chart) {
             }
           ])
         },
-        data: chart.data
+        data: chart.valueData
       }
     ]
   });
