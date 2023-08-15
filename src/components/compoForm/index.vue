@@ -148,9 +148,8 @@ export default {
       return span;
     },
 
-
     extractDefaultValues(formItems) {
-      let defaultValues = {};
+      const defaultValues = {};
       formItems.forEach((item) => {
         if (item.config && 'defaultValue' in item.config) {
           if (item.type === 'select' && Array.isArray(item.config.options)) {
@@ -199,7 +198,10 @@ export default {
         // 判断是否设置 栅格列数'fixedSpan'
         row['span'] = row.fixedSpan ? row.fixedSpan : span;
       }
-      this.form = this.extractDefaultValues(formItems);
+      this.form = {
+        ...this.extractDefaultValues(formItems),
+        ...this.form
+      };
 
       return formItems;
     },
