@@ -135,7 +135,7 @@ const organizationEnum = computed(() => {
 const queryForm = [
   {
     label: '组织', prop: 'organizationId', type: 'select',
-    config: {options: organizationOptions, defaultValue: 97},
+    config: {options: organizationOptions, clearable: false},
   },
   {
     label: '网络', prop: 'networkId', type: 'select',

@@ -158,7 +158,7 @@ const columns = [
 const queryForm = [
   {
     label: '组织', prop: 'organizationId', type: 'select',
-    config: {options: organizationOptions, defaultValue: 76}
+    config: {options: organizationOptions, clearable: false}
   },
   {
     label: '网络', prop: 'networkId', type: 'select',

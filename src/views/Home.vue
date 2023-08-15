@@ -2,16 +2,21 @@
   <div class="app-container">
     <el-row>
       <el-col :span="4">
-        <el-card class="count-card">
+        <el-card class="count-card" >
           <el-row justify="space-evenly">
-            <el-switch
-                v-model="orgSwitch" inline-prompt size="large" width="80px"
-                v-loading.fullscreen.lock="fullscreenLoading"
-                style="--el-switch-on-color: #409EFF; --el-switch-off-color: #E6A23C"
-                active-text="办公室"
-                inactive-text="门店"
+            <el-select
+                v-model="org" placeholder="Select"
                 @change="changeOrgSwitch"
-            />
+                style="margin-top: 16px"
+            >
+              <el-option
+                  v-for="item in organizationOptions"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+              >
+              </el-option>
+            </el-select>
           </el-row>
         </el-card>
       </el-col>
@@ -127,7 +132,7 @@ import {getOrganizationOptions} from "@/views/device/device";
 
 const fullscreenLoading = ref(false)
 const router = useRouter();
-const orgSwitch = ref(true);
+const org = ref('Starbucks China');
 const orgId = ref(null);
 const officeOrgId = ref(null);
 const storeOrgId = ref(null);

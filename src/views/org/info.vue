@@ -7,7 +7,6 @@ import {getOrganizationOptions} from "@/views/device/device";
 
 const route = useRoute();
 const organizationOptions = reactive([]);
-const updateDialogRef = ref(null);
 
 const compoTableRef = ref(null);
 const organizationTypeOptions = reactive([
@@ -33,9 +32,9 @@ const columns = [
   {label: '组织 ID', prop: 'organizationId'},
   {label: '名称', prop: 'name'},
   {
-    label: '组织类型', prop: 'organizationType'
-  },
-  {label: '操作', prop: 'operator', width: '60px', type: 'defined' }
+    label: '组织类型', prop: 'organizationType', type: 'select',
+    config: {options: organizationTypeOptions, clearable: false}
+  }
 ];
 
 // 查询表单
@@ -59,7 +58,22 @@ const table = {
     form: {formItems: queryForm}
   },
   columns: columns,
-  config: {page: true}
+  config: {
+    page: true,
+    multipleTable: true
+  },
+  hideAllowed: true,
+  update: {
+    url: '/organization/update',
+  }
+};
+
+const getTagTypeByOrganizationType = (value) => {
+  if (value === "OFFICE") {
+      return "办公室";
+  } else if (value === "STORE") {
+      return "门店";
+  }
 };
 
 
@@ -86,35 +100,6 @@ onMounted(() => {
   }
 });
 
-async function openUpdateDialog(row) {
-// 调用对话框组件，打开对话框后，再传参给对话框表单
-  await updateDialogRef.value.openDialog();
-  const body = {
-    id: row.id,
-    organizationId: row.organizationId,
-    name: row.name,
-    organizationType: row.organizationType
-  }
-  updateDialogRef.value.setForm(body);
-}
-
-function updateSuccess() {
-  ElMessage.success('更新成功');
-  queryTable()
-}
-
-const updateForm = [
-  {
-    label: '组织类型', prop: 'organizationType', type: 'select', rules: true,
-    config: {options: organizationTypeOptions}
-  }
-]
-
-const updateDialog = {
-  title: '更新',
-  url: '/organization/update',
-  form: {formItems: updateForm}
-}
 
 </script>
 <template>
@@ -123,31 +108,15 @@ const updateDialog = {
     ref="compoTableRef"
     :table-params="table"
   >
-    <template #tableTextSlot="slotProps">
+
+    <template #tableSelectSlot="slotProps">
       <div v-if="slotProps.prop === 'organizationType'">
-        {{ organizationTypeEnum.getDescFromValue(slotProps.cellValue) }}
-      </div>
-      <div v-else-if="slotProps.prop === 'organizationId'">
-        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
-      </div>
-    </template>
-
-    <!-- 自定义列插槽 -->
-    <template #tableDefinedSlot="slotProps">
-      <div v-if="slotProps.prop === 'operator'">
-        <el-link
-            type="primary"
-            href="javascript:;"
-            @click="openUpdateDialog(slotProps.scope.row)"
-        >更新
-        </el-link>
+        <el-tag :type="getTagTypeByOrganizationType(slotProps.cellValue)">
+          {{ organizationTypeEnum.getDescFromValue(slotProps.cellValue) }}
+        </el-tag>
       </div>
     </template>
 
-    <template #dialog>
-      <!-- Update Dialogue -->
-      <compo-dialog ref="updateDialogRef" :dialog-params="updateDialog" @confirmSuccess="updateSuccess"></compo-dialog>
-    </template>
   </compo-table>
 </template>
 

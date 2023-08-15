@@ -24,7 +24,7 @@ const columns = [
 const queryForm = [
   {
     label: '组织', prop: 'organizationId', type: 'select',
-    config: {options: organizationOptions},
+    config: {options: organizationOptions, clearable: false},
   },
   {
     label: '模板', prop: 'tagTemplateName', type: 'input'
