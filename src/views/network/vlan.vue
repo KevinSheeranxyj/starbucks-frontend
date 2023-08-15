@@ -81,7 +81,16 @@ function syncNetwork() {
   console.log('同步');
 }
 
+function initQuery() {
+  const queryForm = {
+    organizationId: organizationOptions.value = '76'
+  };
+  compoTableRef.value.setForm(queryForm);
+  queryTable();
+}
+
 onMounted(() => {
+  initQuery();
   getOrganizationOptions(organizationOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();

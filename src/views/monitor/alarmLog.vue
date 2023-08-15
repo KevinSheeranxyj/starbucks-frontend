@@ -138,7 +138,7 @@ const columns = [
 const queryForm = [
   {
     label: '组织', prop: 'organizationId', type: 'select',
-    config: {options: organizationOptions, value: 97},
+    config: {options: organizationOptions},
   },
   {label: '告警配置ID', prop: 'alarmCfgId', type: 'input' },
   {
@@ -198,7 +198,8 @@ const table = {
 function initQuery() {
   const queryForm = {
     startDate: tool.dateFormat(new Date(), 'yyyy-MM-dd'),
-    endDate: tool.dateFormat(new Date(), 'yyyy-MM-dd')
+    endDate: tool.dateFormat(new Date(), 'yyyy-MM-dd'),
+    organizationId: organizationOptions.value = '76'
   };
   getNetworkOptions(null, networkOptions);
   compoTableRef.value.setForm(queryForm);
@@ -368,7 +369,7 @@ function setupState() {
     const query = route.params;
     const queryForm = {
       alarmCfgId: query.alarmCfgId,
-      startDaate: query.startDate,
+      startDate: query.startDate,
       endDate: query.endDate
     };
     // 设置查询表单

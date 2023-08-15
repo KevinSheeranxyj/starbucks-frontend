@@ -579,7 +579,17 @@ async function setupState() {
   }
 }
 
+function initQuery() {
+  const queryForm = {
+    organizationId: organizationOptions.value = '76'
+  };
+  compoTableRef.value.setForm(queryForm);
+  queryTable();
+}
+
+
 onMounted(() => {
+  initQuery();
   console.log("onMounted")
   tool.getOptions(deviceTypeOptions, 'DEVICE_TYPE');
   getTimespanOptions(timespanOptions);

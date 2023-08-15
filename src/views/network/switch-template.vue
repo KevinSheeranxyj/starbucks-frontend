@@ -2,7 +2,7 @@
 import tool from '@/utils/tool';
 import {ref, onMounted, reactive} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
-import { getNetworkOptions } from '../device/device';
+import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 
 const route = useRoute();
 const router = useRouter();
@@ -10,6 +10,7 @@ const router = useRouter();
 const compoTableRef = ref(null);
 const remoteNetworkOptions = reactive([]);
 const networkOptions = reactive([]);
+const organizationOptions = reactive([]);
 
 // 表格列
 const columns = [
@@ -21,6 +22,10 @@ const columns = [
 
 // 查询表单
 const queryForm = [
+  {
+    label: '组织', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions},
+  },
   {
     label: '网络', prop: 'network', type: 'input'
   },
@@ -77,7 +82,17 @@ function toHistory() {
   router.push('/network/switch-template-history')
 }
 
+function initQuery() {
+  const queryForm = {
+    organizationId: organizationOptions.value = '76'
+  };
+  compoTableRef.value.setForm(queryForm);
+  queryTable();
+}
+
 onMounted(() => {
+  initQuery();
+  getOrganizationOptions(organizationOptions);
   getNetworkOptions(null, networkOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();

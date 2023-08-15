@@ -627,7 +627,16 @@ async function setupState() {
   }
 }
 
+function initQuery() {
+  const queryForm = {
+    organizationId: organizationOptions.value = '76'
+  };
+  compoTableRef.value.setForm(queryForm);
+  queryTable();
+}
+
 onMounted(() => {
+  initQuery();
   tool.getOptions(deviceStatusOptions, 'DEVICE_STATUS');
   getOrganizationOptions(organizationOptions);
   getTimespanOptions(timespanOptions);

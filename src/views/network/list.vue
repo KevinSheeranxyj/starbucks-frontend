@@ -1,8 +1,9 @@
 <script setup>
 import tool from '@/utils/tool';
-import {ref, onMounted, reactive} from 'vue';
+import {ref, onMounted, reactive, computed} from 'vue';
 import {useRoute} from 'vue-router';
-import { getNetworkOptions } from '../device/device';
+import {getNetworkOptions, getOrganizationOptions} from '../device/device';
+import {createEnumByOptions} from "@/utils/enums";
 
 const route = useRoute();
 
@@ -10,6 +11,7 @@ const compoTableRef = ref(null);
 const remoteNetworkOptions = reactive([]);
 const networkOptions = reactive([]);
 const syncLoading = ref(false);
+const organizationOptions = reactive([]);
 
 // 表格列
 const columns = [
@@ -21,8 +23,12 @@ const columns = [
 // 查询表单
 const queryForm = [
   {
-    label: '模板', prop: 'tagTemplateName', type: 'input'
+    label: '组织', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions},
   },
+  {
+    label: '模板', prop: 'tagTemplateName', type: 'input'
+  }
 ];
 
 const table = {
@@ -68,7 +74,21 @@ function syncNetwork() {
   console.log('同步');
 }
 
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
+
+function initQuery() {
+  const queryForm = {
+    organizationId: organizationOptions.value = '76'
+  };
+  compoTableRef.value.setForm(queryForm);
+  queryTable();
+}
+
 onMounted(() => {
+  initQuery();
+  getOrganizationOptions(organizationOptions);
   getNetworkOptions(null, networkOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();
@@ -87,6 +107,11 @@ onMounted(() => {
     <!-- 按钮插槽 -->
     <template #buttonSlot>
       <el-button type="primary" plain :loading="syncLoading" @click="syncNetwork">同 步</el-button>
+    </template>
+    <template #tableTextSlot="slotProps">
+      <div v-if="slotProps.prop === 'organizationId'">
+        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+      </div>
     </template>
   </compo-table>
 </template>

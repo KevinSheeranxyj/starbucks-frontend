@@ -223,7 +223,7 @@ const columns = [
 const queryForm = [
   {
     label: '组织', prop: 'organizationId', type: 'select',
-    config: {options: organizationOptions, defaultValue: 76},
+    config: {options: organizationOptions},
   },
   {
     label: '网络', prop: 'networkId', type: 'select',
@@ -637,7 +637,16 @@ async function setupState() {
   }
 }
 
+function initQuery() {
+  const queryForm = {
+    organizationId: organizationOptions.value = '76'
+  };
+  compoTableRef.value.setForm(queryForm);
+  queryTable();
+}
+
 onMounted(() => {
+  initQuery();
   tool.getOptions(networkStatusOptions, 'DEVICE_STATUS');
   getTimespanOptions(timespanOptions);
   getOrganizationOptions(organizationOptions);

@@ -152,15 +152,7 @@ export default {
       const defaultValues = {};
       formItems.forEach((item) => {
         if (item.config && 'defaultValue' in item.config) {
-          if (item.type === 'select' && Array.isArray(item.config.options)) {
-            const defaultValue = item.config.defaultValue;
-            const matchingOption = item.config.options.find(option => option.value === defaultValue);
-            if (matchingOption) {
-              defaultValues[item.prop] = defaultValue;
-            }
-          } else {
-            defaultValues[item.prop] = item.config.defaultValue;
-          }
+            defaultValues[item.prop] = item.config['defaultValue'];
         }
       });
       return defaultValues;
@@ -249,7 +241,6 @@ export default {
       this.$nextTick(() => {
         // that.form = form
         this.form = {...this.form, ...form};
-        console.log(this.form);
       })
     },
 

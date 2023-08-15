@@ -1,10 +1,13 @@
 <script setup>
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, computed, reactive} from 'vue';
 import {useRoute} from 'vue-router';
+import {createEnumByOptions} from "@/utils/enums";
+import {getOrganizationOptions} from "@/views/device/device";
 
 const route = useRoute();
 
 const compoTableRef = ref(null);
+const organizationOptions = reactive([]);
 
 // 表格列
 const columns = [
@@ -17,7 +20,10 @@ const columns = [
 
 // 查询表单
 const queryForm = [
-
+  {
+    label: '组织', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions},
+  },
 ];
 
 const table = {
@@ -36,7 +42,22 @@ function queryTable() {
   compoTableRef.value.query();
 }
 
+
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
+
+function initQuery() {
+  const queryForm = {
+    organizationId: organizationOptions.value = '76'
+  };
+  compoTableRef.value.setForm(queryForm);
+  queryTable();
+}
+
 onMounted(() => {
+  initQuery();
+  getOrganizationOptions(organizationOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();
   }
@@ -50,6 +71,11 @@ onMounted(() => {
     :table-params="table"
     @reset="afterReset"
   >
+    <template #tableTextSlot="slotProps">
+      <div v-if="slotProps.prop === 'organizationId'">
+        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+      </div>
+    </template>
   </compo-table>
 </template>
 

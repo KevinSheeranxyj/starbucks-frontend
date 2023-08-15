@@ -26,15 +26,20 @@
 </template>
 
 <script setup>
-import {ref, onMounted,  onActivated,} from 'vue';
+import {ref, onMounted, onActivated, computed, reactive,} from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import tool from "@/utils/tool";
+import {createEnumByOptions} from "@/utils/enums";
+import {getOrganizationOptions} from "@/views/device/device";
 
 const route = useRoute();
 const router = useRouter();
 const compoTableRef = ref(null);
+const organizationOptions = reactive([]);
 
-
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
 
 // 表格列
 const columns = [
@@ -47,6 +52,10 @@ const columns = [
 
 // 查询表单
 const queryForm = [
+  {
+    label: '组织', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions},
+  },
   {label: '告警配置ID', prop: 'alarmCfgId', type: 'input',},
   {
     label: '开始日期', prop: 'startDate', type: 'date',
@@ -75,6 +84,7 @@ function initQuery() {
   const queryForm = {
     startDate: tool.dateFormat(new Date(), 'yyyy-MM-dd'),
     endDate: tool.dateFormat(new Date(), 'yyyy-MM-dd'),
+    organizationId: organizationOptions.value = '76' // default value: Starbucks China = 76
   };
   compoTableRef.value.setForm(queryForm);
   queryTable();
@@ -123,6 +133,7 @@ const routerAlarmLogPage = (row) => {
 
 onMounted(() => {
   initQuery();
+  getOrganizationOptions(organizationOptions);
 });
 
 onActivated(() => {

@@ -123,6 +123,7 @@ import http from "@/utils/http";
 import {ElMessage} from "element-plus/lib/components";
 import {WarningFilled} from '@element-plus/icons-vue';
 import * as echarts from 'echarts';
+import {getOrganizationOptions} from "@/views/device/device";
 
 const fullscreenLoading = ref(false)
 const router = useRouter();
@@ -144,6 +145,8 @@ const statusChart = reactive({
   data: [],
   color: ['#67C23A', '#F56C6C', '#E6A23C', '#909399'],
 });
+
+const organizationOptions = reactive([]);
 // const clientsChart = reactive({
 //   title: '客户端连接数',
 //   data: [],
@@ -156,7 +159,6 @@ const devicesChart = reactive({
 const networkList = reactive({
   data: []
 });
-
 
 /**
  * 查询组织ID
@@ -356,7 +358,7 @@ function getDevicesChart() {
  * 统计设备数
  */
 async function countDevice() {
-  const {data: res} = await http.post('/network/device/count', {organizationType: orgId.value});
+  const {data: res} = await http.post('/network/device/count', {organizationId: orgId.value});
 
   if (!res.success) {
     return ElMessage.error(res.msg);
@@ -510,6 +512,7 @@ async function init() {
 }
 
 onMounted(() => {
+  getOrganizationOptions(organizationOptions);
   init();
 });
 

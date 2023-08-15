@@ -39,9 +39,6 @@
           <br>
         </span>
       </div>
-      <div v-else-if="slotProps.prop === 'organizationId'">
-        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
-      </div>
     </template>
 
     <!-- 自定义列插槽 -->
@@ -175,10 +172,6 @@ const columns = [
 
 // 查询表单
 const queryForm = [
-  {
-    label: '组织', prop: 'organizationId', type: 'select',
-    config: {options: organizationOptions, value: 97},
-  },
   {
     label: '告警名称', prop: 'alarmName', type: 'select',
     config: {options: alarmOptions}
