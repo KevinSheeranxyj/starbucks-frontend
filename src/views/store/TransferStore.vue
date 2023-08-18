@@ -2,10 +2,9 @@
 
 </template>
 
-<script>
-export default {
-  name: "store-opening.vue"
-}
+<script setup>
+
+
 </script>
 
 <style scoped>

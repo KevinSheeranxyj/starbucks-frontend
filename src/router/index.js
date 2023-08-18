@@ -1,5 +1,8 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Layout from '@/layout';
+import menu from "@/views/store/menu.vue";
+import CloseStore from "@/views/store/CloseStore.vue";
+import OpenStore from "@/views/store/OpenStore.vue";
 
 /**
  * 页面配置
@@ -16,15 +19,6 @@ export const layoutRoutes = [
       unsearchable: true
     },
     component: () => import('@/views/Home')
-  },
-  {
-    path: '/store/main-store',
-    name: 'MainStore',
-    meta: {
-      title: '门店操作',
-      unsearchable: true
-    },
-    component: () => import('@/views/store/MainStore')
   },
 
   /** ************************************/
@@ -264,6 +258,18 @@ export const constantRoutes = [
 export const asyncRoutes = [];
 
 const routes = [
+  {
+    path: '/store/menu',
+    component: menu,
+  },
+  {
+    path: '/store/open-store',
+    component: OpenStore,
+  },
+  {
+    path: '/store/close-store',
+    component: CloseStore,
+  }
 ];
 
 const router = createRouter({

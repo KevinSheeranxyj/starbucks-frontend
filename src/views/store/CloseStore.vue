@@ -2,10 +2,8 @@
 
 </template>
 
-<script>
-export default {
-  name: "store-transfer"
-}
+<script setup>
+
 </script>
 
 <style scoped>

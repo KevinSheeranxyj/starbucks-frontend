@@ -247,7 +247,7 @@ export default {
      *
      */
     routeStore() {
-      window.open(window.location.origin + '#/store/main-store')
+      window.open(window.location.origin + '#/store/menu')
     },
 
     refreshCurrentTag() {

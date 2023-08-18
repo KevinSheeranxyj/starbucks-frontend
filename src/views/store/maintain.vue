@@ -1,11 +1,17 @@
 <template>
+  <compo-form
+    :form-params="formItems"
 
+  >
+
+  </compo-form>
 </template>
 
-<script>
-export default {
-  name: "maintain"
-}
+<script setup>
+
+const formItems = [
+
+];
 </script>
 
 <style scoped>

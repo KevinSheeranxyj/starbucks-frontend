@@ -95,7 +95,6 @@ const emailOptions = reactive([{}]);
 const organizationTypeOptions = reactive([
   {label: '办公室', value: 'OFFICE' },
   {label: '门店', value: 'STORE' }
-
 ]);
 const channelOptions = reactive([
   {label: '邮件', value: 'MAIL' },
