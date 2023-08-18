@@ -2,10 +2,10 @@
 import tool from '@/utils/tool';
 import {ref, onMounted, reactive} from 'vue';
 import {useRoute} from 'vue-router';
-import { getNetworkOptions } from '../device/device';
+import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 
 const route = useRoute();
-
+const organizationOptions = reactive([]);
 const compoTableRef = ref(null);
 const remoteNetworkOptions = reactive([]);
 const networkOptions = reactive([]);
@@ -21,6 +21,10 @@ const columns = [
 
 // 查询表单
 const queryForm = [
+  {
+    label: '组织', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions, clearable: false},
+  },
   {
     label: 'SN', prop: 'sn', type: 'input'
   },
@@ -73,8 +77,17 @@ function remoteMethod(prop, val) {
     }
   }
 }
+function initQuery() {
+  const queryForm = {
+    organizationId: organizationOptions.value = '76'
+  };
+  compoTableRef.value.setForm(queryForm);
+  queryTable();
+}
 
 onMounted(() => {
+  initQuery();
+  getOrganizationOptions(organizationOptions);
   getNetworkOptions(null, networkOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();

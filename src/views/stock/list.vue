@@ -1,11 +1,12 @@
 <script setup>
-import {ref, onMounted} from 'vue';
+import {ref, onMounted, reactive} from 'vue';
 import {useRoute} from 'vue-router';
+import {getOrganizationOptions} from "@/views/device/device";
 
 const route = useRoute();
 
 const compoTableRef = ref(null);
-
+const organizationOptions = reactive([]);
 // 表格列
 const columns = [
   {label: 'mac地址', prop: 'mac'},
@@ -17,7 +18,10 @@ const columns = [
 
 // 查询表单
 const queryForm = [
-
+  {
+    label: '组织', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions, clearable: false},
+  },
 ];
 
 const table = {
@@ -36,7 +40,16 @@ function queryTable() {
   compoTableRef.value.query();
 }
 
+function initQuery() {
+  const queryForm = {
+    organizationId: organizationOptions.value = '76'
+  };
+  compoTableRef.value.setForm(queryForm);
+  queryTable();
+}
 onMounted(() => {
+  initQuery();
+  getOrganizationOptions(organizationOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();
   }
