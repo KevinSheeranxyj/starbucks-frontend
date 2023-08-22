@@ -7,7 +7,6 @@
   >
     <!-- 表单组件 -->
     <compo-form ref="compoFormRef" :form-params="dialogParams.form" form-type="dialog">
-      <slot name="formTextSlot"></slot>
       <template #formDefinedSlot="slotProps">
         <slot name="dialogFormSlot" :prop="slotProps.prop"></slot>
       </template>

@@ -17,6 +17,7 @@
               :placeholder="item.config.placeholder"
               :clearable="item.config.clearable!==false"
               :type="item.config.type"
+              :disabled="item.config.disabled===true"
             ></el-input>
           </template>
           <!-- 选择器 -->
@@ -30,7 +31,7 @@
               :multiple="item.config.multiple"
               :collapse-tags="item.config.collapseTags"
               :remote="item.config.remote"
-              :remote-method="((value)=>{remoteMethod(item.prop, value)})"
+              :remote-method="((value) => {remoteMethod(item.prop, value)})"
               style="width: 100%"
               @change="((value)=>{changeSelect(item.prop, value)})"
             >
@@ -103,6 +104,13 @@ export default {
   watch: {
     formParams(val) {
       this.formItems = this.initFormItems(val.formItems);
+    },
+    form: {
+      handler(new_val) {
+        // const bool = this.checkButton(new_val);
+        const bool = false;
+        this.$emit('disabledButton', bool);
+      }
     }
   },
 

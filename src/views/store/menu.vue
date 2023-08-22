@@ -20,7 +20,7 @@
         </el-card>
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text">组织</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="organizeStore()">组织</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/operation.png"  alt="closeStore"/>
@@ -28,7 +28,7 @@
         </el-card>
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text">维护</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="maintainStore()">维护</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/organization.png"  alt="closeStore"/>
@@ -36,7 +36,7 @@
         </el-card>
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text">转移</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="transferStore()">转移</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/transfer.png"  alt="closeStore"/>
@@ -44,7 +44,7 @@
         </el-card>
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text">审批</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="auditStore()">审批</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/audit.png"  alt="closeStore"/>
@@ -61,15 +61,27 @@ import {useRouter} from "vue-router";
 const router = useRouter();
 
 function openStore() {
-  this.router.push('/store/open-store')
+  this.router.push('/store/open')
 }
 
 function closeStore() {
-  this.router.push('/store/close-store');
+  this.router.push('/store/close');
 }
 
 function maintainStore() {
-  this.router.push('store/maintain-store');
+  this.router.push('/store/maintain');
+}
+
+function organizeStore() {
+  this.router.push('/store/organize');
+}
+
+function transferStore() {
+  this.router.push('/store/transfer');
+}
+
+function auditStore() {
+  this.router.push('/store/audit');
 }
 
 </script>

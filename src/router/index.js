@@ -1,8 +1,10 @@
 import { createRouter, createWebHashHistory } from 'vue-router';
 import Layout from '@/layout';
 import menu from "@/views/store/menu.vue";
-import CloseStore from "@/views/store/CloseStore.vue";
-import OpenStore from "@/views/store/OpenStore.vue";
+import CloseStore from "@/views/store/close.vue";
+import OpenStore from "@/views/store/open.vue";
+import MaintainStore from "@/views/store/maintain.vue";
+import TransferStore from "@/views/store/transfer.vue";
 
 /**
  * 页面配置
@@ -263,12 +265,24 @@ const routes = [
     component: menu,
   },
   {
-    path: '/store/open-store',
+    path: '/store/open',
     component: OpenStore,
   },
   {
-    path: '/store/close-store',
+    path: '/store/close',
     component: CloseStore,
+  },
+  {
+    path: '/store/maintain',
+    component: MaintainStore,
+  },
+  {
+    path: '/store/transfer',
+    component: TransferStore,
+  },
+  {
+    path: '/store/audit',
+    component: TransferStore,
   }
 ];
 

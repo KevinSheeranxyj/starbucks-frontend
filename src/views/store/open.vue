@@ -8,23 +8,24 @@
       <el-step title="Step 4"></el-step>
       <el-step title="Step 5"></el-step>
     </el-steps>
-    <el-collapse v-model="activeNames"  class="collapse-body">
+    <el-collapse v-model="activeNames" class="collapse-body" >
       <el-collapse-item title="新增门店信息" name="1" v-if="currentStep === 1">
         <div class="content-section">
           <compo-form
-          ref="schemaForm"
+          ref="storeSchemaFormRef"
           :form-params="storeSchemaForm"
           form-type="table"
           >
           </compo-form>
         </div>
         <div class="button-section">
-          <el-button type="primary"  @click="nextStep">{{ '下一步' }}</el-button>
+          <el-button type="primary" :disabled="disabledButton" @click="nextStep">{{ '下一步' }}</el-button>
         </div>
       </el-collapse-item>
-      <el-collapse-item title="网络设备添加" onChange="" name="2" v-if="currentStep === 2">
+      <el-collapse-item title="网络设备添加" name="2" v-if="currentStep === 2">
         <div class="content-section">
           <compo-table
+              ref="deviceTableRef"
               :table-params="table"
           >
             <template #buttonSlot>
@@ -49,7 +50,7 @@
       <el-collapse-item title="获取网段信息" name="3" v-if="currentStep === 3">
         <div class="content-section">
           <compo-form
-              ref="schemaForm"
+              ref="segmentFormRef"
               :form-params="segmentSchema"
               form-type="table"
           >
@@ -63,7 +64,7 @@
       <el-collapse-item title="网络设备信息" name="4" v-if="currentStep === 4">
         <div class="content-section">
           <compo-form
-              ref="schemaForm"
+              ref="networkDeviceFormRef"
               :form-params="networkDeviceInfoSchema"
               form-type="table"
           >
@@ -77,7 +78,7 @@
       <el-collapse-item title="交换机模板调用" name="5" v-if="currentStep === 5">
         <div class="content-section">
           <compo-form
-              ref="schemaForm"
+              ref="switchInfoFormRef"
               :form-params="switchInfoSchema"
               form-type="table"
           >
@@ -103,9 +104,14 @@ import tool from "@/utils/tool";
 const active =  ref(0);
 const addDialogRef = ref(null);
 const currentStep = ref(1);
-const activeNames = ref(['1']);
-const buttonDisabled = ref(true);
-const schemaForm = ref(null);
+const activeNames = ref(['1', '2', '3', '3', '4', '5',]);
+const storeSchemaFormRef = ref(null);
+const deviceTableRef = ref(null);
+const segmentFormRef = ref(null);
+const networkDeviceFormRef = ref(null);
+const switchInfoFormRef = ref(null);
+const disabledButton = ref(false);
+let deviceInfoData = ref({});
 
 const remoteNetworkOptions = reactive([]);
 
@@ -147,20 +153,25 @@ function addSuccess() {
 }
 
 const table = {
-        query: {
-          url: '/device/inventory/table',
-          form: {formItems: []},
-          reset: false
-        },
-        columns: [
-          {label: 'ID', prop: 'id', width: '40px'},
-          {label: '型号', prop: 'enableFlag', type: 'switch', width: '60px' },
-          {label: '类型', prop: 'organizationType', width: '60px'},
-          {label: 'MAC 地址', prop: 'beanName', width: '60px'},
-          {label: '订单编号', prop: 'beanName', width: '60px'},
-          {label: '申领时间', prop: 'beanName', width: '60px'},
-        ],
-      };
+  query: {
+    url: '/device/inventory/table',
+    form: {formItems: []},
+    reset: false
+  },
+  columns: [
+    {label: '网络', prop: 'networkName', },
+    {label: '状态', prop: 'usedStatus', },
+    {label: 'MAC 地址', prop: 'mac', },
+    {label: '序列号', prop: 'serial', },
+    {label: '订单编号', prop: 'orderNumber', },
+    {label: '模型', prop: 'model', },
+  ],
+  config: {
+    page: true,
+    multipleTable: true,
+  },
+
+};
 
 const defaultAddForm = [{
   label: '设备信息', prop: 'deviceInfo', type: 'input', fixedSpan: 24,
@@ -180,7 +191,7 @@ const addDialog = computed(() => ({
 const switchInfoSchema = {
   formItems: [
     {
-      label: '交换机模板选择', prop: 'switchTemplates', type: 'select',
+      label: '交换机模板选择', prop: 'switchTemplates', type: 'select', width: '30px',
       config: {options: networkTypeOptions}
     }]
 };
@@ -201,18 +212,21 @@ function remoteMethod(prop, val) {
 const networkDeviceInfoSchema = {
   formItems: [
     {
-      label: '地址位置信息', prop: 'location', type: 'input',
+      label: '地址位置信息', prop: 'location', type: 'input', rules: true, fixedSpan: 90,
       config: {}
     },
     {
-      label: '设备名称', prop: 'location', type: 'input',
+      label: '设备名称', prop: 'deviceName', type: 'input', rules: true, fixedSpan: 90,
       config: {}
     },
     {
-      label: 'MS-MX IP', prop: 'msIP', type: 'input',
+      label: 'MS IP', prop: 'msIP', type: 'input', rules: true,fixedSpan: 90,
     },
     {
-      label: '掩码', prop: 'maskNo', type: 'input',
+      label: 'MX IP', prop: 'mxIP', type: 'input', rules: true,fixedSpan: 90,
+    },
+    {
+      label: '掩码', prop: 'maskNo', type: 'input',fixedSpan: 90,
     },
     {
       label: 'VLAN', prop: 'vlan', type: 'input',
@@ -227,23 +241,34 @@ const segmentSchema = {
   formItems: [
   {
     label: '网段', prop: 'networkId', type: 'input',
-    config: {}
+    config: {disabled: true}
   },
     {
       label: 'PING 结果', prop: 'pingResult', type: 'input',
-      config: {}
+      config: {disabled: true}
     }
   ]
 
 }
 
 onMounted(() => {
+
 })
 
+function initQuery() {
+  console.log(deviceTableRef.value);
+  deviceTableRef.value.setForm({});
+  deviceTableRef.value.query();
+}
 
 function nextStep() {
   active.value++;
   currentStep.value++;
+  if (currentStep.value === 3) {
+    deviceInfoData = {
+      ...deviceTableRef.value.multipleSelection
+    };
+  }
 }
 
 function addDeviceDialog() {
@@ -256,7 +281,7 @@ function previousStep() {
 }
 
 function preview() {
-  console.log(currentStep.value);
+  activeNames.value = ['1', '2', '3', '4', '5'];
   currentStep.value = 5;
 }
 
@@ -272,8 +297,7 @@ function submitAll() {
 
 .content-section {
   max-height: 60vh;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow: hidden;
   padding-right: 10px;
 }
 
@@ -281,8 +305,6 @@ function submitAll() {
   margin-left: 100px;
   margin-right: 100px;
   margin-top: 100px;
-}
-.large-page {
 }
 
 .collapse-body {
