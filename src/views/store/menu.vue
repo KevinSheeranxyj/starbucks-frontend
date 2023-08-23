@@ -61,27 +61,27 @@ import {useRouter} from "vue-router";
 const router = useRouter();
 
 function openStore() {
-  this.router.push('/store/open')
+  router.push('/store/open')
 }
 
 function closeStore() {
-  this.router.push('/store/close');
+  router.push('/store/close');
 }
 
 function maintainStore() {
-  this.router.push('/store/maintain');
+  router.push('/store/maintain');
 }
 
 function organizeStore() {
-  this.router.push('/store/organize');
+  router.push('/store/organize');
 }
 
 function transferStore() {
-  this.router.push('/store/transfer');
+  router.push('/store/transfer');
 }
 
 function auditStore() {
-  this.router.push('/store/audit');
+  router.push('/store/audit');
 }
 
 </script>
