@@ -7,7 +7,7 @@
     :label-position="labelPosition"
     class="compo-form-container"
   >
-    <el-row :gutter="1">
+    <el-row :gutter="1" :style="{padding: '10px 20px'}">
       <el-col v-for="(item, index) in formItems" :key="index" :span="item.span">
         <el-form-item :label="item.label" :prop="item.prop" :rules="item.rules">
           <!-- 输入框 -->

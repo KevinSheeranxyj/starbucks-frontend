@@ -5,6 +5,7 @@ import CloseStore from "@/views/store/close.vue";
 import OpenStore from "@/views/store/open.vue";
 import MaintainStore from "@/views/store/maintain.vue";
 import TransferStore from "@/views/store/transfer.vue";
+import AuditStore from "@/views/store/audit.vue";
 
 /**
  * 页面配置
@@ -263,26 +264,44 @@ const routes = [
   {
     path: '/store/menu',
     component: menu,
+    meta: {
+      title: '门店菜单'
+    },
   },
   {
     path: '/store/open',
     component: OpenStore,
+    meta: {
+      title: '开店'
+    },
   },
   {
     path: '/store/close',
     component: CloseStore,
+    meta: {
+      title: '关店'
+    },
   },
   {
     path: '/store/maintain',
     component: MaintainStore,
+    meta: {
+      title: '门店维护'
+    },
   },
   {
     path: '/store/transfer',
     component: TransferStore,
+    meta: {
+      title: '门店转移'
+    },
   },
   {
     path: '/store/audit',
-    component: TransferStore,
+    meta: {
+      title: '门店审核'
+    },
+    component: AuditStore,
   }
 ];
 

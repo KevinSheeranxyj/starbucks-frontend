@@ -15,7 +15,7 @@
       ></compo-form>
 
       <el-button-group class="compo-button-group">
-        <el-button v-if="tableParams.query.form.formItems" type="primary" plain @click="query()">查 询</el-button>
+        <el-button v-if="tableParams.query.form.formItems && tableParams.config.showQuery !== false" type="primary" plain @click="query()">查 询</el-button>
         <el-button v-if="tableParams.query.reset!==false" @click="reset">重 置</el-button>
         <el-button v-if="tableParams.delete" type="danger" plain @click="batchUpdate('archiveFlag', 1)">删 除</el-button>
         <el-button v-if="tableParams.export" type="primary" plain @click="exportData()">导 出</el-button>
@@ -200,7 +200,7 @@
 
     <template #footer>
       <el-pagination
-        v-if="tableParams.config.page"
+        v-if="tableParams.config.page && tableParams.config.showPagination  !== false"
         :current-page="page"
         :page-sizes="[10, 20, 50, 100]"
         :page-size="limit"

@@ -5,6 +5,9 @@
     :width="dialogParams.width"
     :fullscreen="dialogParams.fullscreen"
   >
+    <div class="dialog-header">
+      <slot name="headerSlot"></slot>
+    </div>
     <!-- 表单组件 -->
     <compo-form ref="compoFormRef" :form-params="dialogParams.form" form-type="dialog">
       <template #formDefinedSlot="slotProps">

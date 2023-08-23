@@ -1,8 +1,7 @@
 <template>
   <div class="large-page">
     <el-steps :active="active" finish-status="success" class="step-body" >
-      <el-step title="Step 1">
-      </el-step>
+      <el-step title="Step 1"></el-step>
       <el-step title="Step 2"></el-step>
       <el-step title="Step 3"></el-step>
       <el-step title="Step 4"></el-step>
@@ -12,9 +11,9 @@
       <el-collapse-item title="新增门店信息" name="1" v-if="currentStep === 1">
         <div class="content-section">
           <compo-form
-          ref="storeSchemaFormRef"
-          :form-params="storeSchemaForm"
-          form-type="table"
+            ref="storeSchemaFormRef"
+            :form-params="storeSchemaForm"
+            form-type="table"
           >
           </compo-form>
         </div>
@@ -34,9 +33,11 @@
 
             <template #dialog>
               <compo-dialog ref="addDialogRef" :dialog-params="addDialog" @initDialog="initDialog" @confirmSuccess="addSuccess">
-                <template #dialogSlot>
-                  <span>您可以通过添加订单号或单个设备序列号（每行一个）将设备添加到库存中。</span><p></p>
-                    <span>如果您想同时定义设备名称，您可以使用格式输入： “序列号，名称”为每一行。</span>
+                <template #headerSlot>
+                  <ul>
+                    <li>您可以通过添加订单号或单个设备序列号（每行一个）将设备添加到库存中。</li>
+                    <li>如果您想同时定义设备名称，您可以使用格式输入： “序列号，名称”为每一行。</li>
+                  </ul>
                 </template>
               </compo-dialog>
             </template>
@@ -86,10 +87,46 @@
         </div>
         <div class="button-section">
           <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
-          <el-button type="primary"  @click="submitAll">{{ '提交' }}</el-button>
           <el-button type="primary"  @click="preview">{{ '预览' }}</el-button>
         </div>
       </el-collapse-item>
+      <el-collapse-item name="6" v-if="currentStep === 6">
+        <div class="content">
+          <compo-form
+              ref="storeSchemaFormRef"
+              :form-params="storeSchemaForm"
+              form-type="table"
+          >
+          </compo-form>
+          <compo-table
+              ref="previewTableRef"
+              :table-params="previewTable"
+          >
+          </compo-table>
+          <compo-form
+              ref="segmentFormRef"
+              :form-params="segmentSchema"
+              form-type="table"
+          >
+          </compo-form>
+          <compo-form
+              ref="networkDeviceFormRef"
+              :form-params="networkDeviceInfoSchema"
+              form-type="table"
+          >
+          </compo-form>
+          <compo-form
+              ref="switchInfoFormRef"
+              :form-params="switchInfoSchema"
+              form-type="table"
+          >
+          </compo-form>
+        </div>
+      </el-collapse-item>
+      <div class="form-button" v-if="currentStep === 6">
+        <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
+        <el-button type="primary"  @click="submitAll">{{ '提交' }}</el-button>
+      </div>
     </el-collapse>
   </div>
 </template>
@@ -97,7 +134,7 @@
 <script setup>
 import CompoTable from "@/components/compoTable/index.vue";
 import CompoDialog from "@/components/compoDialog/index.vue";
-import {computed, onMounted, reactive, ref} from "vue";
+import {computed, onMounted, onUpdated, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import tool from "@/utils/tool";
 
@@ -112,6 +149,7 @@ const networkDeviceFormRef = ref(null);
 const switchInfoFormRef = ref(null);
 const disabledButton = ref(false);
 let deviceInfoData = ref({});
+const previewTableRef = ref({});
 
 const remoteNetworkOptions = reactive([]);
 
@@ -152,6 +190,29 @@ function addSuccess() {
 
 }
 
+
+const previewTable = {
+  query: {
+    url: '/device/inventory/table',
+    form: {formItems: []},
+    reset: false
+  },
+  columns: [
+    {label: '网络', prop: 'networkName', },
+    {label: '状态', prop: 'usedStatus', },
+    {label: 'MAC 地址', prop: 'mac', },
+    {label: '序列号', prop: 'serial', },
+    {label: '订单编号', prop: 'orderNumber', },
+    {label: '模型', prop: 'model', },
+  ],
+  config: {
+    page: true,
+    multipleTable: false,
+    showQuery: false,
+    showPagination: false
+  }
+}
+
 const table = {
   query: {
     url: '/device/inventory/table',
@@ -169,6 +230,7 @@ const table = {
   config: {
     page: true,
     multipleTable: true,
+    showQuery: false,
   },
 
 };
@@ -212,21 +274,21 @@ function remoteMethod(prop, val) {
 const networkDeviceInfoSchema = {
   formItems: [
     {
-      label: '地址位置信息', prop: 'location', type: 'input', rules: true, fixedSpan: 90,
+      label: '地址位置信息', prop: 'location', type: 'input', rules: true,
       config: {}
     },
     {
-      label: '设备名称', prop: 'deviceName', type: 'input', rules: true, fixedSpan: 90,
+      label: '设备名称', prop: 'deviceName', type: 'input', rules: true, 
       config: {}
     },
     {
-      label: 'MS IP', prop: 'msIP', type: 'input', rules: true,fixedSpan: 90,
+      label: 'MS IP', prop: 'msIP', type: 'input', rules: true,
     },
     {
-      label: 'MX IP', prop: 'mxIP', type: 'input', rules: true,fixedSpan: 90,
+      label: 'MX IP', prop: 'mxIP', type: 'input', rules: true,
     },
     {
-      label: '掩码', prop: 'maskNo', type: 'input',fixedSpan: 90,
+      label: '掩码', prop: 'maskNo', type: 'input',
     },
     {
       label: 'VLAN', prop: 'vlan', type: 'input',
@@ -252,11 +314,26 @@ const segmentSchema = {
 }
 
 onMounted(() => {
-
 })
 
+onUpdated(() => {
+  if(deviceTableRef.value !== null) {
+    initQuery();
+  }
+  if (storeSchemaFormRef.value !== null) {
+    console.log(storeSchemaFormRef.value.form)
+  }
+  if (segmentFormRef.value !== null) {
+    // mock data
+    segmentFormRef.value.setForm({
+      networkId: '2c:3f:0b:5e:c8:81',
+      pingResult: 'SUCCESS'
+    });
+  }
+  if (previewTableRef.value !== null) {
+  }
+})
 function initQuery() {
-  console.log(deviceTableRef.value);
   deviceTableRef.value.setForm({});
   deviceTableRef.value.query();
 }
@@ -264,11 +341,6 @@ function initQuery() {
 function nextStep() {
   active.value++;
   currentStep.value++;
-  if (currentStep.value === 3) {
-    deviceInfoData = {
-      ...deviceTableRef.value.multipleSelection
-    };
-  }
 }
 
 function addDeviceDialog() {
@@ -276,18 +348,28 @@ function addDeviceDialog() {
 }
 
 function previousStep() {
-  active.value--;
-  currentStep.value--;
+  if (currentStep.value > 1) {
+    active.value--;
+    currentStep.value--;
+  }
+  activeNames.value = ['1', '2', '3', '4', '5'];
 }
 
 function preview() {
-  activeNames.value = ['1', '2', '3', '4', '5'];
-  currentStep.value = 5;
+  activeNames.value = ['6'];
+  currentStep.value++;
 }
 
 const router = useRouter();
 
 function submitAll() {
+  active.value++;
+  if (active.value > 5) {
+    active.value = 0;
+  }
+  const data = {
+
+  };
 
 }
 
@@ -312,5 +394,17 @@ function submitAll() {
   margin-top: 40px;
   margin-left: 90px;
   margin-right: 90px;
+}
+.button-section {
+  padding: 50px 10px 0 10px;
+}
+
+.large-page {
+  overflow-y: auto;
+  max-height: 890px;
+}
+
+.form-button {
+  margin: 30px 600px;
 }
 </style>
