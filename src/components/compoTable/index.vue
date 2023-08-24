@@ -227,14 +227,14 @@ import {
 export default {
   name: 'CompoTable',
   components: { SingleDataView, Rank },
-  props: { tableParams: Object, spanMethod: Function, summaryMethod: Function, expandChange: Function },
+  props: { tableParams: Object, spanMethod: Function, summaryMethod: Function, expandChange: Function, tableData: Array },
   emits: ['updateSuccess', 'querySuccess', 'changeSelect', 'remoteMethod'],
 
   data() {
     return {
       loading: false,
       // 表数据
-      tableData: [],
+      tableData: this.tableData || [],
       // 分页信息
       page: 1,
       limit: 10,

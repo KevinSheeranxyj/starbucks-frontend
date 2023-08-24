@@ -25,7 +25,7 @@
         <div class="content-section">
           <compo-table
               ref="deviceTableRef"
-              :table-params="table"
+              :table-params="deviceTable"
           >
             <template #buttonSlot>
               <el-button type="primary" plain @click="addDeviceDialog">添加设备</el-button>
@@ -101,6 +101,7 @@
           <compo-table
               ref="previewTableRef"
               :table-params="previewTable"
+              :table-data="deviceInfoData"
           >
           </compo-table>
           <compo-form
@@ -109,12 +110,14 @@
               form-type="table"
           >
           </compo-form>
-          <compo-form
-              ref="networkDeviceFormRef"
-              :form-params="networkDeviceInfoSchema"
-              form-type="table"
-          >
-          </compo-form>
+          <div v-if="deviceInfoData.length > 0" v-for="item in deviceInfoData" :key="item.id">
+            <compo-form
+                ref="networkDeviceFormRef"
+                :form-params="networkDeviceInfoSchema"
+                form-type="table"
+            >
+            </compo-form>
+          </div>
           <compo-form
               ref="switchInfoFormRef"
               :form-params="switchInfoSchema"
@@ -148,10 +151,33 @@ const segmentFormRef = ref(null);
 const networkDeviceFormRef = ref(null);
 const switchInfoFormRef = ref(null);
 const disabledButton = ref(false);
-let deviceInfoData = ref({});
+let storeData = ref(null);
+let deviceInfoData = ref(
+    [{
+      "mac": "a8:46:9d:6d:ae:b4",
+      "serial": "Q2FY-25TM-3UCK",
+      "networkName": "Shanghai Pre-Prod Lab MX67_2",
+      "model": "MX67",
+      "orderNumber": "5S0785958",
+      "usedStatus": 0,
+      "claimedAt": null
+    },
+      {
+        "mac": "a8:46:9d:7a:94:b7",
+        "serial": "Q2FY-5VHW-Q3QG",
+        "networkName": "Shanghai Pre-Prod Lab MX67_1",
+        "model": "MX67",
+        "orderNumber": "5S0785958",
+        "usedStatus": 0,
+        "claimedAt": null
+      },]
+);
 const previewTableRef = ref({});
 
 const remoteNetworkOptions = reactive([]);
+
+function getFormsData(forms) {
+}
 
 const networkTypeOptions = reactive([
   {label: '组合硬件', value: 'comboHardware' },
@@ -182,14 +208,6 @@ const storeSchemaForm = {
   ]
 };
 
-function initDialog() {
-
-}
-
-function addSuccess() {
-
-}
-
 
 const previewTable = {
   query: {
@@ -213,7 +231,7 @@ const previewTable = {
   }
 }
 
-const table = {
+const deviceTable = {
   query: {
     url: '/device/inventory/table',
     form: {formItems: []},
@@ -322,6 +340,7 @@ onUpdated(() => {
   }
   if (storeSchemaFormRef.value !== null) {
     console.log(storeSchemaFormRef.value.form)
+    storeData = storeSchemaFormRef.value.form;
   }
   if (segmentFormRef.value !== null) {
     // mock data
