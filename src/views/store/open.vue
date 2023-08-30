@@ -8,128 +8,226 @@
       <el-step title="Step 5"></el-step>
     </el-steps>
     <el-collapse v-model="activeNames" class="collapse-body" >
-      <el-collapse-item title="新增门店信息" name="1" v-if="currentStep === 1">
-        <div class="content-section">
-          <compo-form
-            ref="storeSchemaFormRef"
-            :form-params="storeSchemaForm"
-            form-type="table"
-          >
-          </compo-form>
-        </div>
-        <div class="button-section">
-          <el-button type="primary" :disabled="disabledButton" @click="nextStep">{{ '下一步' }}</el-button>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="网络设备添加" name="2" v-if="currentStep === 2">
-        <div class="content-section">
-          <compo-table
-              ref="deviceTableRef"
-              :table-params="deviceTable"
-          >
-            <template #buttonSlot>
-              <el-button type="primary" plain @click="addDeviceDialog">添加设备</el-button>
-            </template>
-
-            <template #dialog>
-              <compo-dialog ref="addDialogRef" :dialog-params="addDialog" @initDialog="initDialog" @confirmSuccess="addSuccess">
-                <template #headerSlot>
-                  <ul>
-                    <li>您可以通过添加订单号或单个设备序列号（每行一个）将设备添加到库存中。</li>
-                    <li>如果您想同时定义设备名称，您可以使用格式输入： “序列号，名称”为每一行。</li>
-                  </ul>
-                </template>
-              </compo-dialog>
-            </template>
-          </compo-table>
-        </div>
-        <div class="button-section">
-          <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
-          <el-button type="primary"  @click="nextStep">{{ '下一步' }}</el-button>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="获取网段信息" name="3" v-if="currentStep === 3">
-        <div class="content-section">
-          <compo-form
-              ref="segmentFormRef"
-              :form-params="segmentSchema"
-              form-type="table"
-          >
-          </compo-form>
-        </div>
-        <div class="button-section">
-          <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
-          <el-button type="primary"  @click="nextStep">{{ '下一步' }}</el-button>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="网络设备信息" name="4" v-if="currentStep === 4">
-        <div class="content-section">
-          <compo-form
-              ref="networkDeviceFormRef"
-              :form-params="networkDeviceInfoSchema"
-              form-type="table"
-          >
-          </compo-form>
-        </div>
-        <div class="button-section">
-          <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
-          <el-button type="primary"  @click="nextStep">{{ '下一步' }}</el-button>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item title="交换机模板调用" name="5" v-if="currentStep === 5">
-        <div class="content-section">
-          <compo-form
-              ref="switchInfoFormRef"
-              :form-params="switchInfoSchema"
-              form-type="table"
-          >
-          </compo-form>
-        </div>
-        <div class="button-section">
-          <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
-          <el-button type="primary"  @click="preview">{{ '预览' }}</el-button>
-        </div>
-      </el-collapse-item>
-      <el-collapse-item name="6" v-if="currentStep === 6">
-        <div class="content">
-          <compo-form
+      <keep-alive>
+        <el-collapse-item title="组织切换" name="1" v-if="currentStep === 1">
+          <div class="content-section">
+            <compo-form
+                ref="organizationFormRef"
+                :form-params="organizationSchema"
+                form-type="table"
+                @disabledButton="handleDisabledButton"
+            >
+            </compo-form>
+          </div>
+          <div class="button-section">
+            <el-button type="primary" :disabled="disabledButton" @click="firstStep">{{ '下一步' }}</el-button>
+          </div>
+        </el-collapse-item>
+      </keep-alive>
+      <keep-alive>
+        <el-collapse-item title="新增门店信息" name="2" v-if="currentStep === 2">
+          <div class="content-section">
+            <compo-form
               ref="storeSchemaFormRef"
               :form-params="storeSchemaForm"
               form-type="table"
-          >
-          </compo-form>
-          <compo-table
-              ref="previewTableRef"
-              :table-params="previewTable"
-              :table-data="deviceInfoData"
-          >
-          </compo-table>
-          <compo-form
-              ref="segmentFormRef"
-              :form-params="segmentSchema"
-              form-type="table"
-          >
-          </compo-form>
-          <div v-if="deviceInfoData.length > 0" v-for="item in deviceInfoData" :key="item.id">
+              @disabledButton="handleDisabledButton"
+            >
+            </compo-form>
+          </div>
+          <div class="button-section">
+            <el-button type="primary" @click="previousStep">{{ '上一步' }}</el-button>
+            <el-button type="primary" :disabled="disabledButton" @click="secondStep">{{ '下一步' }}</el-button>
+          </div>
+        </el-collapse-item>
+      </keep-alive>
+      <keep-alive>
+        <el-collapse-item title="网络设备添加" name="3" v-if="currentStep === 3">
+          <div class="content-section">
+            <compo-table
+                ref="deviceTableRef"
+                :table-params="deviceTable"
+                @selectedValues="handleSelectedValues"
+            >
+              <template #buttonSlot>
+                <el-button type="primary" plain @click="addDeviceDialog">添加设备</el-button>
+              </template>
+              <template #dialog>
+                <compo-dialog ref="addDialogRef" :dialog-params="addDialog">
+                  <template #headerSlot>
+                    <ul>
+                      <li>您可以通过添加订单号或单个设备序列号（每行一个）将设备添加到库存中。</li>
+                      <li>如果您想同时定义设备名称，您可以使用格式输入： “序列号，名称”为每一行。</li>
+                    </ul>
+                  </template>
+                </compo-dialog>
+                <el-dialog
+                    title="确认框"
+                    v-model="dialogVisible"
+                    width="30%"
+                    :before-close="handleClose">
+                  <div class="dialog-content">请确认你所勾选的网络设备</div>
+                  <span slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取消</el-button>
+                <el-button type="primary" @click="thirdStep">确认</el-button>
+              </span>
+                </el-dialog>
+              </template>
+            </compo-table>
+            <div v-if="selectedValues.length > 0">
+              <compo-table
+                  :table-params="selectedTable"
+                  :table-data="selectedValues"
+              >
+              </compo-table>
+            </div>
+          </div>
+          <div class="button-section">
+            <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
+            <el-button type="primary"  @click="promptConfirmationBeforeNext">{{ '下一步' }}</el-button>
+          </div>
+        </el-collapse-item>
+      </keep-alive>
+      <keep-alive>
+        <el-collapse-item title="获取网段信息" name="3" v-if="currentStep === 4">
+          <div class="content-section">
+            <el-select v-model="segmentTypeData"
+                       @change="changeOptions"
+                       placeholder="Select">
+              <el-option
+                  v-for="item in segmentTypeOptions"
+                  :label="item.label"
+                  :value="item.value"
+                  :key="item.value"
+              >
+              </el-option>
+            </el-select>
+           <compo-table
+               ref="segmentFormRef"
+               :table-params="segmentTable"
+               :table-data="segmentData"
+           >
+             <template
+                 #tableDefinedSlot="slotProps"
+             >
+               <div v-if="slotProps.prop === 'operator'">
+                 <el-link
+                     type="primary"
+                     href="javascript:;"
+                 >PING
+                 </el-link>
+               </div>
+             </template>
+           </compo-table>
+          </div>
+          <div class="button-section">
+            <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
+            <el-button type="primary" :disabled="segmentData.every(item => item.pingResult === 'Failed')
+            ? disabledButton : disabledButton = true"  @click="fourthStep">{{ '下一步' }}</el-button>
+          </div>
+        </el-collapse-item>
+      </keep-alive>
+      <keep-alive>
+        <el-collapse-item title="网络设备信息" name="4" v-if="currentStep === 5">
+          <div class="content-section" v-for="item in networkDeviceData" :key="item.serial">
+            <el-divider content-position="left">{{getNetworkType(item.model) === 'router' ?
+                '路由器': getNetworkType(item.model) === 'switch' ? '交换机':
+                    getNetworkType(item.model) === 'appliance' ? '无线AP': ''}}</el-divider>
+            <span>{{item.serial}} - {{item.mac}} - {{item.model}}</span>
             <compo-form
-                ref="networkDeviceFormRef"
-                :form-params="networkDeviceInfoSchema"
+                :ref="`networkDeviceFormRef_${item.serial}`"
+                :form-params="getNetworkType(item.model) === 'router' ? getNetworkDeviceInfoSchema: getApSchema"
                 form-type="table"
             >
             </compo-form>
           </div>
+          <div class="button-section">
+            <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
+            <el-button type="primary"  @click="finalStep">{{ '下一步' }}</el-button>
+          </div>
+        </el-collapse-item>
+      </keep-alive>
+      <keep-alive>
+        <el-collapse-item title="交换机配置文件" name="5" v-if="currentStep === 6
+        && submitData.networkDeviceAdd.some(item => getNetworkType(item.model) === 'switch')">
+          <div class="content-section" v-for="item in switchData" :key="item.id">
+             <el-divider content-position="left">
+               <span>{{ item.serial }} &nbsp;&nbsp;&nbsp; {{item.mac}} &nbsp;&nbsp; {{item.model}}</span>
+             </el-divider>
+             <compo-form
+                 :ref="`switchTemplateRef_${item.serial}`"
+                 :form-params="switchTemplateSchema"
+                 form-type="table"
+             >
+             </compo-form>
+          </div>
+          <div class="button-section">
+            <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
+            <el-button type="primary"  @click="preview">{{ '预览' }}</el-button>
+          </div>
+        </el-collapse-item>
+      </keep-alive>
+    <!-- PREVIEW    STEP   -->
+      <el-collapse-item name="6" v-if="currentStep === 7">
+      <div class="content">
+        <div class="preview-section-1">
           <compo-form
-              ref="switchInfoFormRef"
-              :form-params="switchInfoSchema"
+              ref="organizationFormRef"
+              :form-params="organizationSchema"
               form-type="table"
+              @disabledButton="handleDisabledButton"
+              :default-data="submitData.organization"
           >
           </compo-form>
         </div>
-      </el-collapse-item>
-      <div class="form-button" v-if="currentStep === 6">
+        <div class="preview-section-2">
+          <compo-form
+              ref="storeSchemaFormRef"
+              :form-params="storeSchemaForm"
+              form-type="table"
+              :default-data="submitData.storeInfo"
+          >
+          </compo-form>
+        </div>
+        <div class="preview-section-3">
+          <compo-table
+              ref="previewTableRef"
+              :table-params="previewTable"
+              :table-data="submitData.networkDeviceAdd"
+          >
+          </compo-table>
+        </div>
+        <div class="preview-section-4">
+          <div class="content-section" v-for="item in submitData.switchConfigInfo" :key="item.serial">
+            <el-divider content-position="left">{{getNetworkType(item.model) === 'router' ?
+                '路由器': getNetworkType(item.model) === 'switch' ? '交换机':
+                    getNetworkType(item.model) === 'appliance' ? '无线AP': ''}}</el-divider>
+            <span>{{item.serial}} - {{item.mac}} - {{item.model}}</span>
+            <compo-form
+                :ref="`networkDeviceFormRef_${item.serial}`"
+                :form-params="getNetworkType(item.model) === 'router' ? getNetworkDeviceInfoSchema: getApSchema"
+                form-type="table"
+                :default-data="item"
+            >
+            </compo-form>
+          </div>
+        </div>
+        <div class="preview-section-5">
+            <compo-form
+                ref="networkDeviceFormRef"
+                :form-params="networkDeviceInfoSchema"
+                form-type="table"
+                :default-data="submitData.networkDeviceInfo"
+            >
+            </compo-form>
+        </div>
+      </div>
+      <div class="form-button" v-if="currentStep === 7">
         <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
         <el-button type="primary"  @click="submitAll">{{ '提交' }}</el-button>
       </div>
+    </el-collapse-item>
+
     </el-collapse>
   </div>
 </template>
@@ -139,7 +237,7 @@ import CompoTable from "@/components/compoTable/index.vue";
 import CompoDialog from "@/components/compoDialog/index.vue";
 import {computed, onMounted, onUpdated, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
-import tool from "@/utils/tool";
+import {getOrganizationOptions} from "@/views/device/device";
 
 const active =  ref(0);
 const addDialogRef = ref(null);
@@ -149,35 +247,166 @@ const storeSchemaFormRef = ref(null);
 const deviceTableRef = ref(null);
 const segmentFormRef = ref(null);
 const networkDeviceFormRef = ref(null);
-const switchInfoFormRef = ref(null);
-const disabledButton = ref(false);
+const organizationFormRef = ref(null);
 let storeData = ref(null);
-let deviceInfoData = ref(
-    [{
-      "mac": "a8:46:9d:6d:ae:b4",
-      "serial": "Q2FY-25TM-3UCK",
-      "networkName": "Shanghai Pre-Prod Lab MX67_2",
-      "model": "MX67",
-      "orderNumber": "5S0785958",
-      "usedStatus": 0,
-      "claimedAt": null
-    },
+const disabledButton = ref(false);
+const dialogVisible = ref(false);
+const selectedValues = ref([]);
+const isManual = ref(false);
+const segmentTypeData = ref('自动');
+let switchData = reactive([]);
+const submitData = reactive({
+  organization: {},
+  storeInfo: {},
+  networkDeviceAdd: [],
+  segmentInfo: [],
+  networkDeviceInfo: [],
+  switchConfigInfo: [],
+});
+
+const segmentOptions = ref([
+  {
+    label: '', value: ''
+  },
+  {
+    label: '', value: ''
+  },
+  {
+    label: '120.0.1.1', value: '12929.101'
+  },
+  {
+    label: 'TEST - 201', value: '12929.101'
+  },
+  {
+    label: 'TEST - 301', value: '12929.101'
+  },
+]);
+const segmentTypeOptions = ref([
+  {
+    label: '自动', value: 'auto'
+  },
+  {
+    label: '手动', value: 'manual',
+  }
+]);
+
+function changeOptions(value) {
+  if (value === 'manual') {
+    isManual.value = true;
+  }
+}
+
+function getNetworkType(value) {
+  if (value.startsWith('MX')) {
+      return 'router';
+  } else if(value.startsWith('MS')) {
+      return 'switch';
+  } else if(value.startsWith('MR')) {
+      return 'appliance';
+  }
+}
+
+
+let networkDeviceData = reactive([]);
+const switchConfigData = reactive([]);
+
+const getApSchema = computed(() => {
+  return {
+    formItems: [
       {
-        "mac": "a8:46:9d:7a:94:b7",
-        "serial": "Q2FY-5VHW-Q3QG",
-        "networkName": "Shanghai Pre-Prod Lab MX67_1",
-        "model": "MX67",
-        "orderNumber": "5S0785958",
-        "usedStatus": 0,
-        "claimedAt": null
-      },]
-);
+        label: '地理位置', prop: 'address', type: 'input',
+        rules: true
+      },
+      {
+        label: '设备名称', prop: 'deviceName', type: 'input',
+        rules: true
+      },
+      {
+        label: 'DNS', prop: 'dns', type: 'input',
+        rules: true
+      },
+      {
+        label: 'MX IP', prop: 'ip', type: 'input'
+      },
+      {
+        label: 'VLAN', prop: 'vlan', type: 'input',
+      },
+      {
+        label: '网关', prop: 'gateway', type: 'input'
+      }
+    ]
+  };
+})
+
+const getNetworkDeviceInfoSchema = computed(() => {
+  const schema = {
+    formItems: [
+      {
+        label: '地理位置', prop: 'address', type: 'input',
+        rules: true
+      },
+      {
+        label: '设备名称', prop: 'deviceName', type: 'input',
+        rules: true
+      },
+      {
+        label: 'DNS', prop: 'dns', type: 'input',
+        rules: true
+      }
+    ]
+  };
+  // Generate form items based on selectedDeviceRows length
+  return schema;
+});
+
+const segmentData = ref( [
+  {
+    "vlan": "Management",
+    "segmentIp": "12.02.101",
+    "mxIP": "110.02.10.1",
+    "pingResult": "Failed",
+  },
+  {
+    "vlan": "Router102",
+    "segmentIp": "12.02.102",
+    "mxIP": "110.02.10.1",
+    "pingResult": "Failed",
+  },
+  {
+    "vlan": "IOT",
+    "segmentIp": "12.02.103",
+    "mxIP": "110.02.10.1",
+    "pingResult": "Failed",
+  },
+  {
+    "vlan": "native 2",
+    "segmentIp": "12.02.104",
+    "mxIP": "110.02.10.1",
+    "pingResult": "Failed",
+  },
+]);
+
+
+function handleClose() {
+  dialogVisible.value = false;
+}
+
+function handleSelectedValues(val) {
+  selectedValues.value = val;
+
+}
+
 const previewTableRef = ref({});
 
-const remoteNetworkOptions = reactive([]);
+const organizationOptions = reactive([]);
 
-function getFormsData(forms) {
-}
+const confirmDialog = computed(() => ({
+  title: 'Confirmation',
+  form: {
+    formItem: [{}]
+  }
+}));
+
 
 const networkTypeOptions = reactive([
   {label: '组合硬件', value: 'comboHardware' },
@@ -192,10 +421,46 @@ const networkTemplateOptions = reactive([
   {label: 'TEST', value: 'test'}
 ]);
 
+function handleDisabledButton(value) {
+  disabledButton.value = value;
+}
+
+
+const segmentTable = computed(() => {
+  return {
+    query: {
+      url: '/device/inventory/table',
+      form: {formItems: isManual.value ? [
+          {
+            label: '网段', prop: 'segment', type: 'input',
+          }] : [
+          {
+            label: '12.10.12/120', prop: 'segment', type: 'select', disabled: true,
+            config: {options: segmentOptions}
+          }
+        ]},
+      reset: false
+    },
+    columns: [
+      {label: 'VLAN', prop: 'vlan', },
+      {label: '子网', prop: 'segmentIp', },
+      {label: 'MX IP', prop: 'mxIP', },
+      {label: 'PING 结果', prop: 'pingResult', },
+      {label: '操作', prop: 'operator', type: 'defined' },
+    ],
+    config: {
+      page: true,
+      multipleTable: false,
+      showQuery: false,
+      showPagination: false
+    }
+  }
+})
+
 const storeSchemaForm = {
   formItems: [
     {
-      label: '网络', prop: 'networkId', type: 'input', rules: true,
+      label: '网络名称', prop: 'networkName', type: 'input', rules: true,
     },
     {
       label: '网络类型', prop: 'networkType', type: 'select', rules: true,
@@ -231,26 +496,57 @@ const previewTable = {
   }
 }
 
-const deviceTable = {
+const queryDeviceForm = [
+  {
+    label: '序列号', prop: 'serial', type: 'input'
+  },
+  {
+    label: 'MAC 地址', prop: 'mac', type: 'input'
+   },
+  {
+    label: '型号', prop: 'model', type: 'input'
+   },
+]
+const selectedTable = {
   query: {
     url: '/device/inventory/table',
     form: {formItems: []},
     reset: false
   },
   columns: [
+    {label: '序列号', prop: 'serial', },
+    {label: 'MAC 地址', prop: 'mac', },
+    {label: '型号', prop: 'model', },
+    {label: '订单编号', prop: 'orderNumber' },
     {label: '网络', prop: 'networkName', },
     {label: '状态', prop: 'usedStatus', },
-    {label: 'MAC 地址', prop: 'mac', },
+  ],
+  config: {
+    page: true,
+    multipleTable: false,
+    showQuery: false,
+    showPagination: false
+  },
+};
+
+const deviceTable = {
+  query: {
+    url: '/device/inventory/table',
+    form: {formItems: queryDeviceForm},
+    reset: false
+  },
+  columns: [
     {label: '序列号', prop: 'serial', },
-    {label: '订单编号', prop: 'orderNumber', },
-    {label: '模型', prop: 'model', },
+    {label: 'MAC 地址', prop: 'mac', },
+    {label: '型号', prop: 'model', },
+    {label: '订单编号', prop: 'orderNumber' },
+    {label: '网络', prop: 'networkName', },
+    {label: '状态', prop: 'usedStatus', },
   ],
   config: {
     page: true,
     multipleTable: true,
-    showQuery: false,
   },
-
 };
 
 const defaultAddForm = [{
@@ -268,26 +564,15 @@ const addDialog = computed(() => ({
       }
     }));
 
-const switchInfoSchema = {
+const organizationSchema = {
   formItems: [
     {
-      label: '交换机模板选择', prop: 'switchTemplates', type: 'select', width: '30px',
-      config: {options: networkTypeOptions}
+      label: '选择组织', prop: 'organizationId', type: 'select',
+      config: {options: organizationOptions},
+      rules: true,
     }]
 };
 
-
-function remoteMethod(prop, val) {
-  if (val) {
-    if (prop === 'networkId') {
-      tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
-    }
-  } else if (typeof val === 'undefined') {
-    if (prop === 'networkId') {
-      remoteNetworkOptions.length = 0;
-    }
-  }
-}
 
 const networkDeviceInfoSchema = {
   formItems: [
@@ -317,37 +602,20 @@ const networkDeviceInfoSchema = {
   ]
 };
 
-const segmentSchema = {
-  formItems: [
-  {
-    label: '网段', prop: 'networkId', type: 'input',
-    config: {disabled: true}
-  },
-    {
-      label: 'PING 结果', prop: 'pingResult', type: 'input',
-      config: {disabled: true}
-    }
-  ]
-
-}
-
-onMounted(() => {
-})
-
 onUpdated(() => {
-  if(deviceTableRef.value !== null) {
+  if (currentStep === 2) {
     initQuery();
   }
+  dialogVisible.value = false;
+})
+
+onMounted(() => {
+  getOrganizationOptions(organizationOptions);
+});
+
+onUpdated(() => {
   if (storeSchemaFormRef.value !== null) {
-    console.log(storeSchemaFormRef.value.form)
     storeData = storeSchemaFormRef.value.form;
-  }
-  if (segmentFormRef.value !== null) {
-    // mock data
-    segmentFormRef.value.setForm({
-      networkId: '2c:3f:0b:5e:c8:81',
-      pingResult: 'SUCCESS'
-    });
   }
   if (previewTableRef.value !== null) {
   }
@@ -357,38 +625,103 @@ function initQuery() {
   deviceTableRef.value.query();
 }
 
-function nextStep() {
+function firstStep() {
+  submitData.organization = organizationFormRef.value.getForm();
+  dialogVisible.value = false;
   active.value++;
   currentStep.value++;
+}
+
+function secondStep() {
+  submitData.storeInfo = storeSchemaFormRef.value.getForm();
+  active.value++;
+  currentStep.value++;
+}
+
+function thirdStep() {
+  if (deviceTableRef.value.getMultipleSelection().length === 0) {
+    dialogVisible.value = true;
+  }
+  active.value++;
+  currentStep.value++;
+}
+
+const formRefs = ref({});
+function fourthStep() {
+  networkDeviceData.forEach(item => {
+    formRefs.value[item.serial] = ref(null)
+    const formInstance = formRefs.value[item.serial]
+    if (formInstance.value) {
+      submitData.networkDeviceInfo[item.serial] = formInstance.value.getForm();
+    }
+  });
+  networkDeviceData = submitData.networkDeviceAdd;
+  submitData.segmentInfo = segmentData;
+
+  active.value++;
+  currentStep.value++;
+}
+
+function finalStep() {
+  switchConfigData.forEach(item => {
+    const formRef = `switchTemplateRef_${item.serial}`;
+    const formInstance = ref(formRef);
+    if (formInstance.value) {
+      submitData.switchConfigInfo[item.serial] = formInstance.value.getForm();
+    }
+  });
+  active.value++;
+  currentStep.value++;
+  switchData = submitData.networkDeviceAdd
+      .filter(item => getNetworkType(item.model) === 'switch');
 }
 
 function addDeviceDialog() {
   addDialogRef.value.openDialog();
 }
 
+function promptConfirmationBeforeNext() {
+  dialogVisible.value = true;
+  submitData.networkDeviceAdd = deviceTableRef.value.getMultipleSelection();
+}
+
 function previousStep() {
-  if (currentStep.value > 1) {
-    active.value--;
-    currentStep.value--;
-  }
+  active.value--;
+  currentStep.value--;
   activeNames.value = ['1', '2', '3', '4', '5'];
 }
 
 function preview() {
+  console.log(submitData);
   activeNames.value = ['6'];
   currentStep.value++;
+}
+
+const switchTemplateOptions = reactive([
+  {
+    label: 'TEST1', value: 'test1',
+  },
+  {
+    label: 'TEST2', value: 'test2',
+  },
+  {
+    label: 'TEST3', value: 'test3',
+  }
+]);
+
+const switchTemplateSchema = {
+  formItems: [
+    {
+      label: '模板', prop: 'templateId', type: 'select',
+      config: {options: switchTemplateOptions}
+
+    }
+  ]
 }
 
 const router = useRouter();
 
 function submitAll() {
-  active.value++;
-  if (active.value > 5) {
-    active.value = 0;
-  }
-  const data = {
-
-  };
 
 }
 
@@ -397,7 +730,6 @@ function submitAll() {
 <style scoped>
 
 .content-section {
-  max-height: 60vh;
   overflow: hidden;
   padding-right: 10px;
 }
@@ -413,6 +745,8 @@ function submitAll() {
   margin-top: 40px;
   margin-left: 90px;
   margin-right: 90px;
+  overflow-y: auto;
+  max-height: 50vh;
 }
 .button-section {
   padding: 50px 10px 0 10px;
@@ -420,10 +754,25 @@ function submitAll() {
 
 .large-page {
   overflow-y: auto;
-  max-height: 890px;
 }
 
-.form-button {
-  margin: 30px 600px;
+.preview-section-1 {
+
 }
+.preview-section-3 {
+
+}
+.preview-section-4 {
+
+}
+.preview-section-2 {
+  margin-top: 10px;
+  margin-bottom: 20px;
+}
+.dialog-content {
+  padding-bottom: 15px;
+  padding-left: 45px;
+  color: white;
+}
+
 </style>

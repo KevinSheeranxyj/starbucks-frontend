@@ -12,7 +12,6 @@
             </el-link>
           </div>
         </template>
-
         <template #tableDefinedSlot="slotProps">
           <div v-if="slotProps.prop === 'operator'">
             <el-link
@@ -20,14 +19,14 @@
                 href="javascript:;"
                 @click="openUpdateDialog(slotProps.scope.row)"
             >
-              Update Segment
+              修改网段
             </el-link>
             <el-link
                 type="primary"
                 href="javascript:;"
                 @click="openUpdateSwitch(slotProps.scope.row)"
             >
-              Update Switch Ports
+              修改交换机端口
             </el-link>
           </div>
         </template>
@@ -55,11 +54,19 @@ const columns = [
   {label: 'AP wireless', prop: 'wirelessNum', sortable: true},
 ];
 
+function openUpdateSwitch() {
+
+}
+
 function routeNetworkPage(id) {
     router.push({
       params: id,
       url: '',
     });
+}
+
+function openUpdateDialog() {
+
 }
 
 const router = useRouter();
@@ -71,22 +78,12 @@ const queryForm = [
     }
 ];
 
-const mockData = [
-  {
-    "id": 1111,
-    "alarmName": "办公室-网络-2.4G信道利用率告警",
-    "alarmTemplate": "以下办公室-网络-2.4G信道利用率≥70：",
-    "organizationType": "OFFICE",
-    "alarmObject": "[\"m18274714861@163.c"
-  },
-];
 
 const networkForms = {
   query: {
     url: '/network/table',
     form: {formItems: queryForm}
   },
-  tableData: mockData,
   columns: columns,
   config: {
     page: true,

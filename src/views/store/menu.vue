@@ -1,10 +1,10 @@
-<template>
+<template xmlns="http://www.w3.org/1999/html">
   <div class="store-container">
     <el-container class="el-container">
       <el-main class="el-main">
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="openStore()">开店</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="openStore">开店</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/open-store.png" alt="openStore"/>
@@ -12,11 +12,22 @@
         </el-card>
         <el-card class="box-card">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="closeStore()">关店</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="closeStore">关店</el-button>
           </div>
-          <div class="section" @click="closeStore()">
-            <img class="logo-img" src="../../assets/close-store.png"  alt="closeStore"/>
+          <div class="section" @click="closeStore">
+            <img class="logo-img" src="../../assets/close-store.png"  alt="closeStore" />
           </div>
+          <el-dialog
+              title="警告"
+              v-model="dialogVisible"
+              width="30%"
+              :before-close="handleClose"
+              center
+          >
+            <span class="confirmation-content">您将进行{{content}}操作？<br/>
+              <el-checkbox :checked="checked" @change="handleChecked">我已勾选</el-checkbox></span>
+
+          </el-dialog>
         </el-card>
         <el-card class="box-card">
           <div slot="header" class="clearfix">
@@ -57,31 +68,62 @@
 
 <script setup>
 import {useRouter} from "vue-router";
+import {computed, ref} from "vue";
 
 const router = useRouter();
+const dialogVisible = ref(false);
+const content = ref('');
+
+function handleClose() {
+  dialogVisible.value = false;
+}
 
 function openStore() {
-  router.push('/store/open')
+  router.push('/store/open');
 }
 
 function closeStore() {
-  router.push('/store/close');
+  dialogVisible.value = true; // Show the dialog when clicking the image
+  content.value = '关店';
 }
 
+
+
 function maintainStore() {
-  router.push('/store/maintain');
+  dialogVisible.value = true;
+  content.value = '维护';
+}
+const checked = ref(false);
+
+function handleChecked(val) {
+  checked.value = val;
+  dialogVisible.value = false;
+  if (content.value === '关店') {
+    router.push('/store/close');
+  } else if(content.value === '维护') {
+    router.push('/store/maintain');
+  } else if(content.value === '转移') {
+    router.push('/store/transfer');
+  } else if(content.value === '组织') {
+    router.push('/store/organize');
+  } else if(content.value === '审批') {
+    router.push('/store/audit');
+  }
 }
 
 function organizeStore() {
-  router.push('/store/organize');
+  dialogVisible.value = true;
+  content.value = '组织';
 }
 
 function transferStore() {
-  router.push('/store/transfer');
+  dialogVisible.value = true;
+  content.value = '转移';
 }
 
 function auditStore() {
-  router.push('/store/audit');
+  dialogVisible.value = true;
+  content.value = '审批';
 }
 
 </script>
@@ -116,5 +158,11 @@ p {
   font-weight: 400;
   margin-top: .75rem;
   text-align: center;
+}
+.confirmation-content {
+  font-size: 16px;
+  color: #ffffff;
+  margin: 10px 102px;
+  position: relative;
 }
 </style>

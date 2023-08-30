@@ -227,8 +227,9 @@ import {
 export default {
   name: 'CompoTable',
   components: { SingleDataView, Rank },
-  props: { tableParams: Object, spanMethod: Function, summaryMethod: Function, expandChange: Function, tableData: Array },
-  emits: ['updateSuccess', 'querySuccess', 'changeSelect', 'remoteMethod'],
+  props: { tableParams: Object, spanMethod: Function, summaryMethod: Function,
+    expandChange: Function, tableData: Array, selectedValues: Array },
+  emits: ['updateSuccess', 'querySuccess', 'changeSelect', 'remoteMethod', 'selectedValues'],
 
   data() {
     return {
@@ -408,6 +409,7 @@ export default {
      */
     handleSelectionChange(val) {
       this.multipleSelection = val;
+      this.$emit('selectedValues', this.multipleSelection);
     },
 
     /**

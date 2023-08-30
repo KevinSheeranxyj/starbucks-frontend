@@ -6,6 +6,7 @@ import OpenStore from "@/views/store/open.vue";
 import MaintainStore from "@/views/store/maintain.vue";
 import TransferStore from "@/views/store/transfer.vue";
 import AuditStore from "@/views/store/audit.vue";
+import OrganizeStore from "@/views/store/organize.vue";
 
 /**
  * 页面配置
@@ -280,6 +281,13 @@ const routes = [
     component: CloseStore,
     meta: {
       title: '关店'
+    },
+  },
+  {
+    path: '/store/organize',
+    component: OrganizeStore,
+    meta: {
+      title: '门店组织'
     },
   },
   {

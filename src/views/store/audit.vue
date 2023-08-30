@@ -13,36 +13,33 @@
                   href="javascript:;"
                   @click="openDetailDialog(slotProps.scope.row.id)"
               >
-                Show Detail
+                查看详情
               </el-link>&nbsp;
               <el-link
                   type="primary"
                   href="javascript:;"
                   @click="approveDialog(slotProps.scope.row.id)"
               >
-                Approve
+                通过
               </el-link>&nbsp;&nbsp;
               <el-link
                   type="primary"
                   href="javascript:;"
                   @click="rejectDialog(slotProps.scope.row.id)"
               >
-                Reject
+                拒绝
               </el-link>
             </div>
           </template>
           <template #dialog>
             <!-- show operation logs-->
             <compo-dialog ref="detailDialogRef"
-                          @confirmSuccess="promptSuccess"
                           :dialog-params="showDetailDialog"
             >
             </compo-dialog>
             <!--  confirm dialog          -->
             <compo-dialog ref="approveDialogRef"
                           :dialog-params="showApprovalDialog"
-                          @initDialog="initApproval"
-                          @confirmSuccess="promptSuccess"
               >
               <template #dialogSlot>
                   <span class="dialog-span">You sure want to approve?</span>
@@ -51,8 +48,6 @@
             <!--   reject dialog         -->
             <compo-dialog ref="rejectDialogRef"
                           :dialog-params="showRejectDialog"
-                          @initDialog="initApproval"
-                          @confirmSuccess="promptSuccess"
               >
               <template #dialogSlot>
                   <span>You sure want to reject?</span>
@@ -75,13 +70,6 @@ const approveDialogRef = ref(null);
 const rejectDialogRef = ref(null);
 
 
-function promptSuccess() {
-
-}
-
-function initApproval() {
-
-}
 
 function approveDialog(id) {
   approveDialogRef.value.openDialog();
@@ -92,9 +80,9 @@ function rejectDialog(id) {
 }
 
 const operationTypesOptions = reactive([
-  {label: 'Opening Store', value: 'openingStore'},
-  {label: 'Closing Store', value: 'closingStore'},
-  {label: 'Transferring Store', value: 'transferStore'},
+  {label: '开店', value: 'openingStore'},
+  {label: '关店', value: 'closingStore'},
+  {label: '转移', value: 'transferStore'},
 ])
 
 const queryForm = [
@@ -193,7 +181,6 @@ const showRejectDialog = computed(() => ({
 
 function openDetailDialog(id) {
   detailDialogRef.value.openDialog();
-
 }
 
 </script>

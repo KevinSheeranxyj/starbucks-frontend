@@ -7,7 +7,7 @@
     :label-position="labelPosition"
     class="compo-form-container"
   >
-    <el-row :gutter="1" :style="{padding: '10px 20px'}">
+    <el-row :gutter="1" :style="{padding: '10px 10px'}">
       <el-col v-for="(item, index) in formItems" :key="index" :span="item.span">
         <el-form-item :label="item.label" :prop="item.prop" :rules="item.rules">
           <!-- 输入框 -->
@@ -85,8 +85,13 @@ export default {
     formType: {
       type: String,
       default: null
-    }},
-  emits: [],
+    },
+    defaultData: {
+      type: Object,
+      default: () => ({})
+    }
+    },
+  emits: ['disabledButton'],
 
   data() {
     return {
@@ -102,14 +107,15 @@ export default {
   },
 
   watch: {
-    formParams(val) {
-      this.formItems = this.initFormItems(val.formItems);
+    formParams: {
+      handler(val) {
+        this.formItems = this.initFormItems(val.formItems);
+        this.updateDisabledButton();
+      }
     },
     form: {
-      handler(new_val) {
-        // const bool = this.checkButton(new_val);
-        const bool = false;
-        this.$emit('disabledButton', bool);
+      handler(newVal) {
+        this.updateDisabledButton();
       }
     }
   },
@@ -121,7 +127,10 @@ export default {
     this.formItems = this.initFormItems(this.formParams.formItems);
 
     // Extract and assign default values to the form object
-    this.form = this.extractDefaultValues(this.formItems);
+    this.form = {
+      ...this.extractDefaultValues(this.formItems),
+      ...this.defaultData
+    }
 
     this.$nextTick(() => {
       setTimeout(() => {
@@ -140,6 +149,20 @@ export default {
   },
 
   methods: {
+    /**
+     * Disable button when value are not filled
+     */
+    updateDisabledButton() {
+      const isFormEmpty = this.formItems.every(item => {
+        const value = this.form[item.prop];
+        if (item.type === 'input' || item.type === 'select' || item.type === 'switch'
+            || item.type === 'date' || item.type === 'datetime') {
+          return value === '' || value === null || value === undefined;
+        }
+        return true;
+      });
+      this.$emit('disabledButton', isFormEmpty);
+    },
     /**
      * 获取栅格占据的列数
      */
@@ -261,6 +284,7 @@ export default {
 
     changeSelect(prop, val) {
       this.$emit('changeSelect', prop, val);
+      this.updateDisabledButton();
     },
 
     remoteMethod(prop, val) {
