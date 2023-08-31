@@ -60,6 +60,10 @@
                       <li>如果您想同时定义设备名称，您可以使用格式输入： “序列号，名称”为每一行。</li>
                     </ul>
                   </template>
+                  <template #dialogButtonSlot>
+                    <el-button  @click="closeDialog">关闭</el-button>
+                    <el-button type="primary" @click="applyDevice">申领</el-button>
+                  </template>
                 </compo-dialog>
                 <el-dialog
                     title="确认框"
@@ -77,7 +81,7 @@
             <div v-if="selectedValues.length > 0">
               <compo-table
                   :table-params="selectedTable"
-                  :table-data="selectedValues"
+                  :default-table-data="selectedValues"
               >
               </compo-table>
             </div>
@@ -89,7 +93,7 @@
         </el-collapse-item>
       </keep-alive>
       <keep-alive>
-        <el-collapse-item title="获取网段信息" name="3" v-if="currentStep === 4">
+        <el-collapse-item title="获取网段信息" name="4" v-if="currentStep === 4">
           <div class="content-section">
             <el-select v-model="segmentTypeData"
                        @change="changeOptions"
@@ -105,7 +109,7 @@
            <compo-table
                ref="segmentFormRef"
                :table-params="segmentTable"
-               :table-data="segmentData"
+               :default-table-data="segmentData"
            >
              <template
                  #tableDefinedSlot="slotProps"
@@ -128,15 +132,16 @@
         </el-collapse-item>
       </keep-alive>
       <keep-alive>
-        <el-collapse-item title="网络设备信息" name="4" v-if="currentStep === 5">
+        <el-collapse-item title="网络设备信息" name="5" v-if="currentStep === 5">
           <div class="content-section" v-for="item in networkDeviceData" :key="item.serial">
             <el-divider content-position="left">{{getNetworkType(item.model) === 'router' ?
                 '路由器': getNetworkType(item.model) === 'switch' ? '交换机':
                     getNetworkType(item.model) === 'appliance' ? '无线AP': ''}}</el-divider>
             <span>{{item.serial}} - {{item.mac}} - {{item.model}}</span>
             <compo-form
-                :ref="`networkDeviceFormRef_${item.serial}`"
-                :form-params="getNetworkType(item.model) === 'router' ? getNetworkDeviceInfoSchema: getApSchema"
+                @popValue="(val) => collectValues(val, item.serial)"
+                :form-params="getNetworkType(item.model) === 'router' ? getNetworkDeviceInfoSchema:
+                getNetworkType(item.model) === 'appliance' ? getApSchema : getSwitchSchema"
                 form-type="table"
             >
             </compo-form>
@@ -148,14 +153,14 @@
         </el-collapse-item>
       </keep-alive>
       <keep-alive>
-        <el-collapse-item title="交换机配置文件" name="5" v-if="currentStep === 6
+        <el-collapse-item title="交换机配置文件" name="6" v-if="currentStep === 6
         && submitData.networkDeviceAdd.some(item => getNetworkType(item.model) === 'switch')">
           <div class="content-section" v-for="item in switchData" :key="item.id">
              <el-divider content-position="left">
                <span>{{ item.serial }} &nbsp;&nbsp;&nbsp; {{item.mac}} &nbsp;&nbsp; {{item.model}}</span>
              </el-divider>
              <compo-form
-                 :ref="`switchTemplateRef_${item.serial}`"
+                 @popValue="(val) => collectSwitchConfigInfo(val, item.serial)"
                  :form-params="switchTemplateSchema"
                  form-type="table"
              >
@@ -167,9 +172,10 @@
           </div>
         </el-collapse-item>
       </keep-alive>
-    <!-- PREVIEW    STEP   -->
-      <el-collapse-item name="6" v-if="currentStep === 7">
+    <!-- PREVIEW STEP   -->
+      <el-collapse-item name="7" v-if="currentStep === 7">
       <div class="content">
+        <!--  Step1 组织交换信息预览   -->
         <div class="preview-section-1">
           <compo-form
               ref="organizationFormRef"
@@ -180,6 +186,7 @@
           >
           </compo-form>
         </div>
+        <!--  Step2 门店基本信息预览     -->
         <div class="preview-section-2">
           <compo-form
               ref="storeSchemaFormRef"
@@ -189,37 +196,51 @@
           >
           </compo-form>
         </div>
+        <!--  Step3 网络设备添加信息预览 table      -->
         <div class="preview-section-3">
           <compo-table
-              ref="previewTableRef"
-              :table-params="previewTable"
-              :table-data="submitData.networkDeviceAdd"
+              :table-params="deviceTable"
+              :default-table-data="mockNetworkDeviceInfos"
           >
           </compo-table>
         </div>
+        <!--  Step4  网段信息预览 table  -->
         <div class="preview-section-4">
-          <div class="content-section" v-for="item in submitData.switchConfigInfo" :key="item.serial">
-            <el-divider content-position="left">{{getNetworkType(item.model) === 'router' ?
-                '路由器': getNetworkType(item.model) === 'switch' ? '交换机':
-                    getNetworkType(item.model) === 'appliance' ? '无线AP': ''}}</el-divider>
-            <span>{{item.serial}} - {{item.mac}} - {{item.model}}</span>
+          <div class="content-section">
+            <compo-table
+                :table-params="segmentTable"
+                :default-table-data="segmentData"
+            >
+            </compo-table>
+          </div>
+        </div>
+        <!-- Step5 网络设备基本信息预览 form     -->
+        <div class="preview-section-5" v-for="item in submitData.networkDeviceAdd">
+          <el-divider content-position="left">{{getNetworkType(item.model) === 'router' ?
+              '路由器': getNetworkType(item.model) === 'switch' ? '交换机':
+                  getNetworkType(item.model) === 'appliance' ? '无线AP': ''}}</el-divider>
+          <span>{{item.serial}} - {{item.mac}} - {{item.model}}</span>
             <compo-form
-                :ref="`networkDeviceFormRef_${item.serial}`"
-                :form-params="getNetworkType(item.model) === 'router' ? getNetworkDeviceInfoSchema: getApSchema"
+                :form-params="getNetworkType(item.model) === 'router' ? getNetworkDeviceInfoSchema:
+                getNetworkType(item.model) === 'appliance' ? getApSchema : getSwitchSchema"
                 form-type="table"
                 :default-data="item"
             >
             </compo-form>
-          </div>
         </div>
-        <div class="preview-section-5">
-            <compo-form
-                ref="networkDeviceFormRef"
-                :form-params="networkDeviceInfoSchema"
-                form-type="table"
-                :default-data="submitData.networkDeviceInfo"
-            >
-            </compo-form>
+        <!-- Step6 交换机配置文件预览      -->
+        <div class="preview-section-6" v-if="currentStep === 7
+        && submitData.networkDeviceAdd.some(item => getNetworkType(item.model) === 'switch')"
+             v-for="item in submitData.switchConfig">
+          <el-divider content-position="left">
+            <span>{{ item.serial }} &nbsp;&nbsp;&nbsp; {{item.mac}} &nbsp;&nbsp; {{item.model}}</span>
+          </el-divider>
+          <compo-form
+              :form-params="switchTemplateSchema"
+              form-type="table"
+              :default-data="item"
+          >
+          </compo-form>
         </div>
       </div>
       <div class="form-button" v-if="currentStep === 7">
@@ -227,7 +248,6 @@
         <el-button type="primary"  @click="submitAll">{{ '提交' }}</el-button>
       </div>
     </el-collapse-item>
-
     </el-collapse>
   </div>
 </template>
@@ -242,11 +262,10 @@ import {getOrganizationOptions} from "@/views/device/device";
 const active =  ref(0);
 const addDialogRef = ref(null);
 const currentStep = ref(1);
-const activeNames = ref(['1', '2', '3', '3', '4', '5',]);
+const activeNames = ref(['1', '2', '3', '3', '4', '5', '6']);
 const storeSchemaFormRef = ref(null);
 const deviceTableRef = ref(null);
 const segmentFormRef = ref(null);
-const networkDeviceFormRef = ref(null);
 const organizationFormRef = ref(null);
 let storeData = ref(null);
 const disabledButton = ref(false);
@@ -258,11 +277,105 @@ let switchData = reactive([]);
 const submitData = reactive({
   organization: {},
   storeInfo: {},
-  networkDeviceAdd: [],
-  segmentInfo: [],
-  networkDeviceInfo: [],
-  switchConfigInfo: [],
+  networkDeviceAdd: [], // multiple table
+  segmentInfo: [], // multiple table,
+  switchConfig: []
 });
+const finalActiveNames = ['7'];
+
+function closeDialog() {
+  addDialogRef.value.dialogVisible = false;
+}
+
+function applyDevice() {
+
+}
+
+const mockNetworkDeviceInfos =[
+  {
+    "mac": "a8:46:9d:6d:ae:b4",
+    "serial": "Q2FY-25TM-3UCK",
+    "networkName": "Shanghai Pre-Prod Lab MX67_2",
+    "model": "MX67",
+    "orderNumber": "5S0785958",
+    "usedStatus": 0,
+    "claimedAt": null,
+    "location": "1adea",
+    "deviceName": "TEST",
+    "msIP": "12.10.10.1",
+    "maskNo": "1299",
+    "vlan": "2",
+    "dns": "21"
+  },
+  {
+    "mac": "a8:46:9d:6d:a2:9c",
+    "serial": "Q2FY-XS4J-BLGZ",
+    "networkName": "Pre-Prod Test_Store_1",
+    "model": "MX67",
+    "orderNumber": "5S0785958",
+    "usedStatus": 0,
+    "claimedAt": null,
+    "location": "1adea",
+    "deviceName": "TEST",
+    "msIP": "12.10.10.1",
+    "maskNo": "1299",
+    "vlan": "2",
+    "dns": "21"
+  },
+  {
+    "mac": "2c:3f:0b:5f:05:43",
+    "serial": "Q2CX-AP2K-QH6D",
+    "networkName": "test_Xinyan",
+    "model": "MS120-8FP",
+    "orderNumber": "5S5354573",
+    "usedStatus": 1,
+    "claimedAt": null,
+    "location": "1adea",
+    "deviceName": "TEST",
+    "msIP": "12.10.10.1",
+    "maskNo": "1299",
+    "vlan": "2",
+    "dns": "21"
+  },
+  {
+    "mac": "a8:46:9d:46:cd:e7",
+    "serial": "Q4AS-H87F-HV44",
+    "networkName": "Pre-Prod Test_Store_1",
+    "model": "MS210-24P",
+    "orderNumber": "5S2358094",
+    "usedStatus": 0,
+    "claimedAt": null,
+    "location": "1adea",
+    "deviceName": "TEST",
+    "msIP": "12.10.10.1",
+    "maskNo": "1299",
+    "vlan": "2",
+    "dns": "21"
+  }
+];
+const mockSwitchConfigInfo = [
+  {
+    templateId: "1201",
+    mac: "2c:3f:0b:5f:05:43",
+    model: "MS120-8FP",
+    serial: "Q2CX-AP2K-QH6D",
+  },
+  {
+    templateId: "12122",
+    mac: "2c:3f:0b:5f:05:43",
+    model: "MS120-8FP",
+    serial: "Q2CX-AP2K-QH6D",
+  }
+];
+
+function collectValues(values, idx) {
+  const index = submitData.networkDeviceAdd.findIndex(item => item.serial === idx);
+  submitData.networkDeviceAdd[index] = {
+    ...submitData.networkDeviceAdd[index],
+    ...values
+  }
+  console.log(submitData.networkDeviceAdd);
+}
 
 const segmentOptions = ref([
   {
@@ -291,9 +404,7 @@ const segmentTypeOptions = ref([
 ]);
 
 function changeOptions(value) {
-  if (value === 'manual') {
-    isManual.value = true;
-  }
+  isManual.value = value === 'manual';
 }
 
 function getNetworkType(value) {
@@ -306,60 +417,105 @@ function getNetworkType(value) {
   }
 }
 
-
+function collectSwitchConfigInfo(val, idx) {
+  const index = submitData.networkDeviceAdd.findIndex(item => item.serial === idx);
+  submitData.networkDeviceAdd[index] = {
+    ...submitData.networkDeviceAdd[index],
+    ...val
+  }
+}
 let networkDeviceData = reactive([]);
-const switchConfigData = reactive([]);
 
 const getApSchema = computed(() => {
   return {
     formItems: [
       {
-        label: '地理位置', prop: 'address', type: 'input',
+        label: '地理位置', prop: 'location', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
       {
         label: '设备名称', prop: 'deviceName', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
       {
         label: 'DNS', prop: 'dns', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
       {
-        label: 'MX IP', prop: 'ip', type: 'input'
+        label: 'MX IP', prop: 'mxIp', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       },
       {
         label: 'VLAN', prop: 'vlan', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       },
       {
-        label: '网关', prop: 'gateway', type: 'input'
+        label: '网关', prop: 'gateway', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       }
     ]
   };
-})
-
-const getNetworkDeviceInfoSchema = computed(() => {
-  const schema = {
+});
+const getSwitchSchema = computed(() => {
+  return {
     formItems: [
       {
-        label: '地理位置', prop: 'address', type: 'input',
+        label: '地理位置', prop: 'location', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
       {
         label: '设备名称', prop: 'deviceName', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
       {
         label: 'DNS', prop: 'dns', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        rules: true
+      },
+      {
+        label: 'MS IP', prop: 'msIp', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+      },
+      {
+        label: 'VLAN', prop: 'vlan', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+      },
+      {
+        label: '网关', prop: 'gateway', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+      }
+    ]
+  }
+});
+
+const getNetworkDeviceInfoSchema = computed(() => {
+  return  {
+    formItems: [
+      {
+        label: '地理位置', prop: 'address', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        rules: true
+      },
+      {
+        label: '设备名称', prop: 'deviceName', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        rules: true
+      },
+      {
+        label: 'DNS', prop: 'dns', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       }
     ]
   };
-  // Generate form items based on selectedDeviceRows length
-  return schema;
 });
 
-const segmentData = ref( [
+const segmentData = [
   {
     "vlan": "Management",
     "segmentIp": "12.02.101",
@@ -384,7 +540,7 @@ const segmentData = ref( [
     "mxIP": "110.02.10.1",
     "pingResult": "Failed",
   },
-]);
+];
 
 
 function handleClose() {
@@ -393,10 +549,7 @@ function handleClose() {
 
 function handleSelectedValues(val) {
   selectedValues.value = val;
-
 }
-
-const previewTableRef = ref({});
 
 const organizationOptions = reactive([]);
 
@@ -457,44 +610,26 @@ const segmentTable = computed(() => {
   }
 })
 
-const storeSchemaForm = {
-  formItems: [
-    {
-      label: '网络名称', prop: 'networkName', type: 'input', rules: true,
-    },
-    {
-      label: '网络类型', prop: 'networkType', type: 'select', rules: true,
-      config: {options: networkTypeOptions}
-    },
-    {
-      label: '网络模板', prop: 'networkTemplate', type: 'select', rules: true,
-      config: {options: networkTemplateOptions}
-    }
-  ]
-};
-
-
-const previewTable = {
-  query: {
-    url: '/device/inventory/table',
-    form: {formItems: []},
-    reset: false
-  },
-  columns: [
-    {label: '网络', prop: 'networkName', },
-    {label: '状态', prop: 'usedStatus', },
-    {label: 'MAC 地址', prop: 'mac', },
-    {label: '序列号', prop: 'serial', },
-    {label: '订单编号', prop: 'orderNumber', },
-    {label: '模型', prop: 'model', },
-  ],
-  config: {
-    page: true,
-    multipleTable: false,
-    showQuery: false,
-    showPagination: false
+const storeSchemaForm = computed(() => {
+  return {
+    formItems: [
+      {
+        label: '网络名称', prop: 'networkName', type: 'input', rules: true,
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {}
+      },
+      {
+        label: '网络类型', prop: 'networkType', type: 'select', rules: true,
+        config:  activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {options: networkTypeOptions, disabled: true} : {options: networkTypeOptions}
+      },
+      {
+        label: '网络模板', prop: 'networkTemplate', type: 'select', rules: true,
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ?  {options: networkTemplateOptions, disabled: true} : {options: networkTemplateOptions}
+      }
+    ]
   }
-}
+});
+
+
 
 const queryDeviceForm = [
   {
@@ -529,78 +664,93 @@ const selectedTable = {
   },
 };
 
-const deviceTable = {
-  query: {
-    url: '/device/inventory/table',
-    form: {formItems: queryDeviceForm},
-    reset: false
-  },
-  columns: [
-    {label: '序列号', prop: 'serial', },
-    {label: 'MAC 地址', prop: 'mac', },
-    {label: '型号', prop: 'model', },
-    {label: '订单编号', prop: 'orderNumber' },
-    {label: '网络', prop: 'networkName', },
-    {label: '状态', prop: 'usedStatus', },
-  ],
-  config: {
-    page: true,
-    multipleTable: true,
-  },
-};
+const deviceTable = computed(() => {
+  return {
+    query: {
+      url: '/device/inventory/table',
+      form: {formItems: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? [] : queryDeviceForm},
+      reset: false
+    },
+    columns: [
+      {label: '序列号', prop: 'serial', },
+      {label: 'MAC 地址', prop: 'mac', },
+      {label: '型号', prop: 'model', },
+      {label: '订单编号', prop: 'orderNumber' },
+      {label: '网络', prop: 'networkName', },
+      {label: '状态', prop: 'usedStatus', },
+    ],
+    config: {
+      page: true,
+      multipleTable: !activeNames.value.every((val, index) => val === finalActiveNames[index]),
+      showQuery: !activeNames.value.every((val, index) => val === finalActiveNames[index]),
+      showPagination: !activeNames.value.every((val, index) => val === finalActiveNames[index]),
+    },
+  }
+});
 
 const defaultAddForm = [{
-  label: '设备信息', prop: 'deviceInfo', type: 'input', fixedSpan: 24,
+  label: '设备信息', prop: 'deviceInfo', type: 'input', fixedSpan: 14,
   config: {type: 'textarea'}
 }];
 
 const addDialog = computed(() => ({
-      title: '将设备添加到清单',
+      title: '按序列号或/订单编号申领',
       url: '/device/add',
       form: {
         formItems: [
           ...defaultAddForm,
-        ]
-      }
+        ],
+      },
+      button: false
     }));
 
-const organizationSchema = {
-  formItems: [
-    {
-      label: '选择组织', prop: 'organizationId', type: 'select',
-      config: {options: organizationOptions},
-      rules: true,
-    }]
-};
+const organizationSchema = computed(() => {
+  return  {
+    formItems: [
+      {
+        label: '选择组织', prop: 'organizationId', type: 'select',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {options: organizationOptions, disabled: true} : {
+          options: organizationOptions,
+        },
+        rules: true,
+      }]
+  };
+})
 
-
-const networkDeviceInfoSchema = {
-  formItems: [
-    {
-      label: '地址位置信息', prop: 'location', type: 'input', rules: true,
-      config: {}
-    },
-    {
-      label: '设备名称', prop: 'deviceName', type: 'input', rules: true, 
-      config: {}
-    },
-    {
-      label: 'MS IP', prop: 'msIP', type: 'input', rules: true,
-    },
-    {
-      label: 'MX IP', prop: 'mxIP', type: 'input', rules: true,
-    },
-    {
-      label: '掩码', prop: 'maskNo', type: 'input',
-    },
-    {
-      label: 'VLAN', prop: 'vlan', type: 'input',
-    },
-    {
-      label: 'DNS', prop: 'dns', type: 'input',
-    },
-  ]
-};
+const networkDeviceInfoSchema = computed(() => {
+  return {
+    formItems: [
+      {
+        label: '地址位置信息', prop: 'location', type: 'input', rules: true,
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {}
+      },
+      {
+        label: '设备名称', prop: 'deviceName', type: 'input', rules: true,
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true}: {}
+      },
+      {
+        label: 'MS IP', prop: 'msIP', type: 'input', rules: true,
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {}
+      },
+      {
+        label: 'MX IP', prop: 'mxIP', type: 'input', rules: true,
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true}: {}
+      },
+      {
+        label: '掩码', prop: 'maskNo', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true}: {}
+      },
+      {
+        label: 'VLAN', prop: 'vlan', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true}: {}
+      },
+      {
+        label: 'DNS', prop: 'dns', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true}: {}
+      },
+    ]
+  }
+});
 
 onUpdated(() => {
   if (currentStep === 2) {
@@ -616,8 +766,6 @@ onMounted(() => {
 onUpdated(() => {
   if (storeSchemaFormRef.value !== null) {
     storeData = storeSchemaFormRef.value.form;
-  }
-  if (previewTableRef.value !== null) {
   }
 })
 function initQuery() {
@@ -646,16 +794,9 @@ function thirdStep() {
   currentStep.value++;
 }
 
-const formRefs = ref({});
 function fourthStep() {
-  networkDeviceData.forEach(item => {
-    formRefs.value[item.serial] = ref(null)
-    const formInstance = formRefs.value[item.serial]
-    if (formInstance.value) {
-      submitData.networkDeviceInfo[item.serial] = formInstance.value.getForm();
-    }
-  });
   networkDeviceData = submitData.networkDeviceAdd;
+  console.log(networkDeviceData);
   submitData.segmentInfo = segmentData;
 
   active.value++;
@@ -663,13 +804,6 @@ function fourthStep() {
 }
 
 function finalStep() {
-  switchConfigData.forEach(item => {
-    const formRef = `switchTemplateRef_${item.serial}`;
-    const formInstance = ref(formRef);
-    if (formInstance.value) {
-      submitData.switchConfigInfo[item.serial] = formInstance.value.getForm();
-    }
-  });
   active.value++;
   currentStep.value++;
   switchData = submitData.networkDeviceAdd
@@ -682,19 +816,19 @@ function addDeviceDialog() {
 
 function promptConfirmationBeforeNext() {
   dialogVisible.value = true;
-  submitData.networkDeviceAdd = deviceTableRef.value.getMultipleSelection();
+  submitData.networkDeviceAdd = selectedValues.value;
 }
 
 function previousStep() {
   active.value--;
   currentStep.value--;
-  activeNames.value = ['1', '2', '3', '4', '5'];
+  activeNames.value = ['1', '2', '3', '4', '5', '6'];
 }
 
 function preview() {
-  console.log(submitData);
-  activeNames.value = ['6'];
+  activeNames.value = ['7'];
   currentStep.value++;
+  submitData.switchConfig = submitData.networkDeviceAdd.filter(item => getNetworkType(item.model) === 'switch');
 }
 
 const switchTemplateOptions = reactive([
@@ -709,15 +843,17 @@ const switchTemplateOptions = reactive([
   }
 ]);
 
-const switchTemplateSchema = {
-  formItems: [
-    {
-      label: '模板', prop: 'templateId', type: 'select',
-      config: {options: switchTemplateOptions}
-
-    }
-  ]
-}
+const switchTemplateSchema = computed(() => {
+  return {
+    formItems: [
+      {
+        label: '模板', prop: 'templateId', type: 'select',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index])
+            ? {options: switchTemplateOptions, disabled: true} : {options: switchTemplateOptions}
+      }
+    ]
+  }
+})
 
 const router = useRouter();
 

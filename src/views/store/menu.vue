@@ -2,7 +2,7 @@
   <div class="store-container">
     <el-container class="el-container">
       <el-main class="el-main">
-        <el-card class="box-card">
+        <el-card class="box-card" @click="openStore">
           <div slot="header" class="clearfix">
             <el-button style="float: right; padding: 3px 0" type="text" @click="openStore">开店</el-button>
           </div>
@@ -10,7 +10,7 @@
             <img class="logo-img" src="../../assets/open-store.png" alt="openStore"/>
           </div>
         </el-card>
-        <el-card class="box-card">
+        <el-card class="box-card" @click="closeStore">
           <div slot="header" class="clearfix">
             <el-button style="float: right; padding: 3px 0" type="text" @click="closeStore">关店</el-button>
           </div>
@@ -21,41 +21,40 @@
               title="警告"
               v-model="dialogVisible"
               width="30%"
-              :before-close="handleClose"
+              :close="handleClose"
               center
           >
             <span class="confirmation-content">您将进行{{content}}操作？<br/>
               <el-checkbox :checked="checked" @change="handleChecked">我已勾选</el-checkbox></span>
-
           </el-dialog>
         </el-card>
-        <el-card class="box-card">
+        <el-card class="box-card" @click="organizeStore">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="organizeStore()">组织</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="organizeStore">组织</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/operation.png"  alt="closeStore"/>
           </div>
         </el-card>
-        <el-card class="box-card">
+        <el-card class="box-card" @click="maintainStore">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="maintainStore()">维护</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="maintainStore">维护</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/organization.png"  alt="closeStore"/>
           </div>
         </el-card>
-        <el-card class="box-card">
+        <el-card class="box-card" @click="transferStore">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="transferStore()">转移</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="transferStore">转移</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/transfer.png"  alt="closeStore"/>
           </div>
         </el-card>
-        <el-card class="box-card">
+        <el-card class="box-card" @click="auditStore">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="auditStore()">审批</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" @click="auditStore">审批</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/audit.png"  alt="closeStore"/>
@@ -93,6 +92,7 @@ function maintainStore() {
   dialogVisible.value = true;
   content.value = '维护';
 }
+
 const checked = ref(false);
 
 function handleChecked(val) {

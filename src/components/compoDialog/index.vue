@@ -18,7 +18,7 @@
     <slot name="dialogSlot"></slot>
 
     <div class="dialog-footer">
-      <el-button @click="closeDialog()">取 消</el-button>
+      <el-button v-if="dialogParams.button!==false" @click="closeDialog()">取 消</el-button>
       <!-- 自定义按钮 插槽 -->
       <slot name="dialogButtonSlot"></slot>
       <el-button v-if="dialogParams.button!==false" type="primary" plain :loading="dialogLoading" @click="confirm()">确 定</el-button>
@@ -134,5 +134,8 @@ export default {
 .dialog-footer {
   display: flex;
   justify-content: flex-end;
+}
+.dialog-header {
+  color: #ffffff;
 }
 </style>

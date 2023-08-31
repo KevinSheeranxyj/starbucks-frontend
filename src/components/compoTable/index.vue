@@ -228,14 +228,14 @@ export default {
   name: 'CompoTable',
   components: { SingleDataView, Rank },
   props: { tableParams: Object, spanMethod: Function, summaryMethod: Function,
-    expandChange: Function, tableData: Array, selectedValues: Array },
+    expandChange: Function, defaultTableData: Array, selectedValues: Array },
   emits: ['updateSuccess', 'querySuccess', 'changeSelect', 'remoteMethod', 'selectedValues'],
 
   data() {
     return {
       loading: false,
       // 表数据
-      tableData: this.tableData || [],
+      tableData: [],
       // 分页信息
       page: 1,
       limit: 10,
@@ -278,7 +278,14 @@ export default {
     this.checkedCols = this.tableParams.columns?.map(a => a.prop) || [];
   },
 
+  watch: {
+    defaultTableData(val) {
+      this.tableData = val;
+    }
+  },
+
   methods: {
+
     /**
      * 校验表格列参数
      */

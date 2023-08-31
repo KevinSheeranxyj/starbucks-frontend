@@ -34,6 +34,7 @@
               :remote-method="((value) => {remoteMethod(item.prop, value)})"
               style="width: 100%"
               @change="((value)=>{changeSelect(item.prop, value)})"
+              :disabled="item.config.disabled===true"
             >
               <el-option
                 v-for="option in item.config.options"
@@ -91,7 +92,7 @@ export default {
       default: () => ({})
     }
     },
-  emits: ['disabledButton'],
+  emits: ['disabledButton', 'popValue'],
 
   data() {
     return {
@@ -115,8 +116,10 @@ export default {
     },
     form: {
       handler(newVal) {
+        this.$emit('popValue', newVal);
         this.updateDisabledButton();
-      }
+      },
+      deep: true,
     }
   },
 

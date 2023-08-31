@@ -1,11 +1,7 @@
 <template>
   <div class="large-page">
-  <el-steps :active="currentStep" class="step-body">
-    <el-step title="Step 1"></el-step>
-    <el-step title="Step 2"></el-step>
-  </el-steps>
     <el-collapse v-model="activeNames" class="collapse-body" >
-      <el-collapse-item title="基本信息" name="1" v-if="currentStep === 1">
+      <el-collapse-item title="基本信息" name="1">
         <div class="content-section">
           <compo-form
               ref="organizationFormRef"
