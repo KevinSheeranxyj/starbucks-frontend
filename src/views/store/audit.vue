@@ -1,101 +1,190 @@
 <template>
-  <div class="container">
+  <div class="container" style="color:#00ff00;">
     <el-container class="el-container">
       <el-main class="el-main">
-        <compo-table
-            ref="compoTableRef"
-          :table-params="table"
-          :table-data="mockData"
+
+        <!-- 新增的筛选区域 -->
+        <el-form :inline="true" class="filter-form">
+          <el-row>
+            <el-col :span="4">
+              <el-form-item label="操作类型">
+                <el-select v-model="searchForm.selectedOperationType" placeholder="选择操作类型" @change="filterData">
+                  <el-option
+                      v-for="item in operationTypesOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="4">
+              <el-form-item label="状态类型">
+                <el-select v-model="searchForm.selectedStatusType" placeholder="选择审核状态"
+                           @change="statusFilteredData">
+                  <el-option
+                      v-for="item in auditStatusOptions"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="5">
+              <el-form-item label="开始时间">
+                <el-date-picker
+                    v-model="searchForm.createdStart"
+                    type="date"
+                    placeholder="Pick a day"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="5">
+              <el-form-item label="结束时间">
+                <el-date-picker
+                    v-model="searchForm.createdEnd"
+                    type="date"
+                    placeholder="Pick a day"
+                />
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="4">
+              <el-form-item label="处理人">
+                <el-input v-model="searchForm.auditPerson" placeholder="请输入..."></el-input>
+              </el-form-item>
+            </el-col>
+
+            <el-col :span="4">
+              <el-form-item label="提交人">
+                <el-input v-model="searchForm.submitPerson" placeholder="请输入..."></el-input>
+              </el-form-item>
+            </el-col>
+
+          </el-row>
+        </el-form>
+
+        <el-row>
+          <el-col :span="20"></el-col>
+          <el-col :span="4">
+            <el-button-group class="compo-button-group">
+              <el-button type="primary" plain @click="queryTable">查 询</el-button>
+              <el-button @click="resetSearch">重 置</el-button>
+            </el-button-group>
+          </el-col>
+        </el-row>
+        <el-table :data="filteredData" class="table,el-table" align="center" header-align="center">
+          <el-table-column prop="id" label="ID"></el-table-column>
+          <el-table-column prop="createdBy" label="提交人"></el-table-column>
+          <el-table-column prop="createdAt" label="提交日期"></el-table-column>
+          <el-table-column prop="type" label="操作类型"></el-table-column>
+          <el-table-column prop="auditStatus" label="操作状态"></el-table-column>
+          <el-table-column prop="updatedBy" label="处理人"></el-table-column>
+          <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
+          <el-table-column label="操作" width="180">
+            <template #default="scope">
+              <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row.id)">查看详情</el-link>
+              <el-link class="action-link" type="success" @click="approveDialog(scope.row.id)">通过</el-link>
+              <el-link class="action-link" type="danger" @click="rejectDialog(scope.row.id)">拒绝</el-link>
+            </template>
+          </el-table-column>
+        </el-table>
+
+        <el-pagination
+            :current-page="pagination.currentPage"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="pagination.pageSize"
+            layout="total, sizes, prev, pager, next, jumper"
+            :total="pagination.totalItems"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            class="el-pagination"
         >
-          <template #tableDefinedSlot="slotProps">
-            <div v-if="slotProps.prop === 'operator'">
-              <el-link
-                  type="primary"
-                  href="javascript:;"
-                  @click="openDetailDialog(slotProps.scope.row.id)"
-              >
-                查看详情
-              </el-link>&nbsp;
-              <el-link
-                  type="primary"
-                  href="javascript:;"
-                  @click="approveDialog(slotProps.scope.row.id)"
-              >
-                通过
-              </el-link>&nbsp;&nbsp;
-              <el-link
-                  type="primary"
-                  href="javascript:;"
-                  @click="rejectDialog(slotProps.scope.row.id)"
-              >
-                拒绝
-              </el-link>
-            </div>
-          </template>
-          <template #dialog>
-            <!-- show operation logs-->
-            <compo-dialog ref="detailDialogRef"
-                          :dialog-params="showDetailDialog"
-            >
-            </compo-dialog>
-            <!--  confirm dialog          -->
-            <compo-dialog ref="approveDialogRef"
-                          :dialog-params="showApprovalDialog"
-              >
-              <template #dialogSlot>
-                  <span class="dialog-span">You sure want to approve?</span>
-              </template>
-            </compo-dialog>
-            <!--   reject dialog         -->
-            <compo-dialog ref="rejectDialogRef"
-                          :dialog-params="showRejectDialog"
-              >
-              <template #dialogSlot>
-                  <span>You sure want to reject?</span>
-              </template>
-            </compo-dialog>
-          </template>
-          <template #tableTextSlot="slotProps">
-            <div v-if="slotProps.prop === 'auditStatus'">
-              {{ auditStatusEnum.getDescFromValue(slotProps.cellValue)}}
-            </div>
-            <div v-if="slotProps.prop === 'type'">
-              {{ operationTypesEnum.getDescFromValue(slotProps.cellValue)}}
-            </div>
-          </template>
-        </compo-table>
+        </el-pagination>
+
+
       </el-main>
+
     </el-container>
   </div>
+
+
+  <el-dialog v-model="centerDialogVisible" :title="dialogTitle" :width="dialogWidth" center>
+    <span>{{ dialogContent }}</span>
+    <template #footer>
+      <span class="dialog-footer">
+          <el-button @click="centerDialogVisible = false">关闭</el-button>
+    <el-button v-if="dialogAction === 'reject'" type="danger" @click="doReject()">确认拒绝</el-button>
+    <el-button v-if="dialogAction === 'approve'" type="success" @click="doApprove()">确认通过</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
+
 <script setup>
-import CompoTable from "@/components/compoTable/index.vue";
+
 import {computed, onMounted, reactive, ref} from "vue";
-import CompoDialog from "@/components/compoDialog/index.vue";
-import {createEnumByOptions} from "@/utils/enums";
+import http from "@/utils/http";
 
-
-const detailDialogRef = ref(null);
-const approveDialogRef = ref(null);
-const rejectDialogRef = ref(null);
-const compoTableRef = ref(null);
-
-
-const operationTypesEnum = computed(() => {
-  return createEnumByOptions(operationTypesOptions);
+onMounted(() => {
+  getNetData();
 });
+
+const centerDialogVisible = ref(false);
+const dialogTitle = ref('');
+const dialogContent = ref('');
+const dialogAction = ref('');
+const dialogWidth = ref('30%');
+const selectedID = ref('');
+
+
+function openDetailDialog(id) {
+  setDialogConfig("查看详情",`确定要拒绝ID为 ${id} 的请求吗？`,'details',"70%",true,id);
+}
 
 function approveDialog(id) {
-  approveDialogRef.value.openDialog();
+  setDialogConfig("确认通过",`确定要拒绝ID为 ${id} 的请求吗？`,'approve',"30%",true,id);
 }
-
-const auditStatusEnum = computed(() => {
-  return createEnumByOptions(auditStatusOptions);
-});
 
 function rejectDialog(id) {
-  rejectDialogRef.value.openDialog();
+  setDialogConfig("确认拒绝",`确定要拒绝ID为 ${id} 的请求吗？`,'reject','30%',true,id);
 }
+
+function setDialogConfig( title,content,action,width,isShow,id){
+  dialogTitle.value = title;
+  dialogContent.value = content;
+  dialogAction.value = action;
+  dialogWidth.value = width;
+  centerDialogVisible.value = isShow;
+  selectedID.value = id;
+}
+
+function doApprove() {
+  // 你可以在这里进行实际的"通过"操作，如API调用等
+  centerDialogVisible.value = false;
+  updataStatus(2,selectedID.value);
+}
+
+function doReject() {
+  // 你可以在这里进行实际的"拒绝"操作，如API调用等
+  centerDialogVisible.value = false;
+  updataStatus(3,selectedID.value);
+}
+
+
+const searchForm = ref({
+  selectedOperationType: '',
+  selectedStatusType: '',
+  auditStatus: '',
+  createdStart: '',
+  createdEnd: '',
+  auditPerson: '',
+  submitPerson: '',
+})
+
 
 const operationTypesOptions = reactive([
   {label: '开店', value: 1},
@@ -103,7 +192,6 @@ const operationTypesOptions = reactive([
   {label: '转移', value: 3},
   {label: '回退', value: 4},
 ]);
-
 const auditStatusOptions = reactive([
   {label: '初始化', value: '1'},
   {label: '同意', value: '2'},
@@ -111,124 +199,152 @@ const auditStatusOptions = reactive([
   {label: '自动同意', value: '4'},
 ]);
 
-const queryForm = [
-  {
-    label: '操作类型', prop: 'operationType', type: 'select',
-    config: {options: operationTypesOptions}
-  },
-];
 
-const table = {
-  query: {
-    url: '/operate/audit/table',
-    form: {formItems: queryForm},
-    reset: false
-  },
-  columns: [
-    {label: 'ID', prop: 'id'},
-    {label: '操作网络ID', prop: 'operateNetworkId'},
-    {label: '审批类型', prop: 'type'},
-    {label: '审核状态', prop: 'auditStatus'},
-    {label: '操作人', prop: 'createdBy'},
-    {label: '操作时间', prop: 'createdAt'},
-    {label: '审批人', prop: 'updatedBy'},
-    {label: '审批时间', prop: 'updatedAt'},
-    {label: 'Operations', prop: 'operator', type: 'defined'}
-  ]
-};
-const mockData = ref([
-  {
-    "id": 1,
-    "submitPerson": "Jackson",
-    "submitDate": "2023-08-23",
-    "operationType": "Opening Store",
-    "operationStatus": "Pending",
-    "auditPerson": "Kevin",
-  },
-  {
-    "id": 2,
-    "submitPerson": "Andy",
-    "submitDate": "2023-08-23",
-    "operationType": "Closing Store",
-    "operationStatus": "Pending",
-    "auditPerson": "Stephen",
-  },
-  {
-    "id": 3,
-    "submitPerson": "Tom",
-    "submitDate": "2023-08-23",
-    "operationType": "Transfer Store",
-    "operationStatus": "Pending",
-    "auditPerson": "Jeff Bezos",
-  },
-]);
+const filteredData = ref([]);
 
-const emailOptions = reactive([
-  {label: 'TEST - A', value: 'sinel'},
-  {label: 'FEMALE', value: 'female'}
-]);
+function filterData() {
+}
 
-const detailForm = [
-  {label: 'A', prop: 'test', type: 'input', minWidth: '120px'},
-  {label: 'B', prop: 'test1', type: 'select', minWidth: '120px'},
-  {label: 'C', prop: 'test2', type: 'datetime', minWidth: '120px'},
-  {
-    label: 'D', prop: 'test3', type: 'select', minWidth: '120px',
-    config: {options: emailOptions, multiple: true}
-  },
-  {label: 'E', prop: 'test4', type: 'input', minWidth: '120px'},
-  {label: 'F', prop: 'test5', type: 'input', minWidth: '120px'},
-];
-const showDetailDialog = computed(() => ({
-  title: 'Operation Logs',
-  url: '/audit/details',
-  form: {
-    formItems: [
-        ...detailForm
-    ]
+function statusFilteredData() {
+}
+
+
+async function getNetData() {
+  var params = {
+    "type": '',
+    "auditStatus": '',
+    "createStart": '',
+    "createEnd": '',
+    "createdBy": '',
+    "updatedBy": ''
+  };
+  const res = await http.post("/operate/audit/table" + '?page=' + pagination.currentPage + '&limit=' + pagination.pageSize, {});
+
+  if (res.data && res.data.data) {
+    res.data.data.forEach(item => {
+      // 格式化时间
+      if (item.createdAt) {
+        item.createdAt = formatDate(item.createdAt);
+      }
+      if (item.updatedAt) {
+        item.updatedAt = formatDate(item.updatedAt);
+      }
+
+
+      if (item.type) {
+        item.type = getDescFromValue(operationTypesOptions, item.type);
+      }
+      if (item.auditStatus) {
+        item.auditStatus = getDescFromValue(auditStatusOptions, item.auditStatus);
+      }
+    });
+
+    pagination.totalItems = res.data.count;
+    filteredData.value = res.data.data;
   }
-}))
+}
 
-const showApprovalDialog = computed(() => ({
-  title: 'Confirmation',
-  url: '/audit/approval',
-  form: {
-    formItems: [{}]
-  }
-}))
+function getDescFromValue(arr, value) {
+  const found = arr.find(item => item.value === value);
+  return found ? found.label : value;
 
-const showRejectDialog = computed(() => ({
-  title: 'Confirmation',
-  url: '/audit/reject',
-  form: {
-    formItems: [{}]
-  }
-}))
+function formatDate(date) {
+  const dt = new Date(date);
+  const y = dt.getFullYear();
+  const m = String(dt.getMonth() + 1).padStart(2, '0');
+  const d = String(dt.getDate()).padStart(2, '0');
+  const hh = String(dt.getHours()).padStart(2, '0');
+  const ss = String(dt.getMinutes()).padStart(2, '0');
+  return `${y}-${m}-${d} ${hh}:${ss}`;
+}
 
+const pagination = reactive({
+  currentPage: 1,
+  pageSize: 10,
+  totalItems: 0
+});
 
+// 当更改分页大小时的处理函数
+function handleSizeChange(newSize) {
+  pagination.pageSize = newSize;
+  getNetData();  // 重新获取数据
+}
 
-function openDetailDialog(id) {
-  detailDialogRef.value.openDialog();
+// 当更改当前页时的处理函数
+function handleCurrentChange(newPage) {
+  pagination.currentPage = newPage;
+  getNetData();  // 重新获取数据
 }
 
 function queryTable() {
-  compoTableRef.value.query();
+  console.log(searchForm.value);
 }
 
-function initQuery() {
-  compoTableRef.value.setForm(queryForm);
-  queryTable();
+function resetSearch() {
+
 }
 
-onMounted(() => {
-  initQuery();
-})
+const auditUpdateURL = "/operate/audit/updateAuditStatus";
+
+async function updataStatus(type,id) {
+  var parasm = {
+    'id':id,
+    'auditStatus':type
+  }
+  let res = await http.post(auditUpdateURL, parasm)
+  console.log(res);
+}
 
 </script>
 
+
 <style scoped>
+.el-main {
+  max-height: 95vh; /* 这里的100px是预估的值，可以根据实际情况调整 */
+  display: flex;
+  flex-direction: column;
+}
+
+.el-table {
+  flex: 1;
+  overflow: auto;
+}
+
+.el-pagination {
+  margin-top: 20px; /* 增加上边距，确保与表格有间距 */
+}
+
 .dialog-span {
   font-size: 20px;
   color: white;
+  display: block;
+  margin-bottom: 15px;
+}
+
+/* 新添加的样式 */
+.el-container {
+  padding: 20px;
+}
+
+.table {
+  margin-top: 20px;
+}
+
+.action-link {
+  margin-right: 10px;
+  padding: 5px 10px;
+  border-radius: 4px;
+}
+
+.action-link:not(:last-child) {
+  margin-right: 10px;
+}
+
+.action-link[type="success"] {
+  background-color: #67c23a;
+}
+
+.action-link[type="danger"] {
+  background-color: #f56c6c;
 }
 </style>

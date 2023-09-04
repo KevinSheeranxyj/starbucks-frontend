@@ -100,6 +100,12 @@ export const layoutRoutes = [
     meta: { title: 'org信息' },
     component: () => import('@/views/org/info')
   },
+  {
+    path: 'org/review',
+    name: 'orgReview',
+    meta: { title: '审批' },
+    component: () => import('@/views/org/review')
+  },
 
   {
     path: 'logs/history',
