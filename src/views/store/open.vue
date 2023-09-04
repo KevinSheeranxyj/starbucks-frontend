@@ -6,6 +6,7 @@
       <el-step title="Step 3"></el-step>
       <el-step title="Step 4"></el-step>
       <el-step title="Step 5"></el-step>
+      <el-step title="Step 6"></el-step>
     </el-steps>
     <el-collapse v-model="activeNames" class="collapse-body" >
       <keep-alive>
@@ -111,16 +112,8 @@
                :table-params="segmentTable"
                :default-table-data="segmentData"
            >
-             <template
-                 #tableDefinedSlot="slotProps"
-             >
-               <div v-if="slotProps.prop === 'operator'">
-                 <el-link
-                     type="primary"
-                     href="javascript:;"
-                 >PING
-                 </el-link>
-               </div>
+             <template #buttonSlot v-if="isManual">
+                <el-button type="primary" @click="pingCheck">PING检测</el-button>
              </template>
            </compo-table>
           </div>
@@ -140,7 +133,7 @@
             <span>{{item.serial}} - {{item.mac}} - {{item.model}}</span>
             <compo-form
                 @popValue="(val) => collectValues(val, item.serial)"
-                :form-params="getNetworkType(item.model) === 'router' ? getNetworkDeviceInfoSchema:
+                :form-params="getNetworkType(item.model) === 'router' ? getRouterInfoSchema:
                 getNetworkType(item.model) === 'appliance' ? getApSchema : getSwitchSchema"
                 form-type="table"
             >
@@ -221,7 +214,7 @@
                   getNetworkType(item.model) === 'appliance' ? '无线AP': ''}}</el-divider>
           <span>{{item.serial}} - {{item.mac}} - {{item.model}}</span>
             <compo-form
-                :form-params="getNetworkType(item.model) === 'router' ? getNetworkDeviceInfoSchema:
+                :form-params="getNetworkType(item.model) === 'router' ? getRouterInfoSchema:
                 getNetworkType(item.model) === 'appliance' ? getApSchema : getSwitchSchema"
                 form-type="table"
                 :default-data="item"
@@ -255,9 +248,11 @@
 <script setup>
 import CompoTable from "@/components/compoTable/index.vue";
 import CompoDialog from "@/components/compoDialog/index.vue";
-import {computed, onMounted, onUpdated, reactive, ref} from "vue";
+import {computed, getCurrentInstance, onMounted, onUpdated, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
 import {getOrganizationOptions} from "@/views/device/device";
+import http from "@/utils/http";
+import {ElMessage} from "element-plus/lib/components";
 
 const active =  ref(0);
 const addDialogRef = ref(null);
@@ -287,86 +282,27 @@ function closeDialog() {
   addDialogRef.value.dialogVisible = false;
 }
 
-function applyDevice() {
+const { proxy } = getCurrentInstance();
 
+async function applyDevice() {
+  const serials = [];
+  const {data: res} = await http.post(
+      '/device/claim',
+      {
+        organizationId: submitData.organization.organizationId,
+        serials: serials.concat(addDialogRef.value.getForm().serials)
+      }
+  )
+  if (!res.success) {
+   return ElMessage.error(res.msg);
+  }
 }
 
-const mockNetworkDeviceInfos =[
-  {
-    "mac": "a8:46:9d:6d:ae:b4",
-    "serial": "Q2FY-25TM-3UCK",
-    "networkName": "Shanghai Pre-Prod Lab MX67_2",
-    "model": "MX67",
-    "orderNumber": "5S0785958",
-    "usedStatus": 0,
-    "claimedAt": null,
-    "location": "1adea",
-    "deviceName": "TEST",
-    "msIP": "12.10.10.1",
-    "maskNo": "1299",
-    "vlan": "2",
-    "dns": "21"
-  },
-  {
-    "mac": "a8:46:9d:6d:a2:9c",
-    "serial": "Q2FY-XS4J-BLGZ",
-    "networkName": "Pre-Prod Test_Store_1",
-    "model": "MX67",
-    "orderNumber": "5S0785958",
-    "usedStatus": 0,
-    "claimedAt": null,
-    "location": "1adea",
-    "deviceName": "TEST",
-    "msIP": "12.10.10.1",
-    "maskNo": "1299",
-    "vlan": "2",
-    "dns": "21"
-  },
-  {
-    "mac": "2c:3f:0b:5f:05:43",
-    "serial": "Q2CX-AP2K-QH6D",
-    "networkName": "test_Xinyan",
-    "model": "MS120-8FP",
-    "orderNumber": "5S5354573",
-    "usedStatus": 1,
-    "claimedAt": null,
-    "location": "1adea",
-    "deviceName": "TEST",
-    "msIP": "12.10.10.1",
-    "maskNo": "1299",
-    "vlan": "2",
-    "dns": "21"
-  },
-  {
-    "mac": "a8:46:9d:46:cd:e7",
-    "serial": "Q4AS-H87F-HV44",
-    "networkName": "Pre-Prod Test_Store_1",
-    "model": "MS210-24P",
-    "orderNumber": "5S2358094",
-    "usedStatus": 0,
-    "claimedAt": null,
-    "location": "1adea",
-    "deviceName": "TEST",
-    "msIP": "12.10.10.1",
-    "maskNo": "1299",
-    "vlan": "2",
-    "dns": "21"
-  }
-];
-const mockSwitchConfigInfo = [
-  {
-    templateId: "1201",
-    mac: "2c:3f:0b:5f:05:43",
-    model: "MS120-8FP",
-    serial: "Q2CX-AP2K-QH6D",
-  },
-  {
-    templateId: "12122",
-    mac: "2c:3f:0b:5f:05:43",
-    model: "MS120-8FP",
-    serial: "Q2CX-AP2K-QH6D",
-  }
-];
+async function pingCheck() {
+  const {data: res} = await http.post(
+
+  );
+}
 
 function collectValues(values, idx) {
   const index = submitData.networkDeviceAdd.findIndex(item => item.serial === idx);
@@ -440,12 +376,16 @@ const getApSchema = computed(() => {
         rules: true
       },
       {
-        label: 'DNS', prop: 'dns', type: 'input',
+        label: '主 DNS', prop: 'primaryDns', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
       {
-        label: 'MX IP', prop: 'mxIp', type: 'input',
+        label: '备 DNS', prop: 'secondDns', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+      },
+      {
+        label: 'MR IP', prop: 'mrIp', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       },
       {
@@ -473,9 +413,13 @@ const getSwitchSchema = computed(() => {
         rules: true
       },
       {
-        label: 'DNS', prop: 'dns', type: 'input',
+        label: '主 DNS', prop: 'primaryDns', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
+      },
+      {
+        label: '备 DNS', prop: 'secondDns', type: 'input',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       },
       {
         label: 'MS IP', prop: 'msIp', type: 'input',
@@ -493,7 +437,7 @@ const getSwitchSchema = computed(() => {
   }
 });
 
-const getNetworkDeviceInfoSchema = computed(() => {
+const getRouterInfoSchema = computed(() => {
   return  {
     formItems: [
       {
@@ -506,39 +450,50 @@ const getNetworkDeviceInfoSchema = computed(() => {
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
-      {
-        label: 'DNS', prop: 'dns', type: 'input',
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
-        rules: true
-      }
+      // {
+      //   label: 'DNS', prop: 'dns', type: 'input',
+      //   config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+      //   rules: true
+      // }
     ]
   };
 });
 
 const segmentData = [
   {
-    "vlan": "Management",
-    "segmentIp": "12.02.101",
-    "mxIP": "110.02.10.1",
-    "pingResult": "Failed",
+    "vlanId":2,
+    "name":"IOT",
+    "mxIp":"10.246.190.17",
+    "subnet":"10.246.190.16/28",
+    "pingResult": "Failed"
   },
   {
-    "vlan": "Router102",
-    "segmentIp": "12.02.102",
-    "mxIP": "110.02.10.1",
-    "pingResult": "Failed",
+    "vlanId":98,
+    "name":"IOT",
+    "mxIp":"10.246.190.97",
+    "subnet":"10.246.190.96/27",
+    "pingResult": "Failed"
   },
   {
-    "vlan": "IOT",
-    "segmentIp": "12.02.103",
-    "mxIP": "110.02.10.1",
-    "pingResult": "Failed",
+    "vlanId":100,
+    "name":"IOT",
+    "mxIp":"10.246.190.81",
+    "subnet":"10.246.190.80/28",
+    "pingResult": "Failed"
   },
   {
-    "vlan": "native 2",
-    "segmentIp": "12.02.104",
-    "mxIP": "110.02.10.1",
-    "pingResult": "Failed",
+    "vlanId":101,
+    "name":"IOT",
+    "mxIp":"10.246.190.129",
+    "subnet":"10.246.190.128/25",
+    "pingResult": "Failed"
+  },
+  {
+    "vlanId":102,
+    "name":"IOT",
+    "mxIp":"10.246.190.1",
+    "subnet":"10.246.190.0/28",
+    "pingResult": "Failed"
   },
 ];
 
@@ -562,10 +517,10 @@ const confirmDialog = computed(() => ({
 
 
 const networkTypeOptions = reactive([
-  {label: '组合硬件', value: 'comboHardware' },
-  {label: '路由器', value: 'appliance' },
-  {label: '交换机', value: 'switch' },
-  {label: '无线', value: 'wireless' }
+  {label: '组合硬件', value: '["appliance", "switch", "wireless"]' },
+  {label: '路由器', value: '["appliance"]' },
+  {label: '交换机', value: '["switch"]' },
+  {label: '无线AP', value: '["wireless"]' }
 ]);
 
 const networkTemplateOptions = reactive([
@@ -595,11 +550,11 @@ const segmentTable = computed(() => {
       reset: false
     },
     columns: [
-      {label: 'VLAN', prop: 'vlan', },
-      {label: '子网', prop: 'segmentIp', },
-      {label: 'MX IP', prop: 'mxIP', },
+      {label: 'VLAN ID', prop: 'vlanId', },
+      {label: 'VLAN 名称', prop: 'name', },
+      {label: '子网', prop: 'subnet', },
+      {label: 'MX IP', prop: 'mxIp', },
       {label: 'PING 结果', prop: 'pingResult', },
-      {label: '操作', prop: 'operator', type: 'defined' },
     ],
     config: {
       page: true,
@@ -618,18 +573,25 @@ const storeSchemaForm = computed(() => {
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {}
       },
       {
-        label: '网络类型', prop: 'networkType', type: 'select', rules: true,
+        label: '网络类型', prop: 'productTypes', type: 'select', rules: true,
         config:  activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {options: networkTypeOptions, disabled: true} : {options: networkTypeOptions}
       },
       {
-        label: '网络模板', prop: 'networkTemplate', type: 'select', rules: true,
+        label: '网络模板', prop: 'templateId', type: 'select', rules: true,
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ?  {options: networkTemplateOptions, disabled: true} : {options: networkTemplateOptions}
       }
     ]
   }
 });
 
-
+const userStatusOptions = reactive([
+  {
+    label: '已使用', value: 0,
+  },
+  {
+    label: '未使用', value: 1,
+  }
+]);
 
 const queryDeviceForm = [
   {
@@ -641,6 +603,10 @@ const queryDeviceForm = [
   {
     label: '型号', prop: 'model', type: 'input'
    },
+  {
+    label: '状态', prop: 'usedStatus', type: 'select',
+    config: {options: userStatusOptions}
+  }
 ]
 const selectedTable = {
   query: {
@@ -689,7 +655,7 @@ const deviceTable = computed(() => {
 });
 
 const defaultAddForm = [{
-  label: '设备信息', prop: 'deviceInfo', type: 'input', fixedSpan: 14,
+  label: '设备信息', prop: 'serials', type: 'input', fixedSpan: 14,
   config: {type: 'textarea'}
 }];
 
@@ -717,49 +683,15 @@ const organizationSchema = computed(() => {
   };
 })
 
-const networkDeviceInfoSchema = computed(() => {
-  return {
-    formItems: [
-      {
-        label: '地址位置信息', prop: 'location', type: 'input', rules: true,
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {}
-      },
-      {
-        label: '设备名称', prop: 'deviceName', type: 'input', rules: true,
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true}: {}
-      },
-      {
-        label: 'MS IP', prop: 'msIP', type: 'input', rules: true,
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {}
-      },
-      {
-        label: 'MX IP', prop: 'mxIP', type: 'input', rules: true,
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true}: {}
-      },
-      {
-        label: '掩码', prop: 'maskNo', type: 'input',
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true}: {}
-      },
-      {
-        label: 'VLAN', prop: 'vlan', type: 'input',
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true}: {}
-      },
-      {
-        label: 'DNS', prop: 'dns', type: 'input',
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true}: {}
-      },
-    ]
-  }
-});
-
 onUpdated(() => {
-  if (currentStep === 2) {
+  if (currentStep.value === 3) {
     initQuery();
   }
   dialogVisible.value = false;
 })
 
 onMounted(() => {
+
   getOrganizationOptions(organizationOptions);
 });
 
@@ -780,7 +712,17 @@ function firstStep() {
   currentStep.value++;
 }
 
-function secondStep() {
+async function secondStep() {
+  const {data: res} = await http.post(
+      '/operate/network/openStore/createNetwork',
+      {
+        organizationId: submitData.organization.organizationId,
+        ...storeSchemaFormRef.value.getForm()
+      }
+  );
+  if (!res.success) {
+    ElMessage.error(res.msg);
+  }
   submitData.storeInfo = storeSchemaFormRef.value.getForm();
   active.value++;
   currentStep.value++;

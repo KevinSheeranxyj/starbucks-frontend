@@ -116,6 +116,9 @@ export default {
     },
     form: {
       handler(newVal) {
+        if (newVal.segment !== null && newVal.segment !== undefined) {
+            this.querySegment(newVal.segment)
+        }
         this.$emit('popValue', newVal);
         this.updateDisabledButton();
       },
@@ -152,6 +155,14 @@ export default {
   },
 
   methods: {
+    async querySegment() {
+      const {data: res} = await this.$http.post(
+          '/store/segment',
+          {
+
+          }
+      )
+    },
     /**
      * Disable button when value are not filled
      */
@@ -160,9 +171,9 @@ export default {
         const value = this.form[item.prop];
         if (item.type === 'input' || item.type === 'select' || item.type === 'switch'
             || item.type === 'date' || item.type === 'datetime') {
-          return value === '' || value === null || value === undefined;
+          return value === '' || value === null || value === undefined; // false
         }
-        return true;
+        return true; // default true => disabled
       });
       this.$emit('disabledButton', isFormEmpty);
     },

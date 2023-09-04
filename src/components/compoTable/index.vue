@@ -276,11 +276,15 @@ export default {
     // 修改斑马纹样式
     document.body.style.setProperty('--el-fill-color-lighter', '#111');
     this.checkedCols = this.tableParams.columns?.map(a => a.prop) || [];
+    this.tableData = this.defaultTableData
   },
 
   watch: {
-    defaultTableData(val) {
-      this.tableData = val;
+    defaultTableData: {
+      handler(val) {
+        this.tableData = val
+      },
+      deep: true
     }
   },
 

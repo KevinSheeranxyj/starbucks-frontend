@@ -7,11 +7,14 @@
               ref="organizationFormRef"
               :form-params="organizationSchema"
               form-type="table"
+              @disabledButton="handleDisabledButton"
           >
           </compo-form>
           <div class="button-section">
-            <el-button type="primary"
-                       @click="confirmCloseStore"
+            <el-button
+                :disabled="disabledButton"
+                type="primary"
+                @click="confirmCloseStore"
             >
               确认关店
             </el-button>
@@ -25,6 +28,8 @@
 <script setup>
 import {getCurrentInstance, onMounted, reactive, ref} from 'vue'
 import {getOrganizationOptions} from "@/views/device/device";
+import http from "@/utils/http";
+import {ElMessage} from "element-plus/lib/components";
 
 // 数据
 const checked = ref(false)
@@ -34,6 +39,8 @@ const organizationOptions = reactive([]);
 const organizationFormRef = ref(null);
 const { proxy } = getCurrentInstance();
 
+const disabledButton = ref(true);
+
 function confirmCloseStore() {
   proxy.$prompt('请输入门店号', '', {
     confirmButtonText: 'OK',
@@ -41,6 +48,7 @@ function confirmCloseStore() {
     inputErrorMessage: '无效的门店ID'
   })
       .then(({value}) => {
+        submitCloseStore(value);
         proxy.$message({
           type: 'success',
           message: '关店成功' + value
@@ -73,14 +81,23 @@ const organizationSchema = {
     }]
 };
 
+async function submitCloseStore(val) {
+  const {data: res} = await http.post(
+      '/operate/network/closeStore',
+       {networkId: val}
+  );
+  if (!res.success) {
+    ElMessage.error(res.msg);
+  }
+}
+
+function handleDisabledButton(val) {
+  disabledButton.value = val;
+}
+
 </script>
 <style>
 
-.step-body {
-  margin-left: 100px;
-  margin-right: 100px;
-  margin-top: 100px;
-}
 .collapse-body {
   justify-content: center;
   margin-top: 40px;

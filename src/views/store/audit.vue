@@ -3,6 +3,7 @@
     <el-container class="el-container">
       <el-main class="el-main">
         <compo-table
+            ref="compoTableRef"
           :table-params="table"
           :table-data="mockData"
         >
@@ -54,6 +55,14 @@
               </template>
             </compo-dialog>
           </template>
+          <template #tableTextSlot="slotProps">
+            <div v-if="slotProps.prop === 'auditStatus'">
+              {{ auditStatusEnum.getDescFromValue(slotProps.cellValue)}}
+            </div>
+            <div v-if="slotProps.prop === 'type'">
+              {{ operationTypesEnum.getDescFromValue(slotProps.cellValue)}}
+            </div>
+          </template>
         </compo-table>
       </el-main>
     </el-container>
@@ -61,29 +70,46 @@
 </template>
 <script setup>
 import CompoTable from "@/components/compoTable/index.vue";
-import {computed, reactive, ref} from "vue";
+import {computed, onMounted, reactive, ref} from "vue";
 import CompoDialog from "@/components/compoDialog/index.vue";
+import {createEnumByOptions} from "@/utils/enums";
 
 
 const detailDialogRef = ref(null);
 const approveDialogRef = ref(null);
 const rejectDialogRef = ref(null);
+const compoTableRef = ref(null);
 
 
+const operationTypesEnum = computed(() => {
+  return createEnumByOptions(operationTypesOptions);
+});
 
 function approveDialog(id) {
   approveDialogRef.value.openDialog();
 }
+
+const auditStatusEnum = computed(() => {
+  return createEnumByOptions(auditStatusOptions);
+});
 
 function rejectDialog(id) {
   rejectDialogRef.value.openDialog();
 }
 
 const operationTypesOptions = reactive([
-  {label: '开店', value: 'openingStore'},
-  {label: '关店', value: 'closingStore'},
-  {label: '转移', value: 'transferStore'},
-])
+  {label: '开店', value: 1},
+  {label: '关店', value: 2},
+  {label: '转移', value: 3},
+  {label: '回退', value: 4},
+]);
+
+const auditStatusOptions = reactive([
+  {label: '初始化', value: '1'},
+  {label: '同意', value: '2'},
+  {label: '驳回', value: '3'},
+  {label: '自动同意', value: '4'},
+]);
 
 const queryForm = [
   {
@@ -94,17 +120,19 @@ const queryForm = [
 
 const table = {
   query: {
-    url: '/store/audit',
+    url: '/operate/audit/table',
     form: {formItems: queryForm},
     reset: false
   },
   columns: [
     {label: 'ID', prop: 'id'},
-    {label: '提交人', prop: 'submitPerson'},
-    {label: '提交日期', prop: 'submitDate'},
-    {label: '操作类型', prop: 'operationType'},
-    {label: '操作状态', prop: 'operationStatus'},
-    {label: '处理人', prop: 'auditPerson'},
+    {label: '操作网络ID', prop: 'operateNetworkId'},
+    {label: '审批类型', prop: 'type'},
+    {label: '审核状态', prop: 'auditStatus'},
+    {label: '操作人', prop: 'createdBy'},
+    {label: '操作时间', prop: 'createdAt'},
+    {label: '审批人', prop: 'updatedBy'},
+    {label: '审批时间', prop: 'updatedAt'},
     {label: 'Operations', prop: 'operator', type: 'defined'}
   ]
 };
@@ -182,6 +210,19 @@ const showRejectDialog = computed(() => ({
 function openDetailDialog(id) {
   detailDialogRef.value.openDialog();
 }
+
+function queryTable() {
+  compoTableRef.value.query();
+}
+
+function initQuery() {
+  compoTableRef.value.setForm(queryForm);
+  queryTable();
+}
+
+onMounted(() => {
+  initQuery();
+})
 
 </script>
 
