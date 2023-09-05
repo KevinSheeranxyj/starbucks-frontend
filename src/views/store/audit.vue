@@ -84,11 +84,11 @@
           <el-table-column prop="auditStatus" label="操作状态"></el-table-column>
           <el-table-column prop="updatedBy" label="处理人"></el-table-column>
           <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
-          <el-table-column label="操作" width="180">
-            <template #default="scope">
+          <el-table-column  label="操作" width="180">
+            <template  #default="scope">
               <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row.id)">查看详情</el-link>
-              <el-link class="action-link" type="success" @click="approveDialog(scope.row.id)">通过</el-link>
-              <el-link class="action-link" type="danger" @click="rejectDialog(scope.row.id)">拒绝</el-link>
+              <el-link v-if="scope.row.auditStatus === 1" class="action-link" type="success" @click="approveDialog(scope.row.id)">通过</el-link>
+              <el-link v-if="scope.row.auditStatus === 1" class="action-link" type="danger" @click="rejectDialog(scope.row.id)">拒绝</el-link>
             </template>
           </el-table-column>
         </el-table>
@@ -142,11 +142,11 @@ const selectedID = ref('');
 
 
 function openDetailDialog(id) {
-  setDialogConfig("查看详情",`确定要拒绝ID为 ${id} 的请求吗？`,'details',"70%",true,id);
+  setDialogConfig("查看详情",`查看详情 ${id} 的详细信息？`,'details',"70%",true,id);
 }
 
 function approveDialog(id) {
-  setDialogConfig("确认通过",`确定要拒绝ID为 ${id} 的请求吗？`,'approve',"30%",true,id);
+  setDialogConfig("确认通过",`确定要通过ID为 ${id} 的请求吗？`,'approve',"30%",true,id);
 }
 
 function rejectDialog(id) {
@@ -247,6 +247,7 @@ async function getNetData() {
 function getDescFromValue(arr, value) {
   const found = arr.find(item => item.value === value);
   return found ? found.label : value;
+}
 
 function formatDate(date) {
   const dt = new Date(date);
@@ -292,7 +293,9 @@ async function updataStatus(type,id) {
     'auditStatus':type
   }
   let res = await http.post(auditUpdateURL, parasm)
-  console.log(res);
+
+  getNetData();
+  alert(res.data.msg);
 }
 
 </script>
