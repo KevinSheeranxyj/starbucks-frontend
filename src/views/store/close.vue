@@ -7,6 +7,7 @@
               ref="organizationFormRef"
               :form-params="organizationSchema"
               form-type="table"
+              @changeSelect="changeSelect"
               @disabledButton="handleDisabledButton"
           >
           </compo-form>
@@ -27,33 +28,37 @@
 
 <script setup>
 import {getCurrentInstance, onMounted, reactive, ref} from 'vue'
-import {getOrganizationOptions} from "@/views/device/device";
+import {getNetworkOptions, getOrganizationOptions} from "@/views/device/device";
 import http from "@/utils/http";
 import {ElMessage} from "element-plus/lib/components";
+import tool from "@/utils/tool";
 
 // 数据
 const checked = ref(false)
 const currentStep = ref(1)
 const activeNames = ref(['1', '2', '3', '3', '4', '5',]);
+const networkOptions = reactive([]);
 const organizationOptions = reactive([]);
 const organizationFormRef = ref(null);
+const networkStatusOptions = reactive([]);
+let remoteNetworkOptions = reactive([]);
 const { proxy } = getCurrentInstance();
 
 const disabledButton = ref(true);
 
 function confirmCloseStore() {
+
   proxy.$prompt('请输入门店号', '', {
     confirmButtonText: 'OK',
     cancelButtonText: 'Cancel',
     inputErrorMessage: '无效的门店ID'
   })
       .then(({value}) => {
-        submitCloseStore(value);
-        proxy.$message({
-          type: 'success',
-          message: '关店成功' + value
-        });
-
+        if(value !== netName.value){
+          alert("输入门店号与选择不一致, 请重试");
+          return;
+        }
+        submitCloseStore(netID.value);
       })
       .catch(() => {
         proxy.$message({
@@ -64,6 +69,7 @@ function confirmCloseStore() {
 }
 
 onMounted(() => {
+  tool.getOptions(networkStatusOptions, 'DEVICE_STATUS');
   getOrganizationOptions(organizationOptions);
 })
 
@@ -76,7 +82,7 @@ const organizationSchema = {
     },
     {
       label: '选择网络', prop: 'networkId', type: 'select',
-      config: {options: organizationOptions},
+      config: {options: networkOptions,remote: true, placeholder: '请输入'},
       rules: true,
     }]
 };
@@ -88,9 +94,35 @@ async function submitCloseStore(val) {
   );
   if (!res.success) {
     ElMessage.error(res.msg);
+  }else{
+    proxy.$message({
+      type: 'success',
+      message: '关店成功'
+    });
   }
 }
 
+const netName = ref('');
+const  netID= ref('');
+async  function changeSelect(prop, val) {
+
+  if (prop === 'organizationId') {
+    await getNetworkOptions(val, networkOptions);
+  } else if (prop === 'networkId') {
+
+    if(val === ''){
+      // remoteNetworkOptions.length = 0;
+    }else{
+      networkOptions.forEach((item)=>{
+        console.log(item.value);
+        if(val === item.value){
+          netID.value = val;
+          netName.value = item.label;
+        }
+      });
+    }
+  }
+}
 function handleDisabledButton(val) {
   disabledButton.value = val;
 }
