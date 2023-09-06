@@ -7,6 +7,8 @@ import MaintainStore from "@/views/store/maintain.vue";
 import TransferStore from "@/views/store/transfer.vue";
 import AuditStore from "@/views/store/audit.vue";
 import OrganizeStore from "@/views/store/organize.vue";
+import SwitchConfig from "@/views/store/switchConfig.vue";
+import SwitchPortList from "@/views/store/switchPortList.vue";
 
 /**
  * 页面配置
@@ -316,6 +318,24 @@ const routes = [
       title: '门店审核'
     },
     component: AuditStore,
+  },
+  {
+    path: '/store/switchConfig',
+    name:"switchConfig",
+    meta: {
+      title: '交换机配置'
+    },
+    props:true,
+    component: SwitchConfig,
+  },
+  {
+    path: '/store/switchPortList',
+    name:"switchPortList",
+    meta: {
+      title: '交换机端口管理'
+    },
+    props:true,
+    component: SwitchPortList,
   }
 ];
 
