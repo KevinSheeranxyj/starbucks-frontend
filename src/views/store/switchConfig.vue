@@ -225,28 +225,32 @@ async function setupState() {
 
 ///
 function changePort(row){
+  // const params = {
+  //   params:row
+  // }
   /// 跳转到端口修改
+  console.log("====",row);
   router.push({
-    name:'switchPortList'
+    name:'switchPortList',
+    query:row
   });
 }
 
 
 async function initQuery() {
 
-  // if (Object.keys(route.params).length > 0) {
-  //   const query = route.params;
-    // const networkId = query.networkId;
-    // const organizationId = query.organizationId;
-
+  if (Object.keys(route.query).length > 0) {
+    const query = route.query;
+    const networkId = query.networkId;
+    const organizationId = query.organizationId;
     const queryForm = {
       statusList:[],
-      networkId:"L_851180329573027375",
-      organizationId:"76"
+      networkId:networkId,
+      organizationId:organizationId
     };
     compoTableRef.value.setForm(queryForm);
     queryTable();
-  // }
+  }
 
 }
 

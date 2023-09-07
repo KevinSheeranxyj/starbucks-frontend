@@ -166,9 +166,9 @@ const routerDevicePage = (row) => {
     networkId: row.networkId,
     networkName: row.name
   }
-  console.log("====传参",routeParams);
   router.push({
-    path:'/store/switchConfig'
+    path:'/store/switchConfig',
+    query:routeParams
   });
   // router.push({
   //   name:'switchConfig',
