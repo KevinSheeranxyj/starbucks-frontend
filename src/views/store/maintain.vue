@@ -170,10 +170,6 @@ const routerDevicePage = (row) => {
     path:'/store/switchConfig',
     query:routeParams
   });
-  // router.push({
-  //   name:'switchConfig',
-  //   params: routeParams,
-  // });
 };
 
 /**

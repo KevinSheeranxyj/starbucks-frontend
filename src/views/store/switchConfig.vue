@@ -8,9 +8,16 @@
       @reset="afterReset"
   >
 
+    <template #tableTextSlot="slotProps">
+      <div v-if="slotProps.prop === 'organizationId'">
+        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+      </div>
+    </template>
 
     <!-- 自定义列插槽 -->
     <template #tableDefinedSlot="slotProps">
+
+
       <div v-if="slotProps.prop === 'operator'">
 
         <el-button type="primary" plain @click="changePort(slotProps.scope.row)">端口修改</el-button>
@@ -41,7 +48,7 @@ const organizationOptions = reactive([]);
 const networkOptions = reactive([]);
 const deviceNameOptions = reactive([]);
 const deviceSerialOptions = reactive([]);
-const deviceStatusOptions = reactive([]);
+
 const macOptions = reactive([]);
 const publicIpOptions = reactive([]);
 
@@ -56,16 +63,14 @@ const organizationEnum = computed(() => {
   return createEnumByOptions(organizationOptions);
 });
 
-const statusEnum = computed(() => {
-  return createEnumByOptions(deviceStatusOptions);
-});
+
 
 // 表格列
 const columns = [
   {label: '状态', prop: 'status', sortable: true, width: '60px'},
-  {label: '组织', prop: 'organizationId', sortable: true, minWidth: '120px', showOverflowTooltip: true},
-  {label: '网络', prop: 'networkName', sortable: true, minWidth: '150px', showOverflowTooltip: true},
-  {label: '交换机', prop: 'name', sortable: true, minWidth: '120px', showOverflowTooltip: true},
+  {label: '组织', prop: 'organizationId', sortable: true, minWidth: '120px' },
+  {label: '网络', prop: 'networkName', sortable: true, minWidth: '150px'},
+  {label: '交换机', prop: 'name', sortable: true, minWidth: '120px'},
   {label: '序列', prop: 'serial', minWidth: '120px',},
   {label: '公网IP', prop: 'publicIp', minWidth: '100px',},
   {label: 'LAN IP', prop: 'lanIp', minWidth: '100px',},
@@ -131,7 +136,7 @@ function changeSelect(prop, val) {
  * 表单选择器远程方法
  */
 function remoteMethod(prop, val) {
-  console.log('remoteMethod', prop, val)
+
   if (val) {
     if (prop === 'networkId') {
       tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
@@ -157,6 +162,7 @@ function remoteMethod(prop, val) {
       remotePublicIpOptions.length = 0;
     }
   }
+  getOrganizationOptions(organizationOptions);
 }
 
 /**
@@ -164,6 +170,7 @@ function remoteMethod(prop, val) {
  */
 function queryTable() {
   compoTableRef.value.query();
+  getOrganizationOptions(organizationOptions);
 }
 
 /**
@@ -172,6 +179,7 @@ function queryTable() {
 function afterReset() {
   getNetworkOptions(null, networkOptions);
   getDeviceOptions({productType: 'switch'}, deviceNameOptions, deviceSerialOptions, macOptions, publicIpOptions);
+
 }
 
 
@@ -251,11 +259,12 @@ async function initQuery() {
     compoTableRef.value.setForm(queryForm);
     queryTable();
   }
-
+  getOrganizationOptions(organizationOptions);
 }
 
 onMounted(() => {
   initQuery();
+  getOrganizationOptions(organizationOptions);
 });
 
 

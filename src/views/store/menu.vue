@@ -1,4 +1,4 @@
-<template xmlns="http://www.w3.org/1999/html">
+<template >
   <div class="store-container">
     <el-container class="el-container">
       <el-main class="el-main">
@@ -12,25 +12,18 @@
         </el-card>
         <el-card class="box-card" @click="closeStore">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="closeStore">关店</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" >关店</el-button>
           </div>
-          <div class="section" @click="closeStore">
+          <div class="section"  >
             <img class="logo-img" src="../../assets/close-store.png"  alt="closeStore" />
           </div>
-          <el-dialog
-              title="警告"
-              v-model="dialogVisible"
-              width="30%"
-              :close="handleClose"
-              center
-          >
-            <span class="confirmation-content">您将进行{{content}}操作？<br/>
-              <el-checkbox :checked="checked" @change="handleChecked">我已勾选</el-checkbox></span>
-          </el-dialog>
         </el-card>
+
+
+
         <el-card class="box-card" @click="organizeStore">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="organizeStore">组织</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" >组织</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/operation.png"  alt="closeStore"/>
@@ -38,7 +31,7 @@
         </el-card>
         <el-card class="box-card" @click="maintainStore">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="maintainStore">维护</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" >维护</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/organization.png"  alt="closeStore"/>
@@ -54,12 +47,24 @@
         </el-card>
         <el-card class="box-card" @click="auditStore">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="auditStore">审批</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" >审批</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/audit.png"  alt="closeStore"/>
           </div>
         </el-card>
+
+        <el-dialog
+            title="警告"
+            v-model="dialogVisible"
+            width="30%"
+            :close="handleClose"
+            center
+        >
+            <span class="confirmation-content">您将进行{{content}}操作？<br/>
+              <el-checkbox :checked="checked" @change="handleChecked">我已勾选</el-checkbox></span>
+        </el-dialog>
+
       </el-main>
     </el-container>
   </div>
@@ -84,6 +89,7 @@ function openStore() {
 function closeStore() {
   dialogVisible.value = true; // Show the dialog when clicking the image
   content.value = '关店';
+
 }
 
 
@@ -98,6 +104,7 @@ const checked = ref(false);
 function handleChecked(val) {
   checked.value = val;
   dialogVisible.value = false;
+  console.log(content);
   if (content.value === '关店') {
     router.push('/store/close');
   } else if(content.value === '维护') {
@@ -105,7 +112,9 @@ function handleChecked(val) {
   } else if(content.value === '转移') {
     router.push('/store/transfer');
   } else if(content.value === '组织') {
-    router.push('/store/organize');
+    router.push({
+      path:'/store/organize'
+    })
   } else if(content.value === '审批') {
     router.push('/store/audit');
   }
