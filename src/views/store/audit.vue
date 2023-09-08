@@ -84,11 +84,15 @@
           <el-table-column prop="auditStatus" label="操作状态"></el-table-column>
           <el-table-column prop="updatedBy" label="处理人"></el-table-column>
           <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
-          <el-table-column  label="操作" width="180">
-            <template  #default="scope">
+          <el-table-column label="操作" width="180">
+            <template #default="scope">
               <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row.id)">查看详情</el-link>
-              <el-link v-if="scope.row.auditStatus === 1" class="action-link" type="success" @click="approveDialog(scope.row.id)">通过</el-link>
-              <el-link v-if="scope.row.auditStatus === 1" class="action-link" type="danger" @click="rejectDialog(scope.row.id)">拒绝</el-link>
+              <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="success"
+                       @click="approveDialog(scope.row.id)">通过
+              </el-link>
+              <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="danger"
+                       @click="rejectDialog(scope.row.id)">拒绝
+              </el-link>
             </template>
           </el-table-column>
         </el-table>
@@ -113,15 +117,74 @@
 
 
   <el-dialog v-model="centerDialogVisible" :title="dialogTitle" :width="dialogWidth" center>
-    <span>{{ dialogContent }}</span>
+    <span>{{dialogContent}}</span>
+
     <template #footer>
       <span class="dialog-footer">
           <el-button @click="centerDialogVisible = false">关闭</el-button>
-    <el-button v-if="dialogAction === 'reject'" type="danger" @click="doReject()">确认拒绝</el-button>
-    <el-button v-if="dialogAction === 'approve'" type="success" @click="doApprove()">确认通过</el-button>
+        <div v-if="!isDetail">
+      <el-button v-if="dialogAction === 'reject'" type="danger" @click="doReject()">确认拒绝</el-button>
+      <el-button v-if="dialogAction === 'approve'" type="success" @click="doApprove()">确认通过</el-button>
+        </div>
+
       </span>
     </template>
+
+
+   <div v-if="detailModel.operateDeviceInfoVoList.length>0 && isDetail">
+     <el-divider />
+     <strong>网络设备信息</strong>
+     <div v-for="formData in detailModel.operateDeviceInfoVoList" :key="formData.id">
+       <el-form label-width="120px" class="horizontal-form">
+         <el-row>
+           <el-col :span="4"><strong>名称</strong></el-col>
+           <el-col :span="4"><strong>SN</strong></el-col>
+           <el-col :span="4"><strong>型号</strong></el-col>
+           <el-col :span="4"><strong>MAC</strong></el-col>
+           <el-col :span="4"><strong>地址</strong></el-col>
+         </el-row>
+         <el-row>
+           <el-col :span="4">{{ formData.name }}</el-col>
+           <el-col :span="4">{{ formData.serial }}</el-col>
+           <el-col :span="4">{{ formData.model }}</el-col>
+           <el-col :span="4">{{ formData.mac }}</el-col>
+           <el-col :span="4">{{ formData.address }}</el-col>
+         </el-row>
+       </el-form>
+     </div>
+   </div>
+    <div v-else style="text-align: center;">
+      <el-divider />
+      <strong>暂无网络设备</strong>
+    </div>
+
+   <div v-if="detailModel.operateNetworkVlanVOList.length>0  && isDetail">
+     <el-divider />
+     <strong>子网信息</strong>
+
+     <div v-for="formData in detailModel.operateNetworkVlanVOList" :key="formData.id">
+       <el-form label-width="120px" class="horizontal-form">
+         <el-row>
+           <el-col :span="5"><strong>名称</strong></el-col>
+           <el-col :span="4"><strong>mxIP</strong></el-col>
+           <el-col :span="4"><strong>子网</strong></el-col>
+         </el-row>
+         <el-row>
+           <el-col :span="5">{{ formData.name }}</el-col>
+           <el-col :span="4">{{ formData.mxIp }}</el-col>
+           <el-col :span="4">{{ formData.subnet }}</el-col>
+         </el-row>
+       </el-form>
+     </div>
+   </div>
+    <div v-else style="text-align: center;">
+      <el-divider />
+      <strong>暂无子网信息</strong>
+    </div>
+
   </el-dialog>
+
+
 </template>
 
 <script setup>
@@ -141,19 +204,23 @@ const dialogWidth = ref('30%');
 const selectedID = ref('');
 
 
+const isDetail = ref(false);
 function openDetailDialog(id) {
-  setDialogConfig("查看详情",`查看详情 ${id} 的详细信息？`,'details',"70%",true,id);
+  isDetail.value = true;
+  dialogWidth.value = "70%";
+  showAuditDetail(id);
 }
 
 function approveDialog(id) {
-  setDialogConfig("确认通过",`确定要通过ID为 ${id} 的请求吗？`,'approve',"30%",true,id);
+  setDialogConfig("确认通过", `确定要通过ID为 ${id} 的请求吗？`, 'approve', "30%", true, id);
 }
 
 function rejectDialog(id) {
-  setDialogConfig("确认拒绝",`确定要拒绝ID为 ${id} 的请求吗？`,'reject','30%',true,id);
+  setDialogConfig("确认拒绝", `确定要拒绝ID为 ${id} 的请求吗？`, 'reject', '30%', true, id);
 }
 
-function setDialogConfig( title,content,action,width,isShow,id){
+function setDialogConfig(title, content, action, width, isShow, id) {
+  isDetail.value = false;
   dialogTitle.value = title;
   dialogContent.value = content;
   dialogAction.value = action;
@@ -165,13 +232,13 @@ function setDialogConfig( title,content,action,width,isShow,id){
 function doApprove() {
   // 你可以在这里进行实际的"通过"操作，如API调用等
   centerDialogVisible.value = false;
-  updataStatus(2,selectedID.value);
+  updataStatus(2, selectedID.value);
 }
 
 function doReject() {
   // 你可以在这里进行实际的"拒绝"操作，如API调用等
   centerDialogVisible.value = false;
-  updataStatus(3,selectedID.value);
+  updataStatus(3, selectedID.value);
 }
 
 
@@ -193,10 +260,10 @@ const operationTypesOptions = reactive([
   {label: '回退', value: 4},
 ]);
 const auditStatusOptions = reactive([
-  {label: '初始化', value: '1'},
-  {label: '同意', value: '2'},
-  {label: '驳回', value: '3'},
-  {label: '自动同意', value: '4'},
+  {label: '初始化', value: 1},
+  {label: '同意', value: 2},
+  {label: '驳回', value: 3},
+  {label: '自动同意', value: 4},
 ]);
 
 
@@ -229,7 +296,6 @@ async function getNetData() {
       if (item.updatedAt) {
         item.updatedAt = formatDate(item.updatedAt);
       }
-
 
       if (item.type) {
         item.type = getDescFromValue(operationTypesOptions, item.type);
@@ -287,15 +353,33 @@ function resetSearch() {
 
 const auditUpdateURL = "/operate/audit/updateAuditStatus";
 
-async function updataStatus(type,id) {
+async function updataStatus(type, id) {
   var parasm = {
-    'id':id,
-    'auditStatus':type
+    'id': id,
+    'auditStatus': type
   }
   let res = await http.post(auditUpdateURL, parasm)
 
   getNetData();
   alert(res.data.msg);
+}
+
+
+const detailModel = ref({
+  id: null,
+  operateNetworkId: null,
+  type:null,
+  auditStatus: null,
+  parentId: null,
+  operateDeviceInfoVoList:[],
+  operateNetworkVlanVOList:[],
+});
+
+async function showAuditDetail(id) {
+  const res = await http.post('/operate/audit/detail', {'id': id});
+  detailModel.value = res.data.data;
+  console.log(detailModel.value);
+  centerDialogVisible.value = true
 }
 
 </script>
