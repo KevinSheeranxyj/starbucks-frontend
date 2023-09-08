@@ -117,71 +117,77 @@
 
 
   <el-dialog v-model="centerDialogVisible" :title="dialogTitle" :width="dialogWidth" center>
-    <span>{{dialogContent}}</span>
+    <span>{{ dialogContent }}</span>
 
     <template #footer>
       <span class="dialog-footer">
-          <el-button @click="centerDialogVisible = false">关闭</el-button>
+
         <div v-if="!isDetail">
+          <el-button @click="centerDialogVisible = false">关闭</el-button>
       <el-button v-if="dialogAction === 'reject'" type="danger" @click="doReject()">确认拒绝</el-button>
       <el-button v-if="dialogAction === 'approve'" type="success" @click="doApprove()">确认通过</el-button>
+        </div>
+
+        <div v-else>
+           <el-button @click="centerDialogVisible = false">关闭</el-button>
         </div>
 
       </span>
     </template>
 
 
-   <div v-if="detailModel.operateDeviceInfoVoList.length>0 && isDetail">
-     <el-divider />
-     <strong>网络设备信息</strong>
-     <div v-for="formData in detailModel.operateDeviceInfoVoList" :key="formData.id">
-       <el-form label-width="120px" class="horizontal-form">
-         <el-row>
-           <el-col :span="4"><strong>名称</strong></el-col>
-           <el-col :span="4"><strong>SN</strong></el-col>
-           <el-col :span="4"><strong>型号</strong></el-col>
-           <el-col :span="4"><strong>MAC</strong></el-col>
-           <el-col :span="4"><strong>地址</strong></el-col>
-         </el-row>
-         <el-row>
-           <el-col :span="4">{{ formData.name }}</el-col>
-           <el-col :span="4">{{ formData.serial }}</el-col>
-           <el-col :span="4">{{ formData.model }}</el-col>
-           <el-col :span="4">{{ formData.mac }}</el-col>
-           <el-col :span="4">{{ formData.address }}</el-col>
-         </el-row>
-       </el-form>
-     </div>
-   </div>
-    <div v-else style="text-align: center;">
-      <el-divider />
-      <strong>暂无网络设备</strong>
+    <div v-if="isDetail">
+      <div v-if="detailModel.operateDeviceInfoVoList.length>0 && isDetail">
+
+        <el-divider content-position="left">网络设备信息</el-divider>
+        <el-row>
+          <el-col :span="4"><strong>名称</strong></el-col>
+          <el-col :span="4"><strong>SN</strong></el-col>
+          <el-col :span="4"><strong>型号</strong></el-col>
+          <el-col :span="4"><strong>MAC</strong></el-col>
+          <el-col :span="4"><strong>地址</strong></el-col>
+        </el-row>
+        <div v-for="formData in detailModel.operateDeviceInfoVoList" :key="formData.id">
+          <el-form label-width="120px" class="horizontal-form">
+
+            <el-row>
+              <el-col :span="4">{{ formData.name }}</el-col>
+              <el-col :span="4">{{ formData.serial }}</el-col>
+              <el-col :span="4">{{ formData.model }}</el-col>
+              <el-col :span="4">{{ formData.mac }}</el-col>
+              <el-col :span="4">{{ formData.address }}</el-col>
+            </el-row>
+          </el-form>
+        </div>
+      </div>
+      <div v-else style="text-align: center;">
+        <el-divider/>
+        <strong>暂无网络设备</strong>
+      </div>
+
+      <div v-if="detailModel.operateNetworkVlanVOList.length>0  && isDetail">
+        <el-divider content-position="left">子网信息</el-divider>
+        <el-row>
+          <el-col :span="5"><strong>名称</strong></el-col>
+          <el-col :span="4"><strong>mxIP</strong></el-col>
+          <el-col :span="4"><strong>子网</strong></el-col>
+        </el-row>
+        <div v-for="formData in detailModel.operateNetworkVlanVOList" :key="formData.id">
+          <el-form label-width="120px" class="horizontal-form">
+            <el-row>
+              <el-col :span="5">{{ formData.name }}</el-col>
+              <el-col :span="4">{{ formData.mxIp }}</el-col>
+              <el-col :span="4">{{ formData.subnet }}</el-col>
+            </el-row>
+          </el-form>
+        </div>
+      </div>
+      <div v-else style="text-align: center;">
+        <el-divider/>
+        <strong>暂无子网信息</strong>
+      </div>
+
     </div>
-
-   <div v-if="detailModel.operateNetworkVlanVOList.length>0  && isDetail">
-     <el-divider />
-     <strong>子网信息</strong>
-
-     <div v-for="formData in detailModel.operateNetworkVlanVOList" :key="formData.id">
-       <el-form label-width="120px" class="horizontal-form">
-         <el-row>
-           <el-col :span="5"><strong>名称</strong></el-col>
-           <el-col :span="4"><strong>mxIP</strong></el-col>
-           <el-col :span="4"><strong>子网</strong></el-col>
-         </el-row>
-         <el-row>
-           <el-col :span="5">{{ formData.name }}</el-col>
-           <el-col :span="4">{{ formData.mxIp }}</el-col>
-           <el-col :span="4">{{ formData.subnet }}</el-col>
-         </el-row>
-       </el-form>
-     </div>
-   </div>
-    <div v-else style="text-align: center;">
-      <el-divider />
-      <strong>暂无子网信息</strong>
-    </div>
-
   </el-dialog>
 
 
@@ -205,8 +211,10 @@ const selectedID = ref('');
 
 
 const isDetail = ref(false);
+
 function openDetailDialog(id) {
   isDetail.value = true;
+  dialogContent.value = '';
   dialogWidth.value = "70%";
   showAuditDetail(id);
 }
@@ -368,14 +376,15 @@ async function updataStatus(type, id) {
 const detailModel = ref({
   id: null,
   operateNetworkId: null,
-  type:null,
+  type: null,
   auditStatus: null,
   parentId: null,
-  operateDeviceInfoVoList:[],
-  operateNetworkVlanVOList:[],
+  operateDeviceInfoVoList: [],
+  operateNetworkVlanVOList: [],
 });
 
 async function showAuditDetail(id) {
+  dialogTitle.value = "查看详情"
   const res = await http.post('/operate/audit/detail', {'id': id});
   detailModel.value = res.data.data;
   console.log(detailModel.value);
