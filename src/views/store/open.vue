@@ -107,7 +107,8 @@
               >
               </el-option>
             </el-select>
-           <compo-table
+
+            <compo-table
                ref="segmentFormRef"
                :table-params="segmentTable"
                :default-table-data="segmentData"
@@ -116,12 +117,14 @@
                 <el-button type="primary" @click="pingCheck">PING检测</el-button>
              </template>
            </compo-table>
+
           </div>
           <div class="button-section">
             <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
             <el-button type="primary" :disabled="segmentData.every(item => item.pingResult === 'Failed')
             ? disabledButton : disabledButton = true"  @click="fourthStep">{{ '下一步' }}</el-button>
           </div>
+
         </el-collapse-item>
       </keep-alive>
       <keep-alive>

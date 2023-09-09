@@ -48,7 +48,7 @@ const disabledButton = ref(true);
 
 function confirmCloseStore() {
 
-  proxy.$prompt('请输入门店号', '', {
+  proxy.$prompt('(请手动输入您刚选择的网络信息)', '请输入门店号', {
     confirmButtonText: 'OK',
     cancelButtonText: 'Cancel',
     inputErrorMessage: '无效的门店ID'

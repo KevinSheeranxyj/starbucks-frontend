@@ -16,15 +16,15 @@
 
     <!-- 自定义列插槽 -->
     <template #tableDefinedSlot="slotProps">
-
-
       <div v-if="slotProps.prop === 'operator'">
-
         <el-button type="primary" plain @click="changePort(slotProps.scope.row)">端口修改</el-button>
-
       </div>
+
     </template>
 
+    <template #tableDNSSlot="scope">
+      <div v-if="scope.prop === 'primaryDns'"></div>
+    </template>
 
   </compo-table>
 </template>
@@ -76,9 +76,7 @@ const columns = [
   {label: 'LAN IP', prop: 'lanIp', minWidth: '100px',},
   {label: '网关', prop: 'gateway', minWidth: '100px',},
   {label: '地理位置信息', prop: 'address', minWidth: '100px',},
-  {label: '掩码', prop: 'mask', minWidth: '100px',},
-  {label: '主DNS', prop: 'primaryDns', minWidth: '100px',},
-  {label: '次DNS', prop: 'secondaryDns', minWidth: '100px',},
+  {label: 'DNS', prop: 'primaryDns', type: 'dns', minWidth: '100px',},
   {label: '操作', prop: 'operator', type: 'defined', minWidth: '150px'}
 ];
 

@@ -57,14 +57,11 @@ const remoteNetworkOptions = reactive([]);
 const router = useRouter();
 const route = useRoute();
 
-const organizationEnum = computed(() => {
-  return createEnumByOptions(organizationOptions);
-});
+
 
 
 // 表格列
 const columns = [
-  {label: '组织', prop: 'organizationId', sortable: true, minWidth: '150px', showOverflowTooltip: true},
   {label: '网络', prop: 'name', minWidth: '200px', sortable: true, showOverflowTooltip: true},
   {label: '操作', prop: 'operator', type: 'defined', minWidth: '150px'}
 ];
@@ -107,6 +104,7 @@ function queryTable() {
 function changeSelect(prop, val) {
   if (prop === 'organizationId') {
     getNetworkOptions(val, networkOptions);
+    queryTable();
   } else if (prop === 'networkId') {
     if (val === '') {
       remoteNetworkOptions.length = 0;

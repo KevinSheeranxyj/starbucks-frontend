@@ -73,6 +73,10 @@
               {{ scope.row[scope.column.property] }}
             </slot>
           </template>
+          <template v-else-if="item.type === 'dns'" #default="scope">
+            <slot name="tableDNSSlot" :scope="scope" :prop="item.prop"> </slot>
+            {{ scope.row['primaryDns'] + '/' + (scope.row['secondaryDns'] === null ? "" : scope.row['secondaryDns'])}}
+          </template>
           <!-- 单元格：支持输入框编辑  -->
           <template v-else-if="item.type === 'input'" #default="scope">
             <el-input
