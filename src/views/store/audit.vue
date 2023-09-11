@@ -76,6 +76,7 @@
             </el-button-group>
           </el-col>
         </el-row>
+
         <el-table :data="filteredData" class="table,el-table" align="center" header-align="center">
           <el-table-column prop="id" label="ID"></el-table-column>
           <el-table-column prop="createdBy" label="提交人"></el-table-column>

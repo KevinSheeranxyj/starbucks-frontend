@@ -18,6 +18,7 @@
     <template #tableDefinedSlot="slotProps">
       <div v-if="slotProps.prop === 'operator'">
         <el-button type="primary" plain @click="changePort(slotProps.scope.row)">端口修改</el-button>
+        <el-button type="primary" plain @click="changeSwitchTemplate(slotProps.scope.row)">模板修改</el-button>
       </div>
 
     </template>
@@ -27,6 +28,37 @@
     </template>
 
   </compo-table>
+
+  <el-dialog
+      title="修改交换机模板"
+      v-model="isDialogVisible"
+      width="30%"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false">
+    <el-row>
+      <el-col style="padding: 20px">
+        <span>您即将修改 <strong>{{currentSwitch.serial}}</strong>的模板配置</span>
+      </el-col>
+      <el-col style="padding: 20px">
+        <el-form-item label="选择模板">
+          <el-select v-model="templateID" placeholder="选择网络模板">
+            <el-option
+                v-for="role in templateOption"
+                :key="role.value"
+                :label="role.label"
+                :value="role.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col style="padding: 20px">
+        <center><el-button @click="summitTemplate">提交</el-button></center>
+      </el-col>
+    </el-row>
+
+
+
+  </el-dialog>
 </template>
 
 <script setup>
@@ -41,7 +73,7 @@ import {getOrganizationOptions, getNetworkOptions, getDeviceOptions, getTagTypeB
 
 const router = useRouter();
 const route = useRoute();
-
+const isDialogVisible = ref(false);
 const compoTableRef = ref(null);
 const syncLoading = ref(false);
 const organizationOptions = reactive([]);
@@ -84,21 +116,19 @@ const columns = [
 const queryForm = [
 
   {
-    label: '交换机', prop: 'name', type: 'select',
+    label: '交换机', prop: 'name', type: 'input',
     config: {options: remoteNameOptions, remote: true, placeholder: '请输入',},
   },
   {
-    label: '序列', prop: 'serial', type: 'select',
+    label: '序列号', prop: 'serial', type: 'input',
     config: {options: remoteSerialOptions, remote: true, placeholder: '请输入',},
   },
-
-
   {
-    label: 'MAC', prop: 'mac', type: 'select',
+    label: 'MAC', prop: 'mac', type: 'input',
     config: {options: remoteMacOptions, remote: true, placeholder: '请输入',},
   },
   {
-    label: '公网IP', prop: 'publicIp', type: 'select',
+    label: '公网IP', prop: 'publicIp', type: 'input',
     config: {options: remotePublicIpOptions, remote: true, placeholder: '请输入',},
   },
 ];
@@ -182,64 +212,22 @@ function afterReset() {
 
 
 
-/**
- * 跳转客户端页
- * @param row
- */
-const routerClientPage = (row) => {
-  const routeParams = {
-    recentDeviceType: 'switch',
-    deviceSerial: row.serial,
-  }
-
-  router.push({
-    name: 'client',
-    params: routeParams,
-  });
-};
-
-/**
- * 校验是否页面跳转，设置查询条件
- */
-async function setupState() {
-  if (Object.keys(route.params).length > 0) {
-    const query = route.params;
-    const networkId = query.networkId;
-    const networkName = query.networkName;
-    const serial = query.serial;
-    const queryForm = {
-      networkId: networkId,
-      serial: serial,
-      statusList: query.status ? [query.status] : null,
-    };
-    console.log("====",queryForm);
-    // 设置查询表单
-    compoTableRef.value.setForm(queryForm);
-    queryTable();
-
-    if (networkId) {
-      await tool.setRemoteOptions(remoteNetworkOptions, networkName, networkId);
-      changeSelect('networkId', networkId);
-      remoteNetworkOptions.length = 0;
-    }
-    if(serial){
-      getDeviceOptions({productType: 'switch'}, deviceNameOptions, deviceSerialOptions, macOptions, publicIpOptions);
-    }
-  }
-}
 
 
 ///
 function changePort(row){
-  // const params = {
-  //   params:row
-  // }
   /// 跳转到端口修改
-  console.log("====",row);
   router.push({
     name:'switchPortList',
     query:row
   });
+}
+// 修改 交换机模板
+const currentSwitch = ref();
+function changeSwitchTemplate(row){
+  currentSwitch.value = row;
+  console.log(currentSwitch.value);
+  isDialogVisible.value = true;
 }
 
 
@@ -256,8 +244,41 @@ async function initQuery() {
     };
     compoTableRef.value.setForm(queryForm);
     queryTable();
+    await queryTemplate(query);
   }
   getOrganizationOptions(organizationOptions);
+}
+
+const templateOption = ref([]);
+const  templateID = ref();
+async function queryTemplate(query){
+  const res = await http.post('configTemplate/switchProfile/list',{
+    "organizationId":query.organizationId,
+    "templateId":query.templateId
+  });
+  res.data.data.forEach((item)=>{
+    templateOption.value.push({label:item.name,value:item.switchProfileId});
+  });
+}
+
+async function summitTemplate(){
+
+  const res = await http.post('/operate/maintain/updateSwitchProfile',{
+    "serial": currentSwitch.value.serial,
+    "switchProfileId":templateID.value
+  })
+  isDialogVisible.value = false; // 隐藏对话框
+  if(res.data.success){
+    ElMessage({
+      message: '修改成功',
+      type: 'success',
+    })
+  }else{
+    ElMessage({
+      message: res.data.msg,
+      type: 'error',
+    })
+  }
 }
 
 onMounted(() => {
