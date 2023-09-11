@@ -226,7 +226,6 @@ function changePort(row){
 const currentSwitch = ref();
 function changeSwitchTemplate(row){
   currentSwitch.value = row;
-  console.log(currentSwitch.value);
   isDialogVisible.value = true;
 }
 
@@ -242,6 +241,7 @@ async function initQuery() {
       networkId:networkId,
       organizationId:organizationId
     };
+
     compoTableRef.value.setForm(queryForm);
     queryTable();
     await queryTemplate(query);
@@ -252,6 +252,9 @@ async function initQuery() {
 const templateOption = ref([]);
 const  templateID = ref();
 async function queryTemplate(query){
+
+
+
   const res = await http.post('configTemplate/switchProfile/list',{
     "organizationId":query.organizationId,
     "templateId":query.templateId

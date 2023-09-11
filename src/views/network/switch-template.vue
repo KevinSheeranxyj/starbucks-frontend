@@ -17,6 +17,7 @@ const columns = [
   {label: '网络', prop: 'networkName'},
   {label: '交换机', prop: 'name'},
   {label: '型号', prop: 'model'},
+  {label: '交换机序列号', prop: 'serial'},
   {label: '交换机模板', prop: 'template'}
 ];
 

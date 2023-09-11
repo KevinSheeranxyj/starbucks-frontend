@@ -15,7 +15,8 @@ const columns = [
   {label: '公网IP', prop: 'publicIp', minWidth: '100px'},
   {label: 'VLAN', prop: 'vlan', minWidth: '100px'},
   {label: 'LAN IP', prop: 'lanIp', minWidth: '100px'},
-  {label: '网关', prop: 'gateway', minWidth: '100px'}
+  {label: '网关', prop: 'gateway', minWidth: '100px'},
+  {label: 'DNS', prop: 'dns',type:'dns', minWidth: '100px'}
 ];
 
 // 查询表单
@@ -24,6 +25,23 @@ const queryForm = [
     label: '组织', prop: 'organizationId', type: 'select',
     config: {options: organizationOptions, clearable: false},
   },
+  {
+    label: '交换机', prop: 'name', type: 'input',
+    config: {placeholder: '请输入',},
+  },
+  {
+    label: 'vlan', prop: 'vlan', type: 'input',
+    config: {placeholder: '请输入',},
+  },
+  {
+    label: 'LanIp', prop: 'lanIp', type: 'input',
+    config: {placeholder: '请输入',},
+  },
+  {
+    label: '公网IP', prop: 'publicIp', type: 'input',
+    config: {placeholder: '请输入',},
+  }
+
 ];
 
 const table = {

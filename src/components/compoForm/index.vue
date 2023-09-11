@@ -9,7 +9,7 @@
   >
     <el-row :gutter="1" :style="{padding: '10px 10px'}">
       <el-col v-for="(item, index) in formItems" :key="index" :span="item.span">
-        <el-form-item :label="item.label" :prop="item.prop" :rules="item.rules">
+        <el-form-item :label="item.label" :prop="item.prop" :rules="item.rules" :style="getStyle(item.label)">
           <!-- 输入框 -->
           <template v-if="item.type === 'input'">
             <el-input
@@ -162,6 +162,13 @@ export default {
 
           }
       )
+    },
+    getStyle(label) {
+      if(label === '检查项'){
+        return { 'padding-top': '15px' };
+      }else{
+        return {};
+      }
     },
     /**
      * Disable button when value are not filled

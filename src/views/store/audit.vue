@@ -77,26 +77,58 @@
           </el-col>
         </el-row>
 
-        <el-table :data="filteredData" class="table,el-table" align="center" header-align="center">
-          <el-table-column prop="id" label="ID"></el-table-column>
-          <el-table-column prop="createdBy" label="提交人"></el-table-column>
-          <el-table-column prop="createdAt" label="提交日期"></el-table-column>
-          <el-table-column prop="type" label="操作类型"></el-table-column>
-          <el-table-column prop="auditStatus" label="操作状态"></el-table-column>
-          <el-table-column prop="updatedBy" label="处理人"></el-table-column>
-          <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
-          <el-table-column label="操作" width="180">
-            <template #default="scope">
-              <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row.id)">查看详情</el-link>
-              <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="success"
-                       @click="approveDialog(scope.row.id)">通过
-              </el-link>
-              <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="danger"
-                       @click="rejectDialog(scope.row.id)">拒绝
-              </el-link>
-            </template>
-          </el-table-column>
-        </el-table>
+        <el-tabs
+            v-model="activeName"
+            type="card"
+            class="demo-tabs"
+            @tab-click="handleClick"
+        >
+         <el-tab-pane label="待审核" name="readyAudit">
+           <el-table :data="filteredData" class="table,el-table" align="center" header-align="center">
+             <el-table-column prop="createdBy" label="提交人"></el-table-column>
+             <el-table-column prop="createdAt" label="提交日期"></el-table-column>
+             <el-table-column prop="type" label="操作类型"></el-table-column>
+             <el-table-column prop="auditStatus" label="操作状态"></el-table-column>
+             <el-table-column prop="updatedBy" label="处理人"></el-table-column>
+             <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
+             <el-table-column label="操作" width="180">
+               <template #default="scope">
+                 <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row.id)">查看详情</el-link>
+                 <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="success"
+                          @click="approveDialog(scope.row.id)">通过
+                 </el-link>
+                 <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="danger"
+                          @click="rejectDialog(scope.row.id)">拒绝
+                 </el-link>
+               </template>
+             </el-table-column>
+           </el-table>
+         </el-tab-pane>
+
+          <el-tab-pane label="已审核" name="audited">
+            <el-table :data="filteredData" class="table,el-table" align="center" header-align="center">
+              <el-table-column prop="createdBy" label="提交人"></el-table-column>
+              <el-table-column prop="createdAt" label="提交日期"></el-table-column>
+              <el-table-column prop="type" label="操作类型"></el-table-column>
+              <el-table-column prop="auditStatus" label="操作状态"></el-table-column>
+              <el-table-column prop="updatedBy" label="处理人"></el-table-column>
+              <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
+              <el-table-column label="操作" width="180">
+                <template #default="scope">
+                  <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row.id)">查看详情</el-link>
+                  <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="success"
+                           @click="approveDialog(scope.row.id)">通过
+                  </el-link>
+                  <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="danger"
+                           @click="rejectDialog(scope.row.id)">拒绝
+                  </el-link>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
+
+
+        </el-tabs>
 
         <el-pagination
             :current-page="pagination.currentPage"
@@ -212,6 +244,11 @@ const selectedID = ref('');
 
 
 const isDetail = ref(false);
+
+const activeName = ref('readyAudit')
+const handleClick = (tab, event) => {
+  console.log(tab.props.name);
+}
 
 function openDetailDialog(id) {
   isDetail.value = true;
@@ -443,5 +480,11 @@ async function showAuditDetail(id) {
 
 .action-link[type="danger"] {
   background-color: #f56c6c;
+}
+.demo-tabs > .el-tabs__content {
+  padding: 32px;
+  color: #6b778c;
+  font-size: 32px;
+  font-weight: 600;
 }
 </style>

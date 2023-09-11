@@ -60,6 +60,7 @@ onMounted(() => {
   <!-- 表格组件 -->
   <compo-table
     ref="compoTableRef"
+    @changeSelect="queryTable"
     :table-params="table"
   >
   </compo-table>

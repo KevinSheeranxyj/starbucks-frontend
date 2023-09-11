@@ -140,9 +140,9 @@ const queryForm = [
     config: {options: remoteMacOptions, remote: true, placeholder: '请输入',},
   },
   {
-    label: '公网IP', prop: 'publicIp', type: 'select',
-    config: {options: remotePublicIpOptions, remote: true, placeholder: '请输入',},
-  },
+    label: '公网IP', prop: 'publicIp', type: 'input',
+    config: {placeholder: '请输入',},
+  }
 ];
 
 const table = {

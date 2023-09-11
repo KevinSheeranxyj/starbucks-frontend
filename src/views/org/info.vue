@@ -86,7 +86,7 @@ function queryTable() {
 
 function initQuery() {
   const queryForm = {
-    organizationId: organizationOptions.value = '76'
+    organizationId: organizationOptions.value
   };
   compoTableRef.value.setForm(queryForm);
   queryTable();
@@ -106,6 +106,7 @@ onMounted(() => {
   <!-- 表格组件 -->
   <compo-table
     ref="compoTableRef"
+    @changeSelect="queryTable"
     :table-params="table"
   >
 

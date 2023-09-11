@@ -136,12 +136,6 @@ function afterReset() {
 
 
 /**
- * 查询设备列表
- */
-
-
-
-/**
  * 跳转设备页
  * @param row
  */

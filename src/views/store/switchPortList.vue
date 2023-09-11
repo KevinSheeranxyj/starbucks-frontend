@@ -274,44 +274,47 @@ const accessTactics = [
 </script>
 
 <template>
-  <div class="switch-info">
-    <el-row class="info-row">
-      <el-col :span="4"><strong>交换机的名称:</strong></el-col>
-      <el-col :span="8">{{ switchParam.name }}</el-col>
-      <el-col :span="4"><strong>所在地址:</strong></el-col>
-      <el-col :span="8">{{ switchParam.address }}</el-col>
-    </el-row>
+<center>
+  <el-row style="padding: 20px">
+    <el-col>
+      <el-row class="info-row">
+        <el-col :span="6"></el-col>
+        <el-col :span="4"><strong>交换机的名称: {{ switchParam.name }}</strong></el-col>
+        <el-col :span="5"><strong>所在地址: {{ switchParam.address }}</strong></el-col>
+      </el-row>
 
-    <el-row class="info-row">
-      <el-col :span="4"><strong>型号:</strong></el-col>
-      <el-col :span="8">{{ switchParam.model }}</el-col>
-      <el-col :span="4"><strong>公网 IP:</strong></el-col>
-      <el-col :span="8">{{ switchParam.publicIp }}</el-col>
-    </el-row>
+      <el-row class="info-row">
+        <el-col :span="6"></el-col>
+        <el-col :span="4"><strong>型号: {{ switchParam.model }}</strong></el-col>
+        <el-col :span="4"><strong>公网 IP: {{ switchParam.publicIp }}</strong></el-col>
+      </el-row>
 
-    <el-row class="info-row">
-      <el-col :span="4"><strong>SN 号:</strong></el-col>
-      <el-col :span="8">{{ switchParam.serial }}</el-col>
-      <el-col :span="4"><strong>状态:</strong></el-col>
-      <el-col :span="8">{{ switchParam.status }}</el-col>
-    </el-row>
-  </div>
+      <el-row class="info-row">
+        <el-col :span="6"></el-col>
+        <el-col :span="4"><strong>SN 号: {{ switchParam.serial }}</strong></el-col>
+        <el-col :span="4"><strong>状态: {{ switchParam.status }}</strong></el-col>
+      </el-row>
+    </el-col>
+    <el-col>
+      <el-table :data="portArr" stripe class="centered-table">
+        <el-table-column prop="name" label="名称" width="180"></el-table-column>
+        <el-table-column prop="portId" label="端口号" width="180"></el-table-column>
+        <el-table-column prop="type" label="类型" width="180"></el-table-column>
+        <el-table-column prop="vlan" label="vlan" width="180"></el-table-column>
+        <el-table-column label="功能" width="180">
 
-  <div class="table-container">
-    <el-table :data="portArr" stripe class="centered-table">
-      <el-table-column prop="name" label="名称" width="180"></el-table-column>
-      <el-table-column prop="portId" label="端口号" width="180"></el-table-column>
-      <el-table-column prop="type" label="类型" width="180"></el-table-column>
-      <el-table-column prop="vlan" label="vlan" width="180"></el-table-column>
-      <el-table-column label="功能" width="180">
+          <template #default="scope">
+            <el-button type="primary" plain @click="getPortConfig(scope.row)">编辑</el-button>
+          </template>
+        </el-table-column>
 
-        <template #default="scope">
-          <el-button type="primary" plain @click="getPortConfig(scope.row)">编辑</el-button>
-        </template>
-      </el-table-column>
+      </el-table>
+    </el-col>
+  </el-row>
+</center>
 
-    </el-table>
-  </div>
+
+
 
   <el-dialog v-model="dialogTableVisible" title="更新端口" align-center="align-center" :before-close="dialogClose">
     <el-table :data="tableData" :border="false" :show-header="false">
@@ -497,6 +500,7 @@ const accessTactics = [
 
 .info-row {
   margin-bottom: 15px;
+  color: #C8CBD2;
   &:last-child {
     margin-bottom: 0;
   }
