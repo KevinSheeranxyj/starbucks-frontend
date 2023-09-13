@@ -117,14 +117,12 @@
                 <el-button type="primary" @click="pingCheck">PING检测</el-button>
              </template>
            </compo-table>
-
           </div>
           <div class="button-section">
             <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
-            <el-button type="primary" :disabled="segmentData.every(item => item.pingResult === 'Failed')
+            <el-button type="primary" :disabled="segmentData.every(item => item.pingResult === false)
             ? disabledButton : disabledButton = true"  @click="fourthStep">{{ '下一步' }}</el-button>
           </div>
-
         </el-collapse-item>
       </keep-alive>
       <keep-alive>
@@ -196,7 +194,7 @@
         <div class="preview-section-3">
           <compo-table
               :table-params="deviceTable"
-              :default-table-data="mockNetworkDeviceInfos"
+              :default-table-data="selectedValues"
           >
           </compo-table>
         </div>
@@ -253,7 +251,7 @@ import CompoTable from "@/components/compoTable/index.vue";
 import CompoDialog from "@/components/compoDialog/index.vue";
 import {computed, getCurrentInstance, onMounted, onUpdated, reactive, ref} from "vue";
 import {useRouter} from "vue-router";
-import {getOrganizationOptions} from "@/views/device/device";
+import {getOrganizationOptions, getNetworkTemplateOptions, getSwitchTemplateOptions} from "@/views/device/device";
 import http from "@/utils/http";
 import {ElMessage} from "element-plus/lib/components";
 
@@ -303,8 +301,17 @@ async function applyDevice() {
 
 async function pingCheck() {
   const {data: res} = await http.post(
+      '/operate/networkVlan/getVlans',
+      {
+        ...segmentFormRef.value.getForm(),
+      });
+  if (!res.success) {
+    return this.$message.error(res.msg);
+  } else {
+    segmentData.value = res.data;
+    console.log(segmentData.value);
+  }
 
-  );
 }
 
 function collectValues(values, idx) {
@@ -364,6 +371,8 @@ function collectSwitchConfigInfo(val, idx) {
   }
 }
 let networkDeviceData = reactive([]);
+
+let segmentData = ref([]);
 
 const getApSchema = computed(() => {
   return {
@@ -462,44 +471,6 @@ const getRouterInfoSchema = computed(() => {
   };
 });
 
-const segmentData = [
-  {
-    "vlanId":2,
-    "name":"IOT",
-    "mxIp":"10.246.190.17",
-    "subnet":"10.246.190.16/28",
-    "pingResult": "Failed"
-  },
-  {
-    "vlanId":98,
-    "name":"IOT",
-    "mxIp":"10.246.190.97",
-    "subnet":"10.246.190.96/27",
-    "pingResult": "Failed"
-  },
-  {
-    "vlanId":100,
-    "name":"IOT",
-    "mxIp":"10.246.190.81",
-    "subnet":"10.246.190.80/28",
-    "pingResult": "Failed"
-  },
-  {
-    "vlanId":101,
-    "name":"IOT",
-    "mxIp":"10.246.190.129",
-    "subnet":"10.246.190.128/25",
-    "pingResult": "Failed"
-  },
-  {
-    "vlanId":102,
-    "name":"IOT",
-    "mxIp":"10.246.190.1",
-    "subnet":"10.246.190.0/28",
-    "pingResult": "Failed"
-  },
-];
-
 
 function handleClose() {
   dialogVisible.value = false;
@@ -526,11 +497,7 @@ const networkTypeOptions = reactive([
   {label: '无线AP', value: '["wireless"]' }
 ]);
 
-const networkTemplateOptions = reactive([
-  {label: 'CMMO-TEST', value: 'cmmo-test'},
-  {label: 'TELE-CON', value: 'tele-con'},
-  {label: 'TEST', value: 'test'}
-]);
+const networkTemplateOptions = reactive([]);
 
 function handleDisabledButton(value) {
   disabledButton.value = value;
@@ -540,13 +507,13 @@ function handleDisabledButton(value) {
 const segmentTable = computed(() => {
   return {
     query: {
-      url: '/device/inventory/table',
+      url: '/operate/networkVlan/getVlans',
       form: {formItems: isManual.value ? [
           {
             label: '网段', prop: 'segment', type: 'input',
           }] : [
           {
-            label: '12.10.12/120', prop: 'segment', type: 'select', disabled: true,
+            label: '12.xx.xx/120', prop: 'segment', type: 'select', disabled: true,
             config: {options: segmentOptions}
           }
         ]},
@@ -690,6 +657,12 @@ onUpdated(() => {
   if (currentStep.value === 3) {
     initQuery();
   }
+  if (currentStep.value === 2) {
+    getNetworkTemplateOptions(networkTemplateOptions, organizationFormRef.value.getForm());
+  }
+  if (currentStep.value === 6) {
+    getSwitchTemplateOptions(switchTemplateOptions, organizationFormRef.value.getForm(), storeSchemaFormRef.value.form.templateId)
+  }
   dialogVisible.value = false;
 })
 
@@ -703,6 +676,7 @@ onUpdated(() => {
     storeData = storeSchemaFormRef.value.form;
   }
 })
+
 function initQuery() {
   deviceTableRef.value.setForm({});
   deviceTableRef.value.query();
@@ -715,7 +689,25 @@ function firstStep() {
   currentStep.value++;
 }
 
-async function secondStep() {
+const networkId = ref(null);
+
+function secondStep() {
+  createNetwork();
+  submitData.storeInfo = storeSchemaFormRef.value.getForm();
+  active.value++;
+  currentStep.value++;
+}
+
+function thirdStep() {
+  if (deviceTableRef.value.getMultipleSelection().length === 0) {
+    dialogVisible.value = true;
+  }
+  updateSelectedNetworks();
+  active.value++;
+  currentStep.value++;
+}
+
+async function createNetwork() {
   const {data: res} = await http.post(
       '/operate/network/openStore/createNetwork',
       {
@@ -726,42 +718,97 @@ async function secondStep() {
   if (!res.success) {
     ElMessage.error(res.msg);
   }
-  submitData.storeInfo = storeSchemaFormRef.value.getForm();
-  active.value++;
-  currentStep.value++;
+  networkId.value = res.data;
 }
 
-function thirdStep() {
-  if (deviceTableRef.value.getMultipleSelection().length === 0) {
-    dialogVisible.value = true;
+const deviceInfo = ref(null);
+
+async function updateSelectedNetworks() {
+  const {data: res} = await http.post(
+      '/operate/device/add',
+      {
+        ...networkId.value,
+        serials: serials.value,
+      }
+  );
+  if (!res.success) {
+    ElMessage.error(res.msg);
   }
-  active.value++;
-  currentStep.value++;
+  deviceInfo.value = res.data;
+}
+
+async function updateVlanList() {
+  const {data: res} = await http.post(
+      '/operate/networkVlan/updateVlan',
+      {
+        ...networkId.value,
+        networkVlanList: segmentData.value,
+      }
+  );
+  if (!res.success) {
+    ElMessage.error(res.msg);
+  }
+
 }
 
 function fourthStep() {
+  updateVlanList();
   networkDeviceData = submitData.networkDeviceAdd;
-  console.log(networkDeviceData);
-  submitData.segmentInfo = segmentData;
+  submitData.segmentInfo = segmentData.value;
 
   active.value++;
   currentStep.value++;
 }
 
+
 function finalStep() {
+  updateDeviceInfo();
   active.value++;
   currentStep.value++;
   switchData = submitData.networkDeviceAdd
       .filter(item => getNetworkType(item.model) === 'switch');
 }
 
+function compoundDeviceInfo() {
+  const arr1 = deviceInfo.value;
+  const arr2 = submitData.networkDeviceAdd;
+  for(let i = 0; i < arr1.length; i++ ) {
+      obj1 = arr1[i];
+      obj2 = arr2[i];
+      if (obj1.serial === obj2.serial) {
+          
+      }
+  }
+}
+
+async function updateDeviceInfo() {
+  deviceInfo.value.find()
+    const {data: res} = await http.post(
+        '/operate/device/updateDevice',
+        {
+            ...deviceInfo.value
+        }
+    );
+    if (!res.success) {
+        ElMessage.error(res.msg);
+    }
+}
+
 function addDeviceDialog() {
   addDialogRef.value.openDialog();
 }
 
+
+const serials = ref([]);
+
 function promptConfirmationBeforeNext() {
   dialogVisible.value = true;
   submitData.networkDeviceAdd = selectedValues.value;
+  submitData.networkDeviceAdd.map(item => {
+    if (!serials.value.find(obj => obj.serial === item.serial)) {
+        serials.value.push(item.serial);
+    }
+  });
 }
 
 function previousStep() {
@@ -771,22 +818,19 @@ function previousStep() {
 }
 
 function preview() {
+  updateSwitchConfigInfo();
   activeNames.value = ['7'];
   currentStep.value++;
   submitData.switchConfig = submitData.networkDeviceAdd.filter(item => getNetworkType(item.model) === 'switch');
 }
 
-const switchTemplateOptions = reactive([
-  {
-    label: 'TEST1', value: 'test1',
-  },
-  {
-    label: 'TEST2', value: 'test2',
-  },
-  {
-    label: 'TEST3', value: 'test3',
-  }
-]);
+async function updateSwitchConfigInfo() {
+  const {data: res} = await http.post(
+      '/operate/device/updateDevice',
+  )
+}
+
+const switchTemplateOptions = reactive([]);
 
 const switchTemplateSchema = computed(() => {
   return {
@@ -802,8 +846,14 @@ const switchTemplateSchema = computed(() => {
 
 const router = useRouter();
 
-function submitAll() {
-
+async function submitAll() {
+  const {data: res} = http.post(
+      '/operate/network/openStore/submit',
+      {id: networkId.value}
+  );
+  if (!res.success) {
+    ElMessage.error(res.msg);
+  }
 }
 
 </script>

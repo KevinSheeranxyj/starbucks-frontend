@@ -17,6 +17,39 @@ async function getOrganizationOptions(options) {
     });
 }
 
+export async function getNetworkTemplateOptions(options, organization) {
+    options.length
+    const {data: res} = await http.post(
+      '/configTemplate/list',
+      organization
+    );
+    res.data.forEach((template) => {
+        const data = {
+            label: template.name,
+            value: template.templateId
+        };
+        options.push(data);
+    })
+}
+
+export async function getSwitchTemplateOptions(options, organization, networkTemplate) {
+    options.length = 0;
+    const {data: res} = await http.post(
+      '/configTemplate/switchProfile/list',
+      {
+          ...organization,
+          templateId: networkTemplate
+      }
+    );
+    res.data.forEach((template) => {
+        const data = {
+            label: template.name,
+            value: template.id
+        };
+        options.push(data);
+    })
+}
+
 /**
  * 查询网络
  */

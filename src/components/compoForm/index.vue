@@ -157,11 +157,15 @@ export default {
   methods: {
     async querySegment() {
       const {data: res} = await this.$http.post(
-          '/store/segment',
+          '/operate/networkVlan/getVlans',
           {
-
+            ...this.form,
           }
       )
+      if (!res.success) {
+        return this.$message.error(res.msg);
+      }
+      return res.data;
     },
     /**
      * Disable button when value are not filled
