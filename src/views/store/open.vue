@@ -783,16 +783,14 @@ function compoundDeviceInfo() {
 }
 
 async function updateDeviceInfo() {
-  deviceInfo.value.find()
+  // deviceInfo.value.find();
     const {data: res} = await http.post(
         '/operate/device/updateDevice',
-        {
-            ...deviceInfo.value
-        }
+
+        deviceInfo.value
+
     );
-  console.log({
-    ...deviceInfo.value
-  });
+
     if (!res.success) {
         ElMessage.error(res.msg);
     }
@@ -822,7 +820,7 @@ function previousStep() {
 }
 
 function preview() {
-  updateSwitchConfigInfo();
+  // updateSwitchConfigInfo();
   activeNames.value = ['7'];
   currentStep.value++;
   submitData.switchConfig = submitData.networkDeviceAdd.filter(item => getNetworkType(item.model) === 'switch');
