@@ -106,7 +106,7 @@
          </el-tab-pane>
 
           <el-tab-pane label="已审核" name="audited">
-            <el-table :data="filteredData" class="table,el-table" align="center" header-align="center">
+            <el-table :data="auditedData" class="table,el-table" align="center" header-align="center">
               <el-table-column prop="createdBy" label="提交人"></el-table-column>
               <el-table-column prop="createdAt" label="提交日期"></el-table-column>
               <el-table-column prop="type" label="操作类型"></el-table-column>
@@ -246,9 +246,13 @@ const selectedID = ref('');
 const isDetail = ref(false);
 
 const activeName = ref('readyAudit')
+
+
 const handleClick = (tab, event) => {
   console.log(tab.props.name);
 }
+
+
 
 function openDetailDialog(id) {
   isDetail.value = true;
@@ -315,6 +319,8 @@ const auditStatusOptions = reactive([
 
 const filteredData = ref([]);
 
+const auditedData = ref([]);
+
 function filterData() {
 }
 
@@ -335,6 +341,10 @@ async function getNetData() {
 
   if (res.data && res.data.data) {
     res.data.data.forEach(item => {
+        if(item.auditStatus !== 1){
+          auditedData.value.push(item);
+        }
+
       // 格式化时间
       if (item.createdAt) {
         item.createdAt = formatDate(item.createdAt);
@@ -353,6 +363,7 @@ async function getNetData() {
 
     pagination.totalItems = res.data.count;
     filteredData.value = res.data.data;
+
   }
 }
 

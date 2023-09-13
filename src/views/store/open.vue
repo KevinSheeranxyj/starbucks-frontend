@@ -477,7 +477,9 @@ function handleClose() {
 }
 
 function handleSelectedValues(val) {
-  selectedValues.value = val;
+  if (val.length > 0){
+    selectedValues.value = val;
+  }
 }
 
 const organizationOptions = reactive([]);
@@ -804,6 +806,7 @@ function addDeviceDialog() {
 const serials = ref([]);
 
 function promptConfirmationBeforeNext() {
+
   dialogVisible.value = true;
   submitData.networkDeviceAdd = selectedValues.value;
   submitData.networkDeviceAdd.map(item => {
