@@ -104,6 +104,7 @@ onMounted(() => {
   <compo-table
     ref="compoTableRef"
     :table-params="table"
+    @changeSelect="queryTable"
     @remoteMethod="remoteMethod"
     @reset="afterReset"
   >

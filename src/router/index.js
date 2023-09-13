@@ -9,6 +9,7 @@ import AuditStore from "@/views/store/audit.vue";
 import OrganizeStore from "@/views/store/organize.vue";
 import SwitchConfig from "@/views/store/switchConfig.vue";
 import SwitchPortList from "@/views/store/switchPortList.vue";
+import SubNet from "@/views/store/subNet.vue";
 
 /**
  * 页面配置
@@ -336,6 +337,14 @@ const routes = [
     },
     props:true,
     component: SwitchPortList,
+  }, {
+    path: '/store/subNet',
+    name:"subNet",
+    meta: {
+      title: '子网管理'
+    },
+    props:true,
+    component: SubNet,
   }
 ];
 

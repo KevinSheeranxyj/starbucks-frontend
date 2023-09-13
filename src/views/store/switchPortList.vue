@@ -51,7 +51,6 @@ onMounted(() => {
 function checkQuery() {
   if (Object.keys(route.query).length > 0) {
     switchParam.value = route.query;
-    console.log(switchParam.value);
   }
 }
 
@@ -275,46 +274,47 @@ const accessTactics = [
 </script>
 
 <template>
-  <div class="info-display">
-    <el-row>
-      <el-col :span="4"><strong>交换机的名称:</strong></el-col>
-      <el-col :span="8">{{ switchParam.name }}</el-col>
+<center>
+  <el-row style="padding: 20px">
+    <el-col>
+      <el-row class="info-row">
+        <el-col :span="6"></el-col>
+        <el-col :span="4"><strong>交换机的名称: {{ switchParam.name }}</strong></el-col>
+        <el-col :span="5"><strong>所在地址: {{ switchParam.address }}</strong></el-col>
+      </el-row>
 
-      <el-col :span="4"><strong>所在地址:</strong></el-col>
-      <el-col :span="8">{{ switchParam.address }}</el-col>
-    </el-row>
+      <el-row class="info-row">
+        <el-col :span="6"></el-col>
+        <el-col :span="4"><strong>型号: {{ switchParam.model }}</strong></el-col>
+        <el-col :span="4"><strong>公网 IP: {{ switchParam.publicIp }}</strong></el-col>
+      </el-row>
 
-    <el-row>
-      <el-col :span="4"><strong>型号:</strong></el-col>
-      <el-col :span="8">{{ switchParam.model }}</el-col>
+      <el-row class="info-row">
+        <el-col :span="6"></el-col>
+        <el-col :span="4"><strong>SN 号: {{ switchParam.serial }}</strong></el-col>
+        <el-col :span="4"><strong>状态: {{ switchParam.status }}</strong></el-col>
+      </el-row>
+    </el-col>
+    <el-col>
+      <el-table :data="portArr" stripe class="centered-table">
+        <el-table-column prop="name" label="名称" width="180"></el-table-column>
+        <el-table-column prop="portId" label="端口号" width="180"></el-table-column>
+        <el-table-column prop="type" label="类型" width="180"></el-table-column>
+        <el-table-column prop="vlan" label="vlan" width="180"></el-table-column>
+        <el-table-column label="功能" width="180">
 
-      <el-col :span="4"><strong>公网 IP:</strong></el-col>
-      <el-col :span="8">{{ switchParam.publicIp }}</el-col>
-    </el-row>
+          <template #default="scope">
+            <el-button type="primary" plain @click="getPortConfig(scope.row)">编辑</el-button>
+          </template>
+        </el-table-column>
 
-    <el-row>
-      <el-col :span="4"><strong>SN 号:</strong></el-col>
-      <el-col :span="8">{{ switchParam.serial }}</el-col>
-      <el-col :span="4"><strong>状态:</strong></el-col>
-      <el-col :span="8">{{ switchParam.status }}</el-col>
-    </el-row>
-  </div>
-  <div class="table-container">
+      </el-table>
+    </el-col>
+  </el-row>
+</center>
 
-    <el-table :data="portArr" stripe class="centered-table">
-      <el-table-column prop="name" label="名称" width="180"></el-table-column>
-      <el-table-column prop="portId" label="端口号" width="180"></el-table-column>
-      <el-table-column prop="type" label="类型" width="180"></el-table-column>
-      <el-table-column prop="vlan" label="vlan" width="180"></el-table-column>
-      <el-table-column label="功能" width="180">
 
-        <template #default="scope">
-          <el-button type="primary" plain @click="getPortConfig(scope.row)">编辑</el-button>
-        </template>
-      </el-table-column>
 
-    </el-table>
-  </div>
 
   <el-dialog v-model="dialogTableVisible" title="更新端口" align-center="align-center" :before-close="dialogClose">
     <el-table :data="tableData" :border="false" :show-header="false">
@@ -490,24 +490,46 @@ const accessTactics = [
 </template>
 
 
+
 <style scoped lang="scss">
+.switch-info {
+  margin: 30px 20px 25px 20px;  // 将下边距设为25px
+  padding: 20px;
+  border-radius: 5px;
+}
+
+.info-row {
+  margin-bottom: 15px;
+  color: #C8CBD2;
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
 .table-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  height: 100vh;
+  align-items: start;
+  height: calc(100vh - 140px);
+  margin-top:25px;  // 将上边距设为25px
 }
 
 .centered-table {
-  max-width: 90%;
-  margin: 20px;
-  //box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  max-width: 95%;
+  margin: 20px 0;
 }
-
 .button-container {
   display: flex;
-  justify-content: center; /* 水平居中 */
-  align-items: center; /* 垂直居中 */
-  padding: 20px 0; /* 顶部和底部的间距，可以根据需要调整 */
+  justify-content: center;
+  align-items: center;
+  padding: 20px 0;
 }
+.el-table::before {
+  height: 0;
+}
+.customer-table .el-table__fixed-right::before,
+.el-table__fixed::before {
+  width: 0;
+}
+
 </style>

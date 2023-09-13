@@ -12,7 +12,7 @@
     <!-- 自定义列插槽 -->
     <template #tableDefinedSlot="slotProps">
       <div v-if="slotProps.prop === 'operator'">
-        <el-button type="primary" plain @click="clickAction(slotProps.scope.row)">网段维护</el-button>
+        <el-button type="primary" plain @click="routerSubNet(slotProps.scope.row)">网段维护</el-button>
         <el-button type="primary" plain @click="routerDevicePage(slotProps.scope.row)">交换机配置</el-button>
         <el-button type="primary" plain @click="clickAction(slotProps.scope.row)">RMA 操作</el-button>
         <el-button type="primary" plain @click="clickAction(slotProps.scope.row)">模板修改</el-button>
@@ -136,25 +136,6 @@ function afterReset() {
 
 
 /**
- * 查询设备列表
- */
-async function listDevice(networkId, productType) {
-  const {data: res} = await http.post('/device/list', {networkId: networkId, productType: productType});
-  if (!res.success) {
-    return ElMessage.error(res.msg);
-  }
-  rebootDeviceList.length = 0;
-  res.data.forEach((device) => {
-    rebootDeviceList.push({
-      name: device.name,
-      serial: device.serial,
-      organizationId: device.organizationId,
-    });
-  })
-}
-
-
-/**
  * 跳转设备页
  * @param row
  */
@@ -162,7 +143,8 @@ const routerDevicePage = (row) => {
   const routeParams = {
     organizationId:row.organizationId,
     networkId: row.networkId,
-    networkName: row.name
+    networkName: row.name,
+    templateId:row.templateId
   }
   router.push({
     path:'/store/switchConfig',
@@ -174,15 +156,15 @@ const routerDevicePage = (row) => {
  * 跳转客户端页
  * @param row
  */
-const routerClientPage = (row) => {
+const routerSubNet = (row) => {
   const routeParams = {
+    organizationId:row.organizationId,
     networkId: row.networkId,
-    networkName: row.name,
+    networkName: row.name
   }
-
   router.push({
-    path:'/store/switchConfig',
-    params: routeParams,
+    path:'/store/subNet',
+    query: routeParams,
   });
 };
 
@@ -209,8 +191,9 @@ async function setupState() {
 }
 
 function initQuery() {
+  // TODO fix base value = 76
   const queryForm = {
-    organizationId: organizationOptions.value = '76'
+    organizationId: organizationOptions.value = '851180329573024294'
   };
   compoTableRef.value.setForm(queryForm);
   queryTable();

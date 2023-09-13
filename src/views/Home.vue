@@ -184,7 +184,7 @@ async function queryOrgId() {
  */
 function changeOrgSwitch(val) {
   if (val) {
-    orgId.value = officeOrgId.value;
+    orgId.value = val;
   } else {
     orgId.value = storeOrgId.value;
   }
