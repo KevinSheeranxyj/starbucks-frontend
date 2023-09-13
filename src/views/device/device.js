@@ -1,6 +1,6 @@
 import http from "@/utils/http";
 import tool from "@/utils/tool";
-
+// import {ElLoading} from "element-plus/lib/components";
 
 /**
  * 获取组织列表
@@ -21,6 +21,11 @@ async function getOrganizationOptions(options) {
  * 查询网络
  */
 async function getNetworkOptions(organizationId, options) {
+    // const loading =  ElLoading.service({
+    //     lock: true,
+    //     text: '网络列表加载中...',
+    //     background: 'rgba(0, 0, 0, 0.7)',
+    // })
     let networkNameDict = {};
     if (organizationId){
         const { data: res } = await http.post('/sys/redis/value', {key: 'DICT:NETWORK_NAME:ORG_ID:'+ organizationId});
@@ -49,6 +54,7 @@ async function getNetworkOptions(organizationId, options) {
             options.push(data);
         }
     }
+    // loading.close();
 }
 
 /**

@@ -65,9 +65,7 @@
 <script>
 import {onMounted, reactive, ref} from "vue";
 import {getNetworkOptions, getOrganizationOptions} from "@/views/device/device";
-import { ElLoading } from 'element-plus';
-import 'element-plus/lib/theme-chalk/index.css';
-
+import {ElLoading} from 'element-plus/lib/components';
 
 export default {
   name: "TransferPage",
@@ -105,9 +103,8 @@ export default {
         background: 'rgba(0, 0, 0, 0.7)',
       })
       await getNetworkOptions(v, networkOptions);
-      loading.close;
+      loading.close();
     };
-
 
     return {
       fromOrg,
