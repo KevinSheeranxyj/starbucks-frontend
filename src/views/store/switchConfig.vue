@@ -9,6 +9,13 @@
   >
 
     <template #tableTextSlot="slotProps">
+
+      <div v-if="slotProps.prop === 'status'">
+        <el-tag :type="getTagTypeByStatus(slotProps.cellValue)">
+          {{ statusEnum.getDescFromValue(slotProps.cellValue) }}
+        </el-tag>
+      </div>
+
       <div v-if="slotProps.prop === 'organizationId'">
         {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
       </div>
@@ -90,11 +97,13 @@ const remoteNameOptions = reactive([]);
 const remoteSerialOptions = reactive([]);
 const remoteMacOptions = reactive([]);
 const remotePublicIpOptions = reactive([]);
-
+const deviceStatusOptions = reactive([]);
 const organizationEnum = computed(() => {
   return createEnumByOptions(organizationOptions);
 });
-
+const statusEnum = computed(() => {
+  return createEnumByOptions(deviceStatusOptions);
+});
 
 
 // 表格列
@@ -286,6 +295,7 @@ async function summitTemplate(){
 
 onMounted(() => {
   initQuery();
+  tool.getOptions(deviceStatusOptions, 'DEVICE_STATUS');
   getOrganizationOptions(organizationOptions);
 });
 

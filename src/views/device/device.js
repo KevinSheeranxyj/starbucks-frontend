@@ -8,13 +8,15 @@ import tool from "@/utils/tool";
 async function getOrganizationOptions(options) {
     const {data: res} = await http.post('/organization/list', {});
     options.length = 0;
-    res.data.forEach((organization) => {
-        const data = {
-            label: organization.name,
-            value: organization.organizationId,
-        };
-        options.push(data);
-    });
+    if(res.data.length >0){
+        res.data.forEach((organization) => {
+            const data = {
+                label: organization.name,
+                value: organization.organizationId,
+            };
+            options.push(data);
+        });
+    }
 }
 
 export async function getNetworkTemplateOptions(options, organization) {

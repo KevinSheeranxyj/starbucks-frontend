@@ -745,6 +745,7 @@ async function updateVlanList() {
         networkVlanList: segmentData.value,
       }
   );
+
   if (!res.success) {
     ElMessage.error(res.msg);
   }
@@ -789,6 +790,9 @@ async function updateDeviceInfo() {
             ...deviceInfo.value
         }
     );
+  console.log({
+    ...deviceInfo.value
+  });
     if (!res.success) {
         ElMessage.error(res.msg);
     }
@@ -849,7 +853,7 @@ const router = useRouter();
 async function submitAll() {
   const {data: res} = http.post(
       '/operate/network/openStore/submit',
-      {id: networkId.value}
+      networkId.value
   );
   if (!res.success) {
     ElMessage.error(res.msg);
