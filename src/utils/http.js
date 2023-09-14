@@ -5,17 +5,17 @@ import NProgress from 'nprogress'
 
 const Qs = require('qs')
 
-//  配置请求的根路径
-// let host = window.location.host; // 主机(主机名+端口号)(localhost:8080)
-// let reg = /^localhost+/;
-// if (reg.test(host)) {
-//   // 若本地项目调试使用
-//   axios.defaults.baseURL = 'http://localhost';
-//   // axios.defaults.baseURL = 'http://merakimonitor.starbucks.net';
-// } else {
-//   // 动态请求地址
-//   axios.defaults.baseURL = 'http://116.62.112.199/starbucks';
-// }
+ // 配置请求的根路径
+let host = window.location.host; // 主机(主机名+端口号)(localhost:8080)
+let reg = /^localhost+/;
+if (reg.test(host)) {
+  // 若本地项目调试使用
+  axios.defaults.baseURL = 'http://localhost';
+  // axios.defaults.baseURL = 'http://merakimonitor.starbucks.net';
+} else {
+  // 动态请求地址
+  axios.defaults.baseURL = 'http://116.62.112.199/starbucks';
+}
 
 // 允许携带cookie
 axios.defaults.withCredentials = true;
@@ -47,7 +47,7 @@ formRequest.defaults.headers.common['Content-Type'] = 'application/x-www-form-ur
 formRequest.interceptors.response.use(responseHandler, errHandler);
 
 const http = {
-  // baseURL: axios.defaults.baseURL,
+  baseURL: axios.defaults.baseURL,
   get: request.get,
   post: request.post,
   formPost: async function (path, formData) {

@@ -343,17 +343,35 @@ export default {
      * 将角色数据递归成树
      */
     formatTree(data, parentRoleCode) {
-      return data
-        .filter((o) => {
-          // 判断是否是第一次递归（parentRole 未定义)
-          // 是：筛选parentRole为空的数据
-          // 否：筛选指定parentRole
-          return parentRoleCode === undefined ? !o.parentRoleCode : o.parentRoleCode === parentRoleCode;
-        })
-        .map((o) => {
-          o.children = this.formatTree(data, o.roleCode);
-          return o;
-        });
+      let result = [];
+
+      // 第一步: 查找顶级节点 (即 parentRoleCode 为空的节点)
+      for (let i = 0; i < data.length; i++) {
+        if (!data[i].parentRoleCode) {
+          result.push({
+            label: data[i].label,
+            children: []
+          });
+        }
+      }
+
+      // 第二步: 为顶级节点查找子节点
+      for (let i = 0; i < data.length; i++) {
+        if (data[i].parentRoleCode) {
+          for (let j = 0; j < result.length; j++) {
+            if (data[i].parentRoleCode === result[j].label) {
+              result[j].children.push({
+                label: data[i].label,
+                children: []
+              });
+            }
+          }
+        }
+      }
+
+      // 注意: 这只考虑了两级层次结构，你可能需要添加更多的循环来处理更深的层次结构。
+
+      return result;
     },
   },
 };

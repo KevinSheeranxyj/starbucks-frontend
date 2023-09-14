@@ -84,6 +84,11 @@
                   :table-params="selectedTable"
                   :default-table-data="selectedValues"
               >
+                <template #tableDefinedSlot="slotProps">
+                  <div v-if="slotProps.prop === 'operator'">
+                    <el-button type="primary" plain @click="removeSelected">移除</el-button>
+                  </div>
+                </template>
               </compo-table>
             </div>
           </div>
@@ -281,6 +286,11 @@ const finalActiveNames = ['7'];
 
 function closeDialog() {
   addDialogRef.value.dialogVisible = false;
+}
+function removeSelected(index){
+  console.log("this is code");
+  console.log(index);
+  selectedValues.value.splice(index, 1);
 }
 
 const { proxy } = getCurrentInstance();
@@ -593,6 +603,7 @@ const selectedTable = {
     {label: '订单编号', prop: 'orderNumber' },
     {label: '网络', prop: 'networkName', },
     {label: '状态', prop: 'usedStatus', },
+    {label: '操作', prop: 'operator',type: 'defined' },
   ],
   config: {
     page: true,
