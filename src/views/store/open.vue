@@ -411,12 +411,12 @@ const getApSchema = computed(() => {
   return {
     formItems: [
       {
-        label: '地理位置', prop: 'location', type: 'input',
+        label: '地理位置', prop: 'address', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
       {
-        label: '设备名称', prop: 'deviceName', type: 'input',
+        label: '设备名称', prop: 'name', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
@@ -448,12 +448,12 @@ const getSwitchSchema = computed(() => {
   return {
     formItems: [
       {
-        label: '地理位置', prop: 'location', type: 'input',
+        label: '地理位置', prop: 'address', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
       {
-        label: '设备名称', prop: 'deviceName', type: 'input',
+        label: '设备名称', prop: 'name', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
