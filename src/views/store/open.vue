@@ -350,13 +350,11 @@ async function pingCheck() {
 }
 
 function collectValues(values, idx) {
-  console.log("collectValues====",values,idx);
   const index = submitData.networkDeviceAdd.findIndex(item => item.serial === idx);
   submitData.networkDeviceAdd[index] = {
     ...submitData.networkDeviceAdd[index],
     ...values
   }
-  console.log("collectValues====2",submitData.networkDeviceAdd);
 }
 
 const segmentOptions = ref([
@@ -513,8 +511,9 @@ function handleClose() {
 }
 
 function handleSelectedValues(val) {
-  if (val.length > 0){
-    selectedValues.value = val;
+
+  if (val.length > 0) {
+    selectedValues.value = selectedValues.value.concat(val);
   }
 }
 
@@ -736,6 +735,8 @@ function secondStep() {
   submitData.storeInfo = storeSchemaFormRef.value.getForm();
   active.value++;
   currentStep.value++;
+
+  console.log("======",{ formItems: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? [] : queryDeviceForm })
 }
 
 function thirdStep() {
