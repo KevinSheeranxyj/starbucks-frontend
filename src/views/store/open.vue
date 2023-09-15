@@ -343,7 +343,6 @@ async function pingCheck() {
     return this.$message.error(res.msg);
   } else {
     segmentData.value = res.data;
-    console.log(segmentData.value);
   }
   loading.close();
 
@@ -513,7 +512,11 @@ function handleClose() {
 function handleSelectedValues(val) {
 
   if (val.length > 0) {
-    selectedValues.value = selectedValues.value.concat(val);
+    val.forEach(item => {
+      if (!selectedValues.value.includes(item)) {
+        selectedValues.value.push(item);
+      }
+    });
   }
 }
 
@@ -736,7 +739,6 @@ function secondStep() {
   active.value++;
   currentStep.value++;
 
-  console.log("======",{ formItems: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? [] : queryDeviceForm })
 }
 
 function thirdStep() {
@@ -815,7 +817,13 @@ function finalStep() {
 
 async function updateDeviceInfo() {
 
-
+  networkDeviceData = networkDeviceData.map(device => {
+    const matchedDevice = deviceInfo.value.find(info => info.mac === device.mac);
+    if (matchedDevice) {
+      device.id = matchedDevice.id;
+    }
+    return device;
+  });
     const {data: res} = await http.post(
         '/operate/device/updateDevice',
         networkDeviceData
@@ -884,7 +892,6 @@ async function submitAll() {
       '/operate/network/openStore/submit',
       networkId.value
   );
-  console.log(res);
   if (!res.success) {
     ElMessage.error(res.msg);
   }else{
