@@ -233,7 +233,7 @@ export default {
   name: 'CompoTable',
   components: { SingleDataView, Rank },
   props: { tableParams: Object, spanMethod: Function, summaryMethod: Function,
-    expandChange: Function, defaultTableData: Array, selectedValues: Array },
+    expandChange: Function, defaultTableData: Array, selectedValues: Array ,organizationId:Object},
   emits: ['updateSuccess', 'querySuccess', 'changeSelect', 'remoteMethod', 'selectedValues'],
 
   data() {
@@ -354,10 +354,9 @@ export default {
           }
 
           this.loading = true;
-          console.log("=========query",form);
           const { data: res } = await this.$http.post(
             this.tableParams.query.url + '?page=' + this.page + '&limit=' + this.limit,
-            this.queryForm
+              this.organizationId ? { ...this.queryForm, organizationId: this.organizationId } : this.queryForm
           );
           this.loading = false;
           if (!res.success) {

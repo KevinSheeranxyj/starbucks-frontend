@@ -49,6 +49,7 @@
                 ref="deviceTableRef"
                 :table-params="deviceTable"
                 @selectedValues="handleSelectedValues"
+                :organizationId="submitData.organization.organizationId"
             >
               <template #buttonSlot>
                 <el-button type="primary" plain @click="addDeviceDialog">申领设备</el-button>
@@ -282,7 +283,7 @@ const dialogVisible = ref(false);
 const selectedValues = ref([]);
 const isManual = ref(false);
 const manualIP = ref('');
-const lastValidIP = ref('');
+
 
 const segmentTypeData = ref('自动');
 let switchData = reactive([]);
@@ -617,6 +618,8 @@ const queryDeviceForm = [
   {
     label: '状态', prop: 'usedStatus', type: 'select',
     config: {options: userStatusOptions}
+  },{
+    prop:'organizationId',value:'851180329573024294'
   }
 ]
 const selectedTable = {
@@ -643,6 +646,7 @@ const selectedTable = {
 };
 
 const deviceTable = computed(() => {
+  console.log("测试=========",{ formItems: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? [] : queryDeviceForm },);
   return {
     query: {
       url: '/device/inventory/table',
