@@ -162,7 +162,7 @@
         </div>
 
         <div v-else>
-           <el-button @click="centerDialogVisible = false">关闭</el-button>
+           <el-button @click="doAction">确认通过</el-button>
         </div>
 
       </span>
@@ -269,6 +269,12 @@ function rejectDialog(id) {
   setDialogConfig("确认拒绝", `确定要拒绝ID为 ${id} 的请求吗？`, 'reject', '30%', true, id);
 }
 
+// 执行操作
+async function doAction(row){
+
+  const {data:res} = await http.post("/operate/network/execute",{id:selectedID.value})
+  console.log(res);
+}
 function setDialogConfig(title, content, action, width, isShow, id) {
   isDetail.value = false;
   dialogTitle.value = title;
@@ -286,7 +292,6 @@ function doApprove() {
 }
 
 function doReject() {
-  // 你可以在这里进行实际的"拒绝"操作，如API调用等
   centerDialogVisible.value = false;
   updataStatus(3, selectedID.value);
 }
@@ -330,13 +335,14 @@ function statusFilteredData() {
 
 async function getNetData() {
   var params = {
-    "type": '',
-    "auditStatus": '',
-    "createStart": '',
-    "createEnd": '',
-    "createdBy": '',
-    "updatedBy": ''
+    type: searchForm.value.selectedOperationType,
+    auditStatus: '',
+    createStart: '',
+    createEnd: '',
+    createdBy: '',
+    updatedBy: ''
   };
+
   const res = await http.post("/operate/audit/table" + '?page=' + pagination.currentPage + '&limit=' + pagination.pageSize, {});
 
   if (res.data && res.data.data) {
@@ -401,7 +407,7 @@ function handleCurrentChange(newPage) {
 }
 
 function queryTable() {
-  console.log(searchForm.value);
+  getNetData();
 }
 
 function resetSearch() {
@@ -436,7 +442,7 @@ async function showAuditDetail(id) {
   dialogTitle.value = "查看详情"
   const res = await http.post('/operate/audit/detail', {'id': id});
   detailModel.value = res.data.data;
-  console.log(detailModel.value);
+  selectedID.value = id;
   centerDialogVisible.value = true
 }
 

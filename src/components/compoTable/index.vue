@@ -354,6 +354,7 @@ export default {
           }
 
           this.loading = true;
+          console.log("=========query",form);
           const { data: res } = await this.$http.post(
             this.tableParams.query.url + '?page=' + this.page + '&limit=' + this.limit,
             this.queryForm

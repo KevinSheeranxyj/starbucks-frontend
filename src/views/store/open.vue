@@ -51,7 +51,7 @@
                 @selectedValues="handleSelectedValues"
             >
               <template #buttonSlot>
-                <el-button type="primary" plain @click="addDeviceDialog">添加设备</el-button>
+                <el-button type="primary" plain @click="addDeviceDialog">申领设备</el-button>
               </template>
               <template #dialog>
                 <compo-dialog ref="addDialogRef" :dialog-params="addDialog">
@@ -113,11 +113,18 @@
               </el-option>
             </el-select>
 
+            <el-row v-if="isManual" style="margin-top: 10px">
+              <el-row v-if="isManual" style=" display: flex; align-items: center;">
+                <span style="margin-right: 5px">网段:   </span>
+                <el-input v-model="manualIP" placeholder="请输入:10.0.0.0- 10.255.255.255之间的网段" style="flex: 1;width: 220px;"></el-input>
+                <span style="margin-left: 5px">/24</span>
+              </el-row>
+            </el-row>
+
             <compo-table
                ref="segmentFormRef"
                :table-params="segmentTable"
-               :default-table-data="segmentData"
-           >
+               :default-table-data="segmentData">
              <template #buttonSlot v-if="isManual">
                 <el-button type="primary" @click="pingCheck">PING检测</el-button>
              </template>
@@ -139,8 +146,8 @@
             <span>{{item.serial}} - {{item.mac}} - {{item.model}}</span>
             <compo-form
                 @popValue="(val) => collectValues(val, item.serial)"
-                :form-params="getNetworkType(item.model) === 'router' ? getRouterInfoSchema:
-                getNetworkType(item.model) === 'appliance' ? getApSchema : getSwitchSchema"
+                :form-params="getNetworkType(item.model) === 'router' ? getRouterInfoSchema :
+                (getNetworkType(item.model) === 'appliance' ? getApSchema : getSwitchSchema)"
                 form-type="table"
             >
             </compo-form>
@@ -254,11 +261,12 @@
 <script setup>
 import CompoTable from "@/components/compoTable/index.vue";
 import CompoDialog from "@/components/compoDialog/index.vue";
-import {computed, getCurrentInstance, onMounted, onUpdated, reactive, ref} from "vue";
+import {computed, getCurrentInstance, onMounted, onUpdated, reactive, ref, watch} from "vue";
 import {useRouter} from "vue-router";
 import {getOrganizationOptions, getNetworkTemplateOptions, getSwitchTemplateOptions} from "@/views/device/device";
 import http from "@/utils/http";
-import {ElMessage} from "element-plus/lib/components";
+import {ElLoading, ElMessage} from "element-plus/lib/components";
+
 
 const active =  ref(0);
 const addDialogRef = ref(null);
@@ -273,6 +281,9 @@ const disabledButton = ref(false);
 const dialogVisible = ref(false);
 const selectedValues = ref([]);
 const isManual = ref(false);
+const manualIP = ref('');
+const lastValidIP = ref('');
+
 const segmentTypeData = ref('自动');
 let switchData = reactive([]);
 const submitData = reactive({
@@ -284,12 +295,16 @@ const submitData = reactive({
 });
 const finalActiveNames = ['7'];
 
+
+function isValidIP(ip) {
+  const regex = /^10\.([0-9]{1,2}|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]{1,2}|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.([0-9]{1,2}|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/;
+  return regex.test(ip);
+}
+
 function closeDialog() {
   addDialogRef.value.dialogVisible = false;
 }
 function removeSelected(index){
-  console.log("this is code");
-  console.log(index);
   selectedValues.value.splice(index, 1);
 }
 
@@ -310,10 +325,19 @@ async function applyDevice() {
 }
 
 async function pingCheck() {
+  if(!isValidIP(manualIP.value)){
+    ElMessage.error('请输入:10.0.0.0- 10.255.255.255之间的网段');
+    return;
+  }
+  const loading =  ElLoading.service({
+    lock: true,
+    text: 'ping检测中...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
   const {data: res} = await http.post(
       '/operate/networkVlan/getVlans',
       {
-        ...segmentFormRef.value.getForm(),
+        segment:manualIP.value+'/24',
       });
   if (!res.success) {
     return this.$message.error(res.msg);
@@ -321,16 +345,18 @@ async function pingCheck() {
     segmentData.value = res.data;
     console.log(segmentData.value);
   }
+  loading.close();
 
 }
 
 function collectValues(values, idx) {
+  console.log("collectValues====",values,idx);
   const index = submitData.networkDeviceAdd.findIndex(item => item.serial === idx);
   submitData.networkDeviceAdd[index] = {
     ...submitData.networkDeviceAdd[index],
     ...values
   }
-  console.log(submitData.networkDeviceAdd);
+  console.log("collectValues====2",submitData.networkDeviceAdd);
 }
 
 const segmentOptions = ref([
@@ -444,7 +470,7 @@ const getSwitchSchema = computed(() => {
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       },
       {
-        label: 'MS IP', prop: 'msIp', type: 'input',
+        label: 'MS IP', prop: 'staticIp', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       },
       {
@@ -452,7 +478,7 @@ const getSwitchSchema = computed(() => {
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       },
       {
-        label: '网关', prop: 'gateway', type: 'input',
+        label: '网关', prop: 'staticGatewayIp', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       }
     ]
@@ -521,9 +547,10 @@ const segmentTable = computed(() => {
     query: {
       url: '/operate/networkVlan/getVlans',
       form: {formItems: isManual.value ? [
-          {
-            label: '网段', prop: 'segment', type: 'input',
-          }] : [
+          // {
+          //   label: '网段', prop: 'segment', type: 'input',
+          // }
+          ] : [
           {
             label: '12.xx.xx/120', prop: 'segment', type: 'select', disabled: true,
             config: {options: segmentOptions}
@@ -617,7 +644,7 @@ const deviceTable = computed(() => {
   return {
     query: {
       url: '/device/inventory/table',
-      form: {formItems: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? [] : queryDeviceForm},
+      form: { formItems: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? [] : queryDeviceForm },
       reset: false
     },
     columns: [
@@ -747,6 +774,7 @@ async function updateSelectedNetworks() {
   if (!res.success) {
     ElMessage.error(res.msg);
   }
+
   deviceInfo.value = res.data;
 }
 
@@ -783,25 +811,13 @@ function finalStep() {
       .filter(item => getNetworkType(item.model) === 'switch');
 }
 
-function compoundDeviceInfo() {
-  const arr1 = deviceInfo.value;
-  const arr2 = submitData.networkDeviceAdd;
-  for(let i = 0; i < arr1.length; i++ ) {
-      obj1 = arr1[i];
-      obj2 = arr2[i];
-      if (obj1.serial === obj2.serial) {
-          
-      }
-  }
-}
 
 async function updateDeviceInfo() {
-  // deviceInfo.value.find();
+
+
     const {data: res} = await http.post(
         '/operate/device/updateDevice',
-
-        deviceInfo.value
-
+        networkDeviceData
     );
 
     if (!res.success) {
@@ -863,12 +879,15 @@ const switchTemplateSchema = computed(() => {
 const router = useRouter();
 
 async function submitAll() {
-  const {data: res} = http.post(
+  const {data: res} =  await http.post(
       '/operate/network/openStore/submit',
       networkId.value
   );
+  console.log(res);
   if (!res.success) {
     ElMessage.error(res.msg);
+  }else{
+    ElMessage.success(res.msg);
   }
 }
 
@@ -921,5 +940,7 @@ async function submitAll() {
   padding-left: 45px;
   color: white;
 }
-
+.valid-border {
+  border-color: green !important;
+}
 </style>
