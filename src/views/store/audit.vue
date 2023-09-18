@@ -93,7 +93,7 @@
              <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
              <el-table-column label="操作" width="180">
                <template #default="scope">
-                 <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row.id)">查看详情</el-link>
+                 <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row)">查看详情</el-link>
                  <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="success"
                           @click="approveDialog(scope.row.id)">通过
                  </el-link>
@@ -157,8 +157,12 @@
 
         <div v-if="!isDetail">
           <el-button @click="centerDialogVisible = false">关闭</el-button>
-      <el-button v-if="dialogAction === 'reject'" type="danger" @click="doReject()">确认拒绝</el-button>
-      <el-button v-if="dialogAction === 'approve'" type="success" @click="doApprove()">确认通过</el-button>
+          <el-button v-if="dialogAction === 'reject'" type="danger" @click="doReject()">确认拒绝</el-button>
+          <el-button v-if="dialogAction === 'approve'" type="success" @click="doApprove()">确认通过</el-button>
+        </div>
+
+        <div v-else-if="isCanBack">
+           <el-button @click="backAction">回退</el-button>
         </div>
 
         <div v-else>
@@ -190,9 +194,11 @@
               <el-col :span="4">{{ formData.mac }}</el-col>
               <el-col :span="4">{{ formData.address }}</el-col>
             </el-row>
+
           </el-form>
         </div>
       </div>
+
       <div v-else style="text-align: center;">
         <el-divider/>
         <strong>暂无网络设备</strong>
@@ -230,6 +236,7 @@
 
 import {computed, onMounted, reactive, ref} from "vue";
 import http from "@/utils/http";
+import {ElMessage} from "element-plus/lib/components";
 
 onMounted(() => {
   getNetData();
@@ -244,6 +251,7 @@ const selectedID = ref('');
 
 
 const isDetail = ref(false);
+const isCanBack = ref(false);
 
 const activeName = ref('readyAudit')
 
@@ -254,26 +262,43 @@ const handleClick = (tab, event) => {
 
 
 
-function openDetailDialog(id) {
+/// 打开弹窗, 设置是否显示 回退 按钮的逻辑
+function openDetailDialog(row) {
   isDetail.value = true;
   dialogContent.value = '';
   dialogWidth.value = "70%";
-  showAuditDetail(id);
+
+  console.log(row);
+if( (row.value === 2 || row.value === 3) && row.executeStatus === 2){
+  isCanBack.value = true
+}else{
+  isCanBack.value = false
 }
 
+
+
+  showAuditDetail(row.id);
+}
 function approveDialog(id) {
-  setDialogConfig("确认通过", `确定要通过ID为 ${id} 的请求吗？`, 'approve', "30%", true, id);
+  setDialogConfig("确认通过", `确定{}要通过吗？`, 'approve', "30%", true, id);
 }
 
 function rejectDialog(id) {
-  setDialogConfig("确认拒绝", `确定要拒绝ID为 ${id} 的请求吗？`, 'reject', '30%', true, id);
+  setDialogConfig("确认拒绝", `确定要拒绝吗？`, 'reject', '30%', true, id);
 }
 
 // 执行操作
 async function doAction(row){
 
   const {data:res} = await http.post("/operate/network/execute",{id:selectedID.value})
-  console.log(res);
+  if(res.success){
+    ElMessage.success('转移成功');
+  }else{
+    ElMessage.error(res.msg);
+  }
+}
+async function backAction(){
+  console.log("回退操作");
 }
 function setDialogConfig(title, content, action, width, isShow, id) {
   isDetail.value = false;
@@ -360,6 +385,7 @@ async function getNetData() {
       }
 
       if (item.type) {
+        item.value = item.type;
         item.type = getDescFromValue(operationTypesOptions, item.type);
       }
       if (item.auditStatus) {

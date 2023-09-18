@@ -646,7 +646,6 @@ const selectedTable = {
 };
 
 const deviceTable = computed(() => {
-  console.log("测试=========",{ formItems: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? [] : queryDeviceForm },);
   return {
     query: {
       url: '/device/inventory/table',
@@ -814,8 +813,13 @@ function finalStep() {
   updateDeviceInfo();
   active.value++;
   currentStep.value++;
+
   switchData = submitData.networkDeviceAdd
       .filter(item => getNetworkType(item.model) === 'switch');
+
+  if(switchData.length<1){
+    preview()
+  }
 }
 
 
