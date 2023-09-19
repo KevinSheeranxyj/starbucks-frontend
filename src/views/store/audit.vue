@@ -83,27 +83,27 @@
             class="demo-tabs"
             @tab-click="handleClick"
         >
-         <el-tab-pane label="待审核" name="readyAudit">
-           <el-table :data="filteredData" class="table,el-table" align="center" header-align="center">
-             <el-table-column prop="createdBy" label="提交人"></el-table-column>
-             <el-table-column prop="createdAt" label="提交日期"></el-table-column>
-             <el-table-column prop="type" label="操作类型"></el-table-column>
-             <el-table-column prop="auditStatus" label="操作状态"></el-table-column>
-             <el-table-column prop="updatedBy" label="处理人"></el-table-column>
-             <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
-             <el-table-column label="操作" width="180">
-               <template #default="scope">
-                 <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row)">查看详情</el-link>
-                 <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="success"
-                          @click="approveDialog(scope.row.id)">通过
-                 </el-link>
-                 <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="danger"
-                          @click="rejectDialog(scope.row.id)">拒绝
-                 </el-link>
-               </template>
-             </el-table-column>
-           </el-table>
-         </el-tab-pane>
+          <el-tab-pane label="待审核" name="readyAudit">
+            <el-table :data="filteredData" class="table,el-table" align="center" header-align="center">
+              <el-table-column prop="createdBy" label="提交人"></el-table-column>
+              <el-table-column prop="createdAt" label="提交日期"></el-table-column>
+              <el-table-column prop="type" label="操作类型"></el-table-column>
+              <el-table-column prop="auditStatus" label="操作状态"></el-table-column>
+              <el-table-column prop="updatedBy" label="处理人"></el-table-column>
+              <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
+              <el-table-column label="操作" width="180">
+                <template #default="scope">
+                  <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row)">查看详情</el-link>
+                  <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="success"
+                           @click="approveDialog(scope.row.id)">通过
+                  </el-link>
+                  <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="danger"
+                           @click="rejectDialog(scope.row.id)">拒绝
+                  </el-link>
+                </template>
+              </el-table-column>
+            </el-table>
+          </el-tab-pane>
 
           <el-tab-pane label="已审核" name="audited">
             <el-table :data="auditedData" class="table,el-table" align="center" header-align="center">
@@ -261,7 +261,6 @@ const handleClick = (tab, event) => {
 }
 
 
-
 /// 打开弹窗, 设置是否显示 回退 按钮的逻辑
 function openDetailDialog(row) {
   isDetail.value = true;
@@ -269,16 +268,16 @@ function openDetailDialog(row) {
   dialogWidth.value = "70%";
 
   console.log(row);
-if( (row.value === 2 || row.value === 3) && row.executeStatus === 2){
-  isCanBack.value = true
-}else{
-  isCanBack.value = false
-}
-
+  if ((row.value === 2 || row.value === 3) && row.executeStatus === 2) {
+    isCanBack.value = true
+  } else {
+    isCanBack.value = false
+  }
 
 
   showAuditDetail(row.id);
 }
+
 function approveDialog(id) {
   setDialogConfig("确认通过", `确定{}要通过吗？`, 'approve', "30%", true, id);
 }
@@ -288,18 +287,20 @@ function rejectDialog(id) {
 }
 
 // 执行操作
-async function doAction(row){
+async function doAction(row) {
 
-  const {data:res} = await http.post("/operate/network/execute",{id:selectedID.value})
-  if(res.success){
+  const {data: res} = await http.post("/operate/network/execute", {id: selectedID.value})
+  if (res.success) {
     ElMessage.success('转移成功');
-  }else{
+  } else {
     ElMessage.error(res.msg);
   }
 }
-async function backAction(){
+
+async function backAction() {
   console.log("回退操作");
 }
+
 function setDialogConfig(title, content, action, width, isShow, id) {
   isDetail.value = false;
   dialogTitle.value = title;
@@ -361,20 +362,18 @@ function statusFilteredData() {
 async function getNetData() {
   var params = {
     type: searchForm.value.selectedOperationType,
-    auditStatus: '',
-    createStart: '',
-    createEnd: '',
-    createdBy: '',
-    updatedBy: ''
+    auditStatus: searchForm.value.selectedStatusType,
+    createStart: searchForm.value.createdStart,
+    createEnd: searchForm.value.createdEnd,
+    createdBy:  searchForm.value.submitPerson,
+    updatedBy: searchForm.value.auditPerson
   };
 
-  const res = await http.post("/operate/audit/table" + '?page=' + pagination.currentPage + '&limit=' + pagination.pageSize, {});
-
+  const res = await http.post("/operate/audit/table" + '?page=' + pagination.currentPage + '&limit=' + pagination.pageSize, params);
+  auditedData.value = [];
+  filteredData.value = [];
   if (res.data && res.data.data) {
     res.data.data.forEach(item => {
-        if(item.auditStatus !== 1){
-          auditedData.value.push(item);
-        }
 
       // 格式化时间
       if (item.createdAt) {
@@ -388,13 +387,20 @@ async function getNetData() {
         item.value = item.type;
         item.type = getDescFromValue(operationTypesOptions, item.type);
       }
-      if (item.auditStatus) {
+
+      if (item.auditStatus !== 1) {
         item.auditStatus = getDescFromValue(auditStatusOptions, item.auditStatus);
+        auditedData.value.push(item);
+      } else {
+        if (item.auditStatus) {
+          item.auditStatus = getDescFromValue(auditStatusOptions, item.auditStatus);
+        }
+        filteredData.value.push(item);
       }
     });
 
     pagination.totalItems = res.data.count;
-    filteredData.value = res.data.data;
+
 
   }
 }
@@ -437,7 +443,16 @@ function queryTable() {
 }
 
 function resetSearch() {
-
+  searchForm.value = {
+    selectedOperationType: '',
+    selectedStatusType: '',
+    auditStatus: '',
+    createdStart: '',
+    createdEnd: '',
+    auditPerson: '',
+    submitPerson: '',
+  }
+  getNetData();
 }
 
 const auditUpdateURL = "/operate/audit/updateAuditStatus";
@@ -524,6 +539,7 @@ async function showAuditDetail(id) {
 .action-link[type="danger"] {
   background-color: #f56c6c;
 }
+
 .demo-tabs > .el-tabs__content {
   padding: 32px;
   color: #6b778c;
