@@ -78,6 +78,11 @@
             {{ '主:' + scope.row['primaryDns']}}<br>
             {{ '次:' + (scope.row['secondaryDns'] === null ? "" : scope.row['secondaryDns']) }}
           </template>
+          <template v-else-if="item.type === 'usedStatus'" #default="scope">
+            <slot name="tableDNSSlot" :scope="scope" :prop="item.prop"> </slot>
+            {{scope.row['usedStatus'] === 1 ? "已使用" :"未使用"}}<br>
+          </template>
+
           <!-- 单元格：支持输入框编辑  -->
           <template v-else-if="item.type === 'input'" #default="scope">
             <el-input

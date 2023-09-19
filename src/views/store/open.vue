@@ -427,7 +427,7 @@ const getApSchema = computed(() => {
         rules: true
       },
       {
-        label: '备 DNS', prop: 'secondDns', type: 'input',
+        label: '备 DNS', prop: 'secondaryDns', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       },
       {
@@ -658,7 +658,7 @@ const deviceTable = computed(() => {
       {label: '型号', prop: 'model', },
       {label: '订单编号', prop: 'orderNumber' },
       {label: '网络', prop: 'networkName', },
-      {label: '状态', prop: 'usedStatus', },
+      {label: '状态', prop: 'usedStatus',type:'usedStatus' },
     ],
     config: {
       page: true,
