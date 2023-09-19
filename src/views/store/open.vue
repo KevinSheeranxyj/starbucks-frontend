@@ -431,7 +431,7 @@ const getApSchema = computed(() => {
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       },
       {
-        label: 'MR IP', prop: 'mrIp', type: 'input',
+        label: 'MR IP', prop: 'staticIp', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
       },
       {
@@ -492,7 +492,7 @@ const getRouterInfoSchema = computed(() => {
         rules: true
       },
       {
-        label: '设备名称', prop: 'deviceName', type: 'input',
+        label: '设备名称', prop: 'name', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
         rules: true
       },
@@ -810,6 +810,7 @@ function fourthStep() {
 
 
 function finalStep() {
+
   updateDeviceInfo();
   active.value++;
   currentStep.value++;
@@ -832,6 +833,7 @@ async function updateDeviceInfo() {
     }
     return device;
   });
+
     const {data: res} = await http.post(
         '/operate/device/updateDevice',
         networkDeviceData
