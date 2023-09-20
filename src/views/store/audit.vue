@@ -296,7 +296,13 @@ async function doAction(row) {
 }
 
 async function backAction() {
-  console.log("回退操作");
+  const {data:res} = http.post('operate/audit/rollback',{id: selectedID.value})
+  if (res.success) {
+    ElMessage.success('执行成功');
+  } else {
+    ElMessage.error(res.msg);
+  }
+  getNetData();
 }
 
 function setDialogConfig(title, content, action, width, isShow, id) {

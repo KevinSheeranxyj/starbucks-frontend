@@ -63,7 +63,7 @@ const menu = [
     title: 'org管理',
     children: [
       { icon: List, title: '信息维护', path: '/org/info' },
-      { icon: Switch, title: '审批进度', path: '/org/review' }
+      // { icon: Switch, title: '审批进度', path: '/org/review' }
     ]
   },
   {

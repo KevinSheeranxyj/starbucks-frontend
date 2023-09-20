@@ -80,7 +80,7 @@
           </template>
           <template v-else-if="item.type === 'usedStatus'" #default="scope">
             <slot name="tableDNSSlot" :scope="scope" :prop="item.prop"> </slot>
-            {{scope.row['usedStatus'] === 1 ? "已使用" :"未使用"}}<br>
+            {{scope.row['usedStatus'] === 1 ? "未使用" :"已使用"}}<br>
           </template>
 
           <!-- 单元格：支持输入框编辑  -->
