@@ -8,7 +8,7 @@
           <el-row>
             <el-col :span="4">
               <el-form-item label="操作类型">
-                <el-select v-model="searchForm.selectedOperationType" placeholder="选择操作类型" @change="filterData">
+                <el-select v-model="searchForm.selectedOperationType" placeholder="选择操作类型" @change="getNetData">
                   <el-option
                       v-for="item in operationTypesOptions"
                       :key="item.value"
@@ -22,7 +22,7 @@
             <el-col :span="4">
               <el-form-item label="状态类型">
                 <el-select v-model="searchForm.selectedStatusType" placeholder="选择审核状态"
-                           @change="statusFilteredData">
+                           @change="getNetData">
                   <el-option
                       v-for="item in auditStatusOptions"
                       :key="item.value"
@@ -39,6 +39,7 @@
                     v-model="searchForm.createdStart"
                     type="date"
                     placeholder="Pick a day"
+                    @change="changeTime"
                 />
               </el-form-item>
             </el-col>
@@ -48,19 +49,20 @@
                     v-model="searchForm.createdEnd"
                     type="date"
                     placeholder="Pick a day"
+                    @change="changeTime"
                 />
               </el-form-item>
             </el-col>
 
             <el-col :span="4">
               <el-form-item label="处理人">
-                <el-input v-model="searchForm.auditPerson" placeholder="请输入..."></el-input>
+                <el-input v-model="searchForm.auditPerson" placeholder="请输入..."  @blur="getNetData"></el-input>
               </el-form-item>
             </el-col>
 
             <el-col :span="4">
               <el-form-item label="提交人">
-                <el-input v-model="searchForm.submitPerson" placeholder="请输入..."></el-input>
+                <el-input v-model="searchForm.submitPerson" placeholder="请输入..." @blur="getNetData"></el-input>
               </el-form-item>
             </el-col>
 
@@ -115,7 +117,7 @@
               <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
               <el-table-column label="操作" width="180">
                 <template #default="scope">
-                  <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row.id)">查看详情</el-link>
+                  <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row)">查看详情</el-link>
                   <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="success"
                            @click="approveDialog(scope.row.id)">通过
                   </el-link>
@@ -234,7 +236,7 @@
 
 <script setup>
 
-import {computed, onMounted, reactive, ref} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import http from "@/utils/http";
 import {ElMessage} from "element-plus/lib/components";
 
@@ -267,12 +269,8 @@ function openDetailDialog(row) {
   dialogContent.value = '';
   dialogWidth.value = "70%";
 
-  console.log(row);
-  if ((row.value === 2 || row.value === 3) && row.executeStatus === 2) {
-    isCanBack.value = true
-  } else {
-    isCanBack.value = false
-  }
+
+  isCanBack.value = (row.value === 2 || row.value === 3) && row.executeStatus === 2;
 
 
   showAuditDetail(row.id);
@@ -291,7 +289,7 @@ async function doAction(row) {
 
   const {data: res} = await http.post("/operate/network/execute", {id: selectedID.value})
   if (res.success) {
-    ElMessage.success('转移成功');
+    ElMessage.success('执行成功');
   } else {
     ElMessage.error(res.msg);
   }
@@ -322,13 +320,19 @@ function doReject() {
   updataStatus(3, selectedID.value);
 }
 
+function changeTime(){
+
+  if (searchForm.value.createdStart && searchForm.value.createdEnd) {
+    getNetData();
+  }
+}
 
 const searchForm = ref({
   selectedOperationType: '',
   selectedStatusType: '',
   auditStatus: '',
-  createdStart: '',
-  createdEnd: '',
+  createdStart: Date(),
+  createdEnd: Date(),
   auditPerson: '',
   submitPerson: '',
 })
@@ -351,12 +355,6 @@ const auditStatusOptions = reactive([
 const filteredData = ref([]);
 
 const auditedData = ref([]);
-
-function filterData() {
-}
-
-function statusFilteredData() {
-}
 
 
 async function getNetData() {
