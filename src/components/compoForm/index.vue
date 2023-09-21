@@ -243,6 +243,55 @@ export default {
           }
         }
 
+        if (row.isIp === true) {
+          const ipValidator = {
+            validator: (rule, value, callback) => {
+              const ipPattern = /^(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)\.(25[0-5]|2[0-4][0-9]|[0-1]?[0-9][0-9]?)$/;
+              if (ipPattern.test(value)) {
+                callback(); // 符合规则
+              } else {
+                callback(new Error('请输入有效的IP地址')); // 不符合规则
+              }
+            },
+            trigger: 'blur'
+          };
+
+          // 如果 row['rules'] 已经存在，则追加。否则，创建一个新数组
+          if (Array.isArray(row['rules'])) {
+            row['rules'].push(ipValidator);
+          } else {
+            row['rules'] = [ipValidator];
+          }
+        }
+
+        if (row.isVlan === true) {
+          const vlanValidator = {
+            validator: (rule, value, callback) => {
+              const vlanPattern = /^[1-9][0-9]*$/;  // 正整数
+              if (vlanPattern.test(value)) {
+                callback(); // 符合规则
+              } else {
+                callback(new Error('请输入有效的VLAN ID')); // 不符合规则
+              }
+            },
+            trigger: 'blur'
+          };
+
+          // 如果 row['rules'] 已经存在，则追加。否则，创建一个新数组
+          if (Array.isArray(row['rules'])) {
+            row['rules'].push(vlanValidator);
+          } else {
+            row['rules'] = [vlanValidator];
+          }
+
+          // 设置默认值
+          if (row.config && 'defaultValue' in row.config) {
+            row.config['defaultValue'] = row.config['defaultValue'];  // 可以设置为你想要的默认值
+          } else {
+            row.config = row.config || {};
+            row.config['defaultValue'] = '';  // 可以设置为你想要的默认值
+          }
+        }
         // 判断是否设置 栅格列数'fixedSpan'
         row['span'] = row.fixedSpan ? row.fixedSpan : span;
       }

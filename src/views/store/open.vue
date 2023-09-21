@@ -424,23 +424,29 @@ const getApSchema = computed(() => {
       {
         label: '主 DNS', prop: 'primaryDns', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
-        rules: true
+        rules: true,
+        isIp:true
       },
       {
         label: '备 DNS', prop: 'secondaryDns', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        isIp:true
       },
       {
         label: 'MR IP', prop: 'staticIp', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        isIp:true
       },
       {
         label: 'VLAN', prop: 'vlan', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        isVlan:true
+
       },
       {
         label: '网关', prop: 'gateway', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        isIp:true
       }
     ]
   };
@@ -461,23 +467,28 @@ const getSwitchSchema = computed(() => {
       {
         label: '主 DNS', prop: 'primaryDns', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
-        rules: true
+        rules: true,
+        isIp:true
       },
       {
         label: '备 DNS', prop: 'secondDns', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        isIp:true
       },
       {
         label: 'MS IP', prop: 'staticIp', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        isIp:true
       },
       {
         label: 'VLAN', prop: 'vlan', type: 'input',
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true,defaultValue:2} : {defaultValue:2},
+        isVlan:true,defaultValue:2
       },
       {
         label: '网关', prop: 'staticGatewayIp', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        isIp:true
       }
     ]
   }
