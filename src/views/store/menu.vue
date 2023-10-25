@@ -1,5 +1,5 @@
 <template >
-  <div class="store-container">
+  <div >
     <el-container class="el-container">
       <el-main class="el-main">
         <el-card class="box-card" @click="openStore">

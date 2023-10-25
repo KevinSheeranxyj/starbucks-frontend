@@ -218,7 +218,9 @@ onActivated(() => {
 
 function clickAction(v){
 
-  console.log(v);
+  router.push({
+    path:'/store/rmaPage',
+  });
 
 }
 

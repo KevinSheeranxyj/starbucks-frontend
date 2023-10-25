@@ -133,7 +133,7 @@ import {getOrganizationOptions} from "@/views/device/device";
 const fullscreenLoading = ref(false)
 const router = useRouter();
 const org = ref('Starbucks China');
-const orgId = ref(null);
+const orgId = ref('76');
 const officeOrgId = ref(null);
 const storeOrgId = ref(null);
 const initFlag = ref(1);
@@ -186,8 +186,9 @@ function changeOrgSwitch(val) {
   if (val) {
     orgId.value = val;
   } else {
-    orgId.value = storeOrgId.value;
+    orgId.value = storeOrgId.value ;
   }
+  console.log("======",val)
   initFlag.value = 1;
   countDevice();
   countNetworkStatus();
@@ -513,7 +514,7 @@ const routerDevicePage = (serial, deviceType) => {
 
 async function init() {
   await queryOrgId();
-  await changeOrgSwitch(true);
+  await changeOrgSwitch('76');// 默认加载组织 id 为 76
 }
 
 onMounted(() => {

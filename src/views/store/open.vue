@@ -44,6 +44,22 @@
       </keep-alive>
       <keep-alive>
         <el-collapse-item title="网络设备添加" name="3" v-if="currentStep === 3">
+          <div v-if="selectedValues.length > 0">
+            <compo-table
+                :table-params="selectedTable"
+                :default-table-data="selectedValues"
+            >
+              <template #headerSlot>
+                <el-text type="primary" >已选中设备</el-text>
+              </template>
+              <template #tableDefinedSlot="slotProps">
+                <div v-if="slotProps.prop === 'operator'">
+                  <el-button type="primary" plain @click="removeSelected">移除</el-button>
+                </div>
+              </template>
+            </compo-table>
+          </div>
+
           <div class="content-section">
             <compo-table
                 ref="deviceTableRef"
@@ -80,18 +96,7 @@
                 </el-dialog>
               </template>
             </compo-table>
-            <div v-if="selectedValues.length > 0">
-              <compo-table
-                  :table-params="selectedTable"
-                  :default-table-data="selectedValues"
-              >
-                <template #tableDefinedSlot="slotProps">
-                  <div v-if="slotProps.prop === 'operator'">
-                    <el-button type="primary" plain @click="removeSelected">移除</el-button>
-                  </div>
-                </template>
-              </compo-table>
-            </div>
+
           </div>
           <div class="button-section">
             <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
@@ -481,9 +486,14 @@ const getSwitchSchema = computed(() => {
         isIp:true
       },
       {
+        label: '掩  码 ', prop: 'staticIp', type: 'text',
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true,defaultValue:"255.255.255.244"} : {defaultValue:"255.255.255.244"},
+        defaultValue:"255.255.255.244"
+      },
+      {
         label: 'VLAN', prop: 'vlan', type: 'input',
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true,defaultValue:2} : {defaultValue:2},
-        isVlan:true,defaultValue:2
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        isVlan:true,
       },
       {
         label: '网关', prop: 'staticGatewayIp', type: 'input',
@@ -941,7 +951,7 @@ async function submitAll() {
   margin-left: 90px;
   margin-right: 90px;
   overflow-y: auto;
-  max-height: 50vh;
+  max-height: 80vh;
 }
 .button-section {
   padding: 50px 10px 0 10px;

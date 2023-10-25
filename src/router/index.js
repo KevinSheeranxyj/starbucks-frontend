@@ -10,6 +10,7 @@ import OrganizeStore from "@/views/store/organize.vue";
 import SwitchConfig from "@/views/store/switchConfig.vue";
 import SwitchPortList from "@/views/store/switchPortList.vue";
 import SubNet from "@/views/store/subNet.vue";
+import RmaPage from "@/views/store/rmaPage.vue";
 
 /**
  * 页面配置
@@ -345,6 +346,15 @@ const routes = [
     },
     props:true,
     component: SubNet,
+  }
+  , {
+    path: '/store/rmaPage',
+    name:"rmaPage",
+    meta: {
+      title: 'RMA操作'
+    },
+    props:true,
+    component: RmaPage,
   }
 ];
 

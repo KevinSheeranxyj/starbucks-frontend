@@ -105,6 +105,17 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-pagination
+                :current-page="pagination.currentPage"
+                :page-sizes="[10, 20, 50, 100]"
+                :page-size="pagination.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pagination.totalItems"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                class="el-pagination"
+            >
+            </el-pagination>
           </el-tab-pane>
 
           <el-tab-pane label="已审核" name="audited">
@@ -127,22 +138,23 @@
                 </template>
               </el-table-column>
             </el-table>
+            <el-pagination
+                :current-page="auditPagination.currentPage"
+                :page-sizes="[10, 20, 50, 100]"
+                :page-size="pagination.pageSize"
+                layout="total, sizes, prev, pager, next, jumper"
+                :total="pagination.totalItems"
+                @size-change="handleSizeChange"
+                @current-change="handleCurrentChange"
+                class="el-pagination"
+            >
+            </el-pagination>
           </el-tab-pane>
 
 
         </el-tabs>
 
-        <el-pagination
-            :current-page="pagination.currentPage"
-            :page-sizes="[10, 20, 50, 100]"
-            :page-size="pagination.pageSize"
-            layout="total, sizes, prev, pager, next, jumper"
-            :total="pagination.totalItems"
-            @size-change="handleSizeChange"
-            @current-change="handleCurrentChange"
-            class="el-pagination"
-        >
-        </el-pagination>
+
 
 
       </el-main>
@@ -168,7 +180,7 @@
         </div>
 
         <div v-else>
-           <el-button @click="doAction">确认通过</el-button>
+           <el-button @click="doAction">立即执行</el-button>
         </div>
 
       </span>
@@ -277,7 +289,7 @@ function openDetailDialog(row) {
 }
 
 function approveDialog(id) {
-  setDialogConfig("确认通过", `确定{}要通过吗？`, 'approve', "30%", true, id);
+  setDialogConfig("确认通过", `确定要通过吗？`, 'approve', "30%", true, id);
 }
 
 function rejectDialog(id) {
@@ -404,6 +416,7 @@ async function getNetData() {
     });
 
     pagination.totalItems = res.data.count;
+    auditPagination.totalItems = res.data.count;
 
 
   }
@@ -425,6 +438,12 @@ function formatDate(date) {
 }
 
 const pagination = reactive({
+  currentPage: 1,
+  pageSize: 10,
+  totalItems: 0
+});
+
+const auditPagination = reactive({
   currentPage: 1,
   pageSize: 10,
   totalItems: 0

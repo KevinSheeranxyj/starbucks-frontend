@@ -20,6 +20,15 @@
               :disabled="item.config.disabled===true"
             ></el-input>
           </template>
+          <template v-if="item.type === 'text'">
+            <el-text
+                v-model="form[item.prop]"
+                :placeholder="item.config.placeholder"
+                :clearable="item.config.clearable!==false"
+                :type="item.config.type"
+                :disabled="item.config.disabled===true"
+            >{{item.defaultValue}}</el-text>
+          </template>
           <!-- 选择器 -->
           <template v-else-if="item.type === 'select'">
             <el-select
@@ -181,7 +190,7 @@ export default {
       const isFormEmpty = this.formItems.every(item => {
         const value = this.form[item.prop];
         if (item.type === 'input' || item.type === 'select' || item.type === 'switch'
-            || item.type === 'date' || item.type === 'datetime') {
+            || item.type === 'date' || item.type === 'datetime' || item.type === 'text') {
           return value === '' || value === null || value === undefined; // false
         }
         return true; // default true => disabled

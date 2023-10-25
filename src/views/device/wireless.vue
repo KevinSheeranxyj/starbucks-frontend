@@ -101,11 +101,17 @@ const dataTypeOptions = reactive([
   {label: 'AP连接数', value: 'clientCount'}
 ]);
 const timespanOptions = reactive([]);
-const resolutionOptions = reactive([
+const resolutionOptionsAll = reactive([
   {label: '10分钟', value: 600},
   {label: '1小时', value: 3600},
   {label: '1天', value: 86400}
 ]);
+const resolutionOptions = computed(() => {
+  if (historyDialogRef.value.timespan === 86400) {  // 1天
+    return resolutionOptionsAll.filter(option => option.value !== 600); // 过滤掉 10 分钟
+  }
+  return resolutionOptionsAll; // 如果没有特殊条件，则返回所有选项
+});
 const chartLoading = ref(false);
 // 远程选项
 const remoteNetworkOptions = reactive([]);

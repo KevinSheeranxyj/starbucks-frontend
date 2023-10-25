@@ -4,7 +4,7 @@
     <div class="selection-section">
       <el-row>
         <el-col>
-          请选择转移前的网络信息
+          请选择转移前的组织信息
         </el-col>
         <el-col>
           <el-select v-model="fromOrg" placeholder="选择转移前的org" @change="changeOrg">
