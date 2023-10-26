@@ -30,7 +30,7 @@ const organizationEnum = computed(() => {
 const columns = [
   {label: 'ID', prop: 'id'},
   {label: '组织 ID', prop: 'organizationId'},
-  {label: '名称', prop: 'name'},
+  // {label: '名称', prop: 'name'},
   {
     label: '组织类型', prop: 'organizationType', type: 'select',
     config: {options: organizationTypeOptions, clearable: false}
@@ -43,9 +43,9 @@ const queryForm = [
     label: '组织', prop: 'organizationId', type: 'select',
     config: {options: organizationOptions},
   },
-  {
-    label: '名称', prop: 'name', type: 'input'
-  },
+  // {
+  //   label: '名称', prop: 'name', type: 'input'
+  // },
   {
     label: '组织类型', prop: 'organizationType', type: 'select',
     config: {options: organizationTypeOptions}

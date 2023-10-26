@@ -16,7 +16,7 @@ const organizationOptions = reactive([]);
 // 表格列
 const columns = [
   {label: '网络', prop: 'networkName'},
-  {label: '原模板', prop: 'orgTemplateName'},
+  // {label: '原模板', prop: 'orgTemplateName'},
   {label: '新模板', prop: 'tagTemplateName'}
 ];
 
