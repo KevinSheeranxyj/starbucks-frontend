@@ -146,14 +146,13 @@
       <keep-alive>
         <el-collapse-item title="网络设备信息" name="5" v-if="currentStep === 5">
           <div class="content-section" v-for="item in networkDeviceData" :key="item.serial">
-            <el-divider content-position="left">{{getNetworkType(item.model) === 'router' ?
-                '路由器': getNetworkType(item.model) === 'switch' ? '交换机':
-                    getNetworkType(item.model) === 'appliance' ? '无线AP': ''}}</el-divider>
+            <el-divider content-position="left">{{(getNetworkType(item.model) === 'router') ? '路由器' :
+                ((getNetworkType(item.model) === 'appliance') ? '无线AP' :
+                    ((getNetworkType(item.model) === 'switch') ? '交换机' : ''))}}</el-divider>
             <span>{{item.serial}} - {{item.mac}} - {{item.model}}</span>
             <compo-form
                 @popValue="(val) => collectValues(val, item.serial)"
-                :form-params="getNetworkType(item.model) === 'router' ? getRouterInfoSchema :
-                (getNetworkType(item.model) === 'appliance' ? getApSchema : getSwitchSchema)"
+                :form-params="(getNetworkType(item.model) === 'router') ? getRouterInfoSchema :((getNetworkType(item.model) === 'switch') ? getSwitchSchema : getApSchema)"
                 form-type="table"
             >
             </compo-form>
@@ -439,8 +438,9 @@ const getApSchema = computed(() => {
       },
       {
         label: 'MR IP', prop: 'staticIp', type: 'input',
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
-        isIp:true
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true,defaultValue:manualIP.value.slice(0, -1)} : {defaultValue:manualIP.value.slice(0, -1)},
+        isIp:true,
+        defaultValue:manualIP.value.slice(0, -1)
       },
       {
         label: 'VLAN', prop: 'vlan', type: 'input',
@@ -487,8 +487,8 @@ const getSwitchSchema = computed(() => {
       },
       {
         label: '掩  码 ', prop: 'staticIp', type: 'text',
-        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true,defaultValue:"255.255.255.244"} : {defaultValue:"255.255.255.244"},
-        defaultValue:"255.255.255.244"
+        config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true,defaultValue:"255.255.255.240"} : {defaultValue:"255.255.255.240"},
+        defaultValue:"255.255.255.240"
       },
       {
         label: 'VLAN', prop: 'vlan', type: 'input',
@@ -927,6 +927,7 @@ async function submitAll() {
     ElMessage.error(res.msg);
   }else{
     ElMessage.success(res.msg);
+    router.push('/store/audit');
   }
 }
 

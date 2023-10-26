@@ -250,7 +250,7 @@
 
 import {onMounted, reactive, ref} from "vue";
 import http from "@/utils/http";
-import {ElMessage} from "element-plus/lib/components";
+import {ElLoading,ElMessage} from "element-plus/lib/components";
 
 onMounted(() => {
   getNetData();
@@ -300,18 +300,34 @@ function rejectDialog(id) {
 async function doAction(row) {
 
   const {data: res} = await http.post("/operate/network/execute", {id: selectedID.value})
+
+  const loading =  ElLoading.service({
+    lock: true,
+    text: '请稍后...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
   if (res.success) {
+    loading.close();
     ElMessage.success('执行成功');
   } else {
+    loading.close();
     ElMessage.error(res.msg);
   }
+
 }
 
 async function backAction() {
   const {data:res} = http.post('operate/audit/rollback',{id: selectedID.value})
+  const loading =  ElLoading.service({
+    lock: true,
+    text: 'ping检测中...',
+    background: 'rgba(0, 0, 0, 0.7)',
+  })
   if (res.success) {
+    loading.close();
     ElMessage.success('执行成功');
   } else {
+    loading.close();
     ElMessage.error(res.msg);
   }
   getNetData();
