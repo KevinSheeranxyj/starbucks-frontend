@@ -9,15 +9,22 @@ const compoTableRef = ref(null);
 const organizationOptions = reactive([]);
 const syncLoading = ref(false);
 
+const cellWidth = 180;
 // 表格列
 const columns = [
-  {label: '网络', prop: 'networkName'},
-  {label: 'Vlan2', prop: 'vlan2'},
-  {label: 'Vlan98', prop: 'vlan98'},
-  {label: 'Vlan99', prop: 'vlan99'},
-  {label: 'Vlan100', prop: 'vlan100'},
-  {label: 'Vlan101', prop: 'vlan101'},
-  {label: 'Vlan102', prop: 'vlan102'}
+  {label: '网络', prop: 'networkName',width:cellWidth},
+  {label: 'Vlan2', prop: 'vlan2',width:cellWidth},
+  {label: 'vlan2MxIp', prop: 'vlan2MxIp',width:cellWidth},
+  {label: 'Vlan98', prop: 'vlan98',width:cellWidth},
+  {label: 'Vlan98MxIp', prop: 'vlan98MxIp',width:cellWidth},
+  {label: 'Vlan99', prop: 'vlan99',width:cellWidth},
+  {label: 'Vlan99MxIp', prop: 'vlan99MxIp',width:cellWidth},
+  {label: 'Vlan100', prop: 'vlan100',width:cellWidth},
+  {label: 'Vlan100MxIp', prop: 'vlan100MxIp',width:cellWidth},
+  {label: 'Vlan101', prop: 'vlan101',width:cellWidth},
+  {label: 'Vlan101MxIp', prop: 'vlan101MxIp',width:cellWidth},
+  {label: 'Vlan102', prop: 'vlan102',width:cellWidth},
+  {label: 'Vlan102MxIp', prop: 'vlan102MxIp',width:cellWidth}
 ];
 
 // 查询表单

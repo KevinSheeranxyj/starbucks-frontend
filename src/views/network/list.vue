@@ -16,7 +16,7 @@ const organizationOptions = reactive([]);
 // 表格列
 const columns = [
   {label: '组织', prop: 'organizationId'},
-  {label: '网络', prop: 'networkName'},
+  {label: '网络', prop: 'name'},
   {label: '网络类型', prop: 'productTypes'},
   // {label: '原模板', prop: 'orgTemplateName'},
   {label: '模板', prop: 'tagTemplateName'}
@@ -35,7 +35,7 @@ const queryForm = [
 
 const table = {
   query: {
-    url: '/network/networkTemplateHistory',
+    url: '/network/table',
     form: {formItems: queryForm}
   },
   columns: columns,
