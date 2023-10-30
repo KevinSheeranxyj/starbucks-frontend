@@ -15,9 +15,11 @@ const organizationOptions = reactive([]);
 
 // 表格列
 const columns = [
+  {label: '组织', prop: 'organizationId'},
   {label: '网络', prop: 'networkName'},
+  {label: '网络类型', prop: 'productTypes'},
   // {label: '原模板', prop: 'orgTemplateName'},
-  {label: '新模板', prop: 'tagTemplateName'}
+  {label: '模板', prop: 'tagTemplateName'}
 ];
 
 // 查询表单
@@ -85,6 +87,25 @@ function initQuery() {
   compoTableRef.value.setForm(queryForm);
   queryTable();
 }
+function getProductTypesText(productTypes) {
+  if (!productTypes) return '';
+
+  try {
+    const types = JSON.parse(productTypes);
+    const typesString = types.sort().join(',');
+
+    switch(typesString) {
+      case 'appliance': return '路由器';
+      case 'switch': return '交换机';
+      case 'wireless': return '无线';
+      case 'appliance,switch,wireless': return '混合设备';
+      default: return '';
+    }
+  } catch (e) {
+    console.error('Failed to parse productTypes:', e);
+    return '';
+  }
+}
 
 onMounted(() => {
   initQuery();
@@ -110,6 +131,9 @@ onMounted(() => {
     <template #tableTextSlot="slotProps">
       <div v-if="slotProps.prop === 'organizationId'">
         {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+      </div>
+      <div v-if="slotProps.prop === 'productTypes'">
+        {{ getProductTypesText(slotProps.cellValue) }}
       </div>
     </template>
   </compo-table>
