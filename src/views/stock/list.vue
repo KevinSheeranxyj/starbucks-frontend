@@ -2,6 +2,7 @@
 import {ref, onMounted, reactive} from 'vue';
 import {useRoute} from 'vue-router';
 import {getOrganizationOptions} from "@/views/device/device";
+import tool from "@/utils/tool";
 
 const route = useRoute();
 
@@ -9,11 +10,12 @@ const compoTableRef = ref(null);
 const organizationOptions = reactive([]);
 // 表格列
 const columns = [
-  {label: 'mac地址', prop: 'mac'},
-  {label: '序列号', prop: 'serial'},
-  {label: '归属网络', prop: 'networkName'},
+  {label: '组织', prop: 'organizationId'},
+  {label: 'MAC', prop: 'mac'},
+  {label: '序列', prop: 'serial'},
+  {label: '网络', prop: 'networkName'},
   {label: '型号', prop: 'model'},
-  {label: '申领时间', prop: 'claimedTime'}
+  {label: '申领时间', prop: 'claimedAt'}
 ];
 
 // 查询表单
@@ -21,6 +23,26 @@ const queryForm = [
   {
     label: '组织', prop: 'organizationId', type: 'select',
     config: {options: organizationOptions, clearable: false},
+  },
+  {
+    label: '网络', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions, clearable: false},
+  },
+  {
+    label: 'MAC', prop: 'mac', type: 'input',
+  },
+  {
+    label: '序列', prop: 'serial', type: 'input',
+  },
+  {
+    label: '型号', prop: 'model', type: 'input',
+  },
+  {
+    label: '开始日期', prop: 'startDate', type: 'date',
+    config: {valueFormat: "YYYY-MM-DD"},
+  },
+  {label: '结束日期', prop: 'endDate', type: 'date',
+    config: {valueFormat: "YYYY-MM-DD"},
   },
 ];
 
@@ -63,6 +85,11 @@ onMounted(() => {
     @changeSelect="queryTable"
     :table-params="table"
   >
+    <template #tableTextSlot="slotProps">
+      <div v-if="slotProps.prop === 'claimedAt'">
+        {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
+      </div>
+    </template>
   </compo-table>
 </template>
 

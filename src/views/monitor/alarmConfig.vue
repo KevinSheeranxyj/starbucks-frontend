@@ -86,7 +86,7 @@ import {ElMessage} from 'element-plus/lib/components';
 import {createEnum, createEnumByOptions} from '@/utils/enums';
 import tool from '@/utils/tool';
 import {getOrganizationOptions} from "@/views/device/device";
-
+import {getUserListOptions} from "@/views/device/device";
 const compoTableRef = ref(null);
 const addDialogRef = ref(null);
 const updateDialogRef = ref(null);
@@ -127,16 +127,16 @@ const organizationOptions = reactive([]);
 
 const router = useRouter();
 
-async function getUserOptions() {
-  const {data: res} = await http.post(`/sys/user/list`, {});
-  emailOptions.length = 0;
-  res.data.forEach((user) => {
-    emailOptions.push({
-      value: user.email,
-      label: user.email
-    });
-  });
-}
+// async function getUserOptions() {
+//   const {data: res} = await http.post(`/sys/user/list`, {});
+//   emailOptions.length = 0;
+//   res.data.forEach((user) => {
+//     emailOptions.push({
+//       value: user.email,
+//       label: user.email
+//     });
+//   });
+// }
 
 async function getAlarmOptions() {
   const {data: res} = await http.post(`/alarm/config/list`, {});
@@ -426,7 +426,7 @@ const routerAlarmLogPage = (id) => {
 
 onMounted(() => {
   queryTable();
-  getUserOptions();
+  getUserListOptions(emailOptions);
   getAlarmOptions();
   getOrganizationOptions(organizationOptions);
   tool.getOptions(classOptions, 'BEAN_NAME');

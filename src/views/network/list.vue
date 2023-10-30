@@ -94,7 +94,6 @@ onMounted(() => {
     queryTable();
   }
 });
-
 </script>
 <template>
   <!-- 表格组件 -->

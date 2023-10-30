@@ -18,7 +18,16 @@ async function getOrganizationOptions(options) {
         });
     }
 }
-
+export async function getUserListOptions(options) {
+    const {data: res} = await http.post(`/sys/user/list`, {});
+    options.length = 0;
+    res.data.forEach((user) => {
+        options.push({
+            value: user.email,
+            label: user.email
+        });
+    });
+}
 export async function getNetworkTemplateOptions(options, organization) {
     options.length
     const {data: res} = await http.post(

@@ -4,7 +4,8 @@ import {createEnum} from '@/utils/enums';
 import {ref, onMounted, reactive, computed} from 'vue';
 import {useRoute} from 'vue-router';
 import {ElMessage} from 'element-plus/lib/components';
-
+import http from "@/utils/http";
+import {getUserListOptions} from "@/views/device/device";
 const route = useRoute();
 
 const compoTableRef = ref(null);
@@ -24,16 +25,18 @@ const archiveFlagEnum = computed(() => {
   return createEnum(enumData);
 });
 
+const createdByOptions = reactive([]);
+
 // 表格列
 const columns = [
+  {label: '操作时间', prop: 'createdAt', width: '140px'},
+  {label: '操作人', prop: 'createdBy'},
   {label: '页面', prop: 'page'},
   {label: '操作', prop: 'action', minWidth: '120px'},
-  {label: '接口路径', prop: 'path', minWidth: '180px'},
+  // {label: '接口路径', prop: 'path', minWidth: '180px'},
   {label: '结果', prop: 'result', minWidth: '100px'},
-  {label: '备注', prop: 'remark', minWidth: '100px'},
-  {label: '操作人', prop: 'createdBy'},
-  {label: '操作时间', prop: 'createdAt', width: '140px'},
-  {label: '归档标识', prop: 'archiveFlag'},
+  // {label: '备注', prop: 'remark', minWidth: '100px'},
+  // {label: '归档标识', prop: 'archiveFlag'},
   {label: '查看', prop: 'operator', width: '80px', type: 'defined'}
 ];
 
@@ -49,8 +52,16 @@ const queryForm = [
     label: '结果', prop: 'result', type: 'input'
   },
   {
-    label: '操作时间', prop: 'createdAt', type: 'input'
-  }
+    label: '操作人', prop: 'createdBy', type: 'select',
+    config: {options: createdByOptions, clearable: false},
+  },
+  {
+    label: '开始日期', prop: 'startDate', type: 'date',
+    config: {valueFormat: "YYYY-MM-DD"},
+  },
+  {label: '结束日期', prop: 'endDate', type: 'date',
+    config: {valueFormat: "YYYY-MM-DD"},
+  },
 ];
 
 const getTagTypeByArchiveFlag = (value) => {
@@ -103,6 +114,7 @@ onMounted(() => {
   if (Object.keys(route.params).length <= 0) {
     queryTable();
   }
+  getUserListOptions(createdByOptions);
 });
 
 </script>

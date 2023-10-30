@@ -37,7 +37,14 @@ const queryForm = [
   },
   {
     label: '型号', prop: 'model', type: 'input'
-  }
+  },
+  {
+    label: '开始日期', prop: 'startDate', type: 'date',
+    config: {valueFormat: "YYYY-MM-DD"},
+  },
+  {label: '结束日期', prop: 'endDate', type: 'date',
+    config: {valueFormat: "YYYY-MM-DD"},
+  },
 ];
 
 const table = {
