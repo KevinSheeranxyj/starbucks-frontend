@@ -12,11 +12,12 @@ const networkOptions = reactive([]);
 
 // 表格列
 const columns = [
-  {label: 'SN', prop: 'serial'},
-  {label: 'mac地址', prop: 'mac'},
+  {label: '组织', prop: 'organizationId'},
+  {label: 'MAC', prop: 'mac'},
+  {label: '序列', prop: 'serial'},
   {label: '网络', prop: 'networkName'},
   {label: '型号', prop: 'model'},
-  {label: '时间', prop: 'createdTime'}
+  {label: '申领时间', prop: 'claimedAt'}
 ];
 
 // 查询表单
@@ -26,14 +27,14 @@ const queryForm = [
     config: {options: organizationOptions, clearable: false},
   },
   {
-    label: 'SN', prop: 'sn', type: 'input'
+    label: '网络', prop: 'networkId', type: 'select',
+    config: {options: networkOptions, remote: true, placeholder: '请输入'}
+  },
+  {
+    label: '序列', prop: 'sn', type: 'input'
   },
   {
     label: 'MAC', prop: 'mac', type: 'input'
-  },
-  {
-    label: '网络', prop: 'networkId', type: 'select',
-    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
   },
   {
     label: '型号', prop: 'model', type: 'input'
@@ -70,10 +71,20 @@ function afterReset() {
   getNetworkOptions(null, networkOptions);
 }
 
+function changeSelect(prop, val) {
+  if (prop === 'organizationId') {
+    getNetworkOptions(val, networkOptions);
+  } else if (prop === 'networkId') {
+    if(val === ''){
+      remoteNetworkOptions.length = 0;
+    }
+  }
+}
 /**
  * 表单选择器远程方法
  */
 function remoteMethod(prop, val) {
+
   if (val) {
     if (prop === 'networkId') {
       tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
@@ -108,8 +119,14 @@ onMounted(() => {
     ref="compoTableRef"
     :table-params="table"
     @remoteMethod="remoteMethod"
+    @changeSelect="changeSelect"
     @reset="afterReset"
   >
+    <template #tableTextSlot="slotProps">
+      <div v-if="slotProps.prop === 'claimedAt'">
+        {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
+      </div>
+    </template>
   </compo-table>
 </template>
 

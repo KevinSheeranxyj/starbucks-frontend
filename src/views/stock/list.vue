@@ -43,7 +43,7 @@ const queryForm = [
   },
   {label: '结束日期', prop: 'endDate', type: 'date',
     config: {valueFormat: "YYYY-MM-DD"},
-  },
+  }
 ];
 
 const table = {
