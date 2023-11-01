@@ -1,9 +1,11 @@
 <script setup>
 import tool from '@/utils/tool';
-import {ref, onMounted, reactive, computed} from 'vue';
+import {ref, onMounted, reactive, computed, h} from 'vue';
 import {useRoute} from 'vue-router';
 import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 import {createEnumByOptions} from "@/utils/enums";
+import {ElMessage, ElMessageBox} from "element-plus/lib/components";
+import http from "@/utils/http";
 
 const route = useRoute();
 
@@ -12,15 +14,28 @@ const remoteNetworkOptions = reactive([]);
 const networkOptions = reactive([]);
 const syncLoading = ref(false);
 const organizationOptions = reactive([]);
-
+const defaultOrg = '76';
 // 表格列
 const columns = [
   {label: '组织', prop: 'organizationId'},
   {label: '网络', prop: 'name'},
   {label: '网络类型', prop: 'productTypes'},
-  // {label: '原模板', prop: 'orgTemplateName'},
   {label: '模板', prop: 'tagTemplateName'}
 ];
+
+/*
+      case 'appliance': return '路由器';
+      case 'switch': return '交换机';
+      case 'wireless': return '无线';
+      case 'appliance,switch,wireless': return '混合设备';
+* */
+const productTypesOptions = [
+  {label:"路由器",value:"appliance"},
+  {label:"交换机",value:"switch"},
+  {label:"无线",value:"wireless"},
+  {label:"混合设备",value:"appliance,switch,wireless"},
+
+]
 
 // 查询表单
 const queryForm = [
@@ -29,7 +44,15 @@ const queryForm = [
     config: {options: organizationOptions, clearable: false},
   },
   {
+    label: '网络', prop: 'networkId', type: 'select',
+    config: {options: networkOptions, clearable: false},
+  },
+  {
     label: '模板', prop: 'tagTemplateName', type: 'input'
+  },
+  {
+    label: '网络类型', prop: 'productTypes', type: 'select',
+    config: {options: productTypesOptions}
   }
 ];
 
@@ -39,7 +62,7 @@ const table = {
     form: {formItems: queryForm}
   },
   columns: columns,
-  config: {page: true}
+  config: {page: true, multipleTable: true}
 };
 
 /**
@@ -53,13 +76,14 @@ function queryTable() {
  * 重置后
  */
 function afterReset() {
-  getNetworkOptions(null, networkOptions);
+  getNetworkOptions(defaultOrg, networkOptions);
 }
 
 /**
  * 表单选择器远程方法
  */
 function remoteMethod(prop, val) {
+
   if (val) {
     if (prop === 'networkId') {
       tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
@@ -70,10 +94,45 @@ function remoteMethod(prop, val) {
     }
   }
 }
-
+function changeSelect(prop, val) {
+  if (prop === 'organizationId') {
+    getNetworkOptions(val, networkOptions);
+    queryTable();
+  } else if (prop === 'networkId') {
+    if (val === '') {
+      remoteNetworkOptions.length = 0;
+    }
+  }
+}
 function syncNetwork() {
+  const selection = compoTableRef.value.getMultipleSelection();
+  if (selection.length !== 1) {
+    return ElMessage.warning('请选择一条记录!');
+  }
   syncLoading.value = true;
-  console.log('同步');
+  // const syncNum = 4 + selection[0].routerNum + selection[0].wirelessNum * 4 + selection[0].connectClientNum * 2;
+
+  ElMessageBox({
+    title: '同步被选中网络以及关联的设备、客户端信息',
+    message: h('p', null, [
+      h('p', null, "网络：" + selection[0].name),
+      // h('p', null, "预计：" + syncNum + "秒"),
+    ]),
+    confirmButtonText: '确定',
+  }).then(async () => {
+    const {data: res} = await http.post('/network/sync', {
+      networkIds: [selection[0].networkId],
+      organizationId: selection[0].organizationId
+    });
+    syncLoading.value = false;
+    if (!res.success) {
+      return ElMessage.error(res.msg);
+    }
+    ElMessage.success(res.msg);
+    queryTable();
+  }).catch(() => {
+    syncLoading.value = false;
+  })
 }
 
 const organizationEnum = computed(() => {
@@ -110,7 +169,7 @@ function getProductTypesText(productTypes) {
 onMounted(() => {
   initQuery();
   getOrganizationOptions(organizationOptions);
-  getNetworkOptions(null, networkOptions);
+  getNetworkOptions(defaultOrg, networkOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();
   }
@@ -122,6 +181,7 @@ onMounted(() => {
     ref="compoTableRef"
     :table-params="table"
     @remoteMethod="remoteMethod"
+    @changeSelect="changeSelect"
     @reset="afterReset"
   >
     <!-- 按钮插槽 -->

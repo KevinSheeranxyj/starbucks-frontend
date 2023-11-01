@@ -4,6 +4,7 @@ import {ref, onMounted, reactive, computed} from 'vue';
 import {useRoute} from 'vue-router';
 import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 import {createEnumByOptions} from "@/utils/enums";
+import {ElMessage, ElMessageBox} from "element-plus/lib/components";
 
 const route = useRoute();
 
@@ -15,10 +16,11 @@ const organizationOptions = reactive([]);
 
 // 表格列
 const columns = [
+  {label: '组织', prop: 'organizationId'},
   {label: '网络', prop: 'networkName'},
   {label: '设备名', prop: 'name'},
-  {label: '设备型号', prop: 'model'},
-  {label: '设备SN', prop: 'serial'},
+  {label: '型号', prop: 'model'},
+  {label: '序列', prop: 'serial'},
   {label: '地理位置', prop: 'address'}
 ];
 
@@ -31,6 +33,9 @@ const queryForm = [
   {
     label: '网络', prop: 'networkId', type: 'select',
     config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
+  },
+  {
+    label: '序列', prop: 'serial', type: 'input'
   }
 ];
 
@@ -40,7 +45,7 @@ const table = {
     form: {formItems: queryForm}
   },
   columns: columns,
-  config: {page: true}
+  config: {page: true, multipleTable: true}
 };
 
 const organizationEnum = computed(() => {
@@ -75,10 +80,45 @@ function remoteMethod(prop, val) {
     }
   }
 }
-
+function changeSelect(prop, val) {
+  if (prop === 'organizationId') {
+    getNetworkOptions(val, networkOptions);
+    queryTable();
+  } else if (prop === 'networkId') {
+    if (val === '') {
+      remoteNetworkOptions.length = 0;
+    }
+  }
+}
 function syncNetwork() {
+  const selection = compoTableRef.value.getMultipleSelection();
+  if (selection.length !== 1) {
+    return ElMessage.warning('请选择一条记录!');
+  }
   syncLoading.value = true;
-  console.log('同步');
+  // const syncNum = 4 + selection[0].routerNum + selection[0].wirelessNum * 4 + selection[0].connectClientNum * 2;
+
+  ElMessageBox({
+    title: '同步被选中网络以及关联的设备、客户端信息',
+    message: h('p', null, [
+      h('p', null, "网络：" + selection[0].name),
+      // h('p', null, "预计：" + syncNum + "秒"),
+    ]),
+    confirmButtonText: '确定',
+  }).then(async () => {
+    const {data: res} = await http.post('/network/sync', {
+      networkIds: [selection[0].networkId],
+      organizationId: selection[0].organizationId
+    });
+    syncLoading.value = false;
+    if (!res.success) {
+      return ElMessage.error(res.msg);
+    }
+    ElMessage.success(res.msg);
+    queryTable();
+  }).catch(() => {
+    syncLoading.value = false;
+  })
 }
 
 function initQuery() {
@@ -104,7 +144,7 @@ onMounted(() => {
   <compo-table
     ref="compoTableRef"
     :table-params="table"
-    @changeSelect="queryTable"
+    @changeSelect="changeSelect"
     @remoteMethod="remoteMethod"
     @reset="afterReset"
   >

@@ -163,6 +163,12 @@ export const layoutRoutes = [
     component: () => import('@/views/network/switch')
   },
   {
+    path: 'network/switch-history/:name',
+    name: 'networkSwitchHistory',
+    meta: { title: '交换机历史' },
+    component: () => import('@/views/network/switch-history.vue')
+  },
+  {
     path: 'network/switch-template',
     name: 'networkSwitchTemplate',
     meta: { title: '交换机模板管理' },

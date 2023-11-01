@@ -28,9 +28,9 @@ const organizationEnum = computed(() => {
 
 // 表格列operateLog/list
 const columns = [
-  {label: 'ID', prop: 'id'},
+  // {label: 'ID', prop: 'id'},
   {label: '组织 ID', prop: 'organizationId'},
-  // {label: '名称', prop: 'name'},
+  {label: '组织', prop: 'name'},
   {
     label: '组织类型', prop: 'organizationType', type: 'select',
     config: {options: organizationTypeOptions, clearable: false}

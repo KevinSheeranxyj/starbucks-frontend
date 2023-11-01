@@ -1,17 +1,22 @@
 <script setup>
-import {ref, onMounted, reactive} from 'vue';
+import {ref, onMounted, reactive, h} from 'vue';
 import {useRoute} from 'vue-router';
-import {getOrganizationOptions} from '../device/device';
+import {getNetworkOptions, getOrganizationOptions} from '../device/device';
+import tool from "@/utils/tool";
+import {ElMessage, ElMessageBox} from "element-plus/lib/components";
+import * as http from "http";
 
 const route = useRoute();
 
 const compoTableRef = ref(null);
 const organizationOptions = reactive([]);
 const syncLoading = ref(false);
-
+const networkOptions = reactive([]);
+const remoteNetworkOptions = reactive([]);
 const cellWidth = 180;
 // 表格列
 const columns = [
+  {label: '组织', prop: 'organizationId',width:cellWidth},
   {label: '网络', prop: 'networkName',width:cellWidth},
   {label: 'Vlan2', prop: 'vlan2',width:cellWidth},
   {label: 'vlan2MxIp', prop: 'vlan2MxIp',width:cellWidth},
@@ -34,26 +39,33 @@ const queryForm = [
     config: {options: organizationOptions, clearable: false}
   },
   {
-    label: '网络', prop: 'network', type: 'input'
+    label: '网络', prop: 'network', type: 'select',
+    config: {options: networkOptions, clearable: false}
   },
+
   {
     label: 'Vlan2', prop: 'vlan2', type: 'input'
   },
+  {label: 'vlan2MxIp', prop: 'vlan2MxIp',type: 'input'},
   {
     label: 'Vlan98', prop: 'vlan98', type: 'input'
   },
+  {label: 'Vlan98MxIp', prop: 'vlan98MxIp',type: 'input'},
   {
     label: 'Vlan99', prop: 'vlan99', type: 'input'
   },
+  {label: 'Vlan99MxIp', prop: 'vlan99MxIp',type: 'input'},
   {
     label: 'Vlan100', prop: 'vlan100', type: 'input'
   },
+  {label: 'Vlan100MxIp', prop: 'vlan100MxIp',type: 'input'},
   {
     label: 'Vlan101', prop: 'vlan101', type: 'input'
   },
+  {label: 'Vlan101MxIp', prop: 'vlan101MxIp',type: 'input'},
   {
     label: 'Vlan102', prop: 'vlan102', type: 'input'
-  }
+  },{label: 'Vlan102MxIp', prop: 'vlan102MxIp',type: 'input'}
 ];
 
 const table = {
@@ -66,7 +78,7 @@ const table = {
   },
   columns: columns,
   hideAllowed: true,
-  config: {page: true}
+  config: {page: true, multipleTable: true}
 };
 
 /**
@@ -74,6 +86,28 @@ const table = {
  */
 function queryTable() {
   compoTableRef.value.query();
+}
+function remoteMethod(prop, val) {
+
+  if (val) {
+    if (prop === 'networkId') {
+      tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
+    }
+  } else if (typeof val === 'undefined') {
+    if (prop === 'networkId') {
+      remoteNetworkOptions.length = 0;
+    }
+  }
+}
+function changeSelect(prop, val) {
+  if (prop === 'organizationId') {
+    getNetworkOptions(val, networkOptions);
+    queryTable();
+  } else if (prop === 'networkId') {
+    if (val === '') {
+      remoteNetworkOptions.length = 0;
+    }
+  }
 }
 
 /**
@@ -84,8 +118,34 @@ function afterReset() {
 }
 
 function syncNetwork() {
+  const selection = compoTableRef.value.getMultipleSelection();
+  if (selection.length !== 1) {
+    return ElMessage.warning('请选择一条记录!');
+  }
   syncLoading.value = true;
-  console.log('同步');
+  // const syncNum = 4 + selection[0].routerNum + selection[0].wirelessNum * 4 + selection[0].connectClientNum * 2;
+
+  ElMessageBox({
+    title: '同步被选中网络以及关联的设备、客户端信息',
+    message: h('p', null, [
+      h('p', null, "网络：" + selection[0].name),
+      // h('p', null, "预计：" + syncNum + "秒"),
+    ]),
+    confirmButtonText: '确定',
+  }).then(async () => {
+    const {data: res} = await http.post('/network/sync', {
+      networkIds: [selection[0].networkId],
+      organizationId: selection[0].organizationId
+    });
+    syncLoading.value = false;
+    if (!res.success) {
+      return ElMessage.error(res.msg);
+    }
+    ElMessage.success(res.msg);
+    queryTable();
+  }).catch(() => {
+    syncLoading.value = false;
+  })
 }
 
 function initQuery() {
@@ -95,10 +155,11 @@ function initQuery() {
   compoTableRef.value.setForm(queryForm);
   queryTable();
 }
-
+const defaultOrg = '76';
 onMounted(() => {
   initQuery();
   getOrganizationOptions(organizationOptions);
+  getNetworkOptions(defaultOrg, networkOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();
   }
@@ -111,6 +172,8 @@ onMounted(() => {
     ref="compoTableRef"
     :table-params="table"
     @reset="afterReset"
+    @remoteMethod="remoteMethod"
+    @changeSelect="changeSelect"
   >
     <!-- 按钮插槽 -->
     <template #buttonSlot>
