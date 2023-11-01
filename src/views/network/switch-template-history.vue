@@ -1,8 +1,9 @@
 <script setup>
 import tool from '@/utils/tool';
-import {ref, onMounted, reactive} from 'vue';
+import {ref, onMounted, reactive, computed} from 'vue';
 import {useRoute} from 'vue-router';
 import { getNetworkOptions } from '../device/device';
+import {createEnumByOptions} from "@/utils/enums";
 
 const route = useRoute();
 
@@ -12,10 +13,18 @@ const networkOptions = reactive([]);
 
 // 表格列
 const columns = [
-  {label: '网络', prop: 'network'},
-  {label: '交换机', prop: 'switch'},
-  {label: '型号', prop: 'model'},
-  {label: '交换机模板', prop: 'template'}
+  {label: '组织', prop: 'organizationId', minWidth: '100px'},
+  {label: '网络', prop: 'networkName', minWidth: '100px'},
+  {label: '申领时间', prop: 'claimedAt', minWidth: '100px'},
+  {label: '创建时间', prop: 'createdAt', minWidth: '100px'},
+  {label: '更新时间', prop: 'updatedAt', minWidth: '100px'},
+  {label: '交换机', prop: 'name', minWidth: '100px'},
+  {label: '序列', prop: 'serial', minWidth: '100px'},
+  {label: '公网IP', prop: 'publicIp', minWidth: '100px'},
+  {label: 'VLAN', prop: 'vlan', minWidth: '100px'},
+  {label: 'LAN IP', prop: 'lanIp', minWidth: '100px'},
+  {label: '网关', prop: 'gateway', minWidth: '100px'},
+  {label: 'DNS', prop: 'dns',type:'dns', minWidth: '100px'}
 ];
 
 // 查询表单
@@ -40,7 +49,7 @@ const table = {
     form: {formItems: queryForm}
   },
   columns: columns,
-  config: {page: true, multipleTable: true}
+  config: {page: true}
 };
 
 /**
@@ -72,17 +81,27 @@ function remoteMethod(prop, val) {
   }
 }
 
-function toHistory() {
-
-}
 
 onMounted(() => {
   getNetworkOptions(null, networkOptions);
+  getNetworkOptions(null, networkOptions);
+
   if (Object.keys(route.params).length <= 0) {
+    queryTable();
+  }else{
+    const query = route.params;
+    const name = query.name;
+    const queryForm = {
+      name: name,
+    };
+    compoTableRef.value.setForm(queryForm);
     queryTable();
   }
 });
-
+const organizationOptions = reactive([]);
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
 </script>
 <template>
   <!-- 表格组件 -->
@@ -92,10 +111,21 @@ onMounted(() => {
     @remoteMethod="remoteMethod"
     @reset="afterReset"
   >
-    <!-- 按钮插槽 -->
-    <template #buttonSlot>
-      <el-button type="primary" plain @click="toHistory">历史记录</el-button>
+    <template #tableTextSlot="slotProps">
+      <div v-if="slotProps.prop === 'organizationId'">
+        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+      </div>
+      <div v-if="slotProps.prop === 'claimedAt'">
+        {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
+      </div>
+      <div v-if="slotProps.prop === 'createdAt'">
+        {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
+      </div>
+      <div v-if="slotProps.prop === 'updatedAt'">
+        {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
+      </div>
     </template>
+
   </compo-table>
 </template>
 

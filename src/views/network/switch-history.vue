@@ -1,8 +1,9 @@
 <script setup>
 import tool from '@/utils/tool';
-import {ref, onMounted, reactive, onActivated} from 'vue';
+import {ref, onMounted, reactive, onActivated, computed} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import { getNetworkOptions } from '../device/device';
+import {createEnumByOptions} from "@/utils/enums";
 
 const route = useRoute();
 
@@ -97,7 +98,9 @@ onMounted(() => {
   }
 });
 
-
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
 </script>
 <template>
   <!-- 表格组件 -->
@@ -107,6 +110,11 @@ onMounted(() => {
       @remoteMethod="remoteMethod"
       @reset="afterReset"
   >
+    <template #tableTextSlot="slotProps">
+      <div v-if="slotProps.prop === 'organizationId'">
+        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+      </div>
+    </template>
     <!-- 按钮插槽 -->
     <template #buttonSlot>
       <el-button type="primary" plain @click="toHistory">历史记录</el-button>

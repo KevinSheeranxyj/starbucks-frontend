@@ -1,24 +1,31 @@
 <script setup>
 import tool from '@/utils/tool';
-import {ref, onMounted, reactive} from 'vue';
+import {ref, onMounted, reactive, computed, h} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {getNetworkOptions, getOrganizationOptions} from '../device/device';
+import {createEnumByOptions} from "@/utils/enums";
+import {ElMessage, ElMessageBox} from "element-plus/lib/components";
+import http from "http";
 
 const route = useRoute();
 const router = useRouter();
-
+const syncLoading = ref(false);
 const compoTableRef = ref(null);
 const remoteNetworkOptions = reactive([]);
 const networkOptions = reactive([]);
 const organizationOptions = reactive([]);
-
+const defaultOrg = '76';
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
 // 表格列
 const columns = [
-  {label: '网络', prop: 'networkName'},
-  {label: '交换机', prop: 'name'},
-  {label: '型号', prop: 'model'},
-  {label: '交换机序列号', prop: 'serial'},
-  {label: '交换机模板', prop: 'template'}
+  {label: '组织', prop: 'organizationId', minWidth: '100px'},
+  {label: '网络', prop: 'networkName', minWidth: '100px'},
+  {label: '交换机', prop: 'name', minWidth: '100px'},
+  {label: '序列', prop: 'serial', minWidth: '100px'},
+  {label: '型号', prop: 'model', minWidth: '100px'},
+  {label: '交换机模板', prop: 'switchProfileName', minWidth: '100px'},
 ];
 
 // 查询表单
@@ -28,11 +35,13 @@ const queryForm = [
     config: {options: organizationOptions, clearable: false},
   },
   {
-    label: '网络', prop: 'network', type: 'input'
+    label: '网络', prop: 'networkId', type: 'select',
+    config: {options: networkOptions, clearable: false},
   },
   {
     label: '交换机', prop: 'switch', type: 'input'
   },
+  {label: '序列', prop: 'serial',  type: 'input'},
   {
     label: '型号', prop: 'model', type: 'input'
   },
@@ -61,13 +70,14 @@ function queryTable() {
  * 重置后
  */
 function afterReset() {
-  getNetworkOptions(null, networkOptions);
+  getNetworkOptions(defaultOrg, networkOptions);
 }
 
 /**
  * 表单选择器远程方法
  */
 function remoteMethod(prop, val) {
+
   if (val) {
     if (prop === 'networkId') {
       tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
@@ -78,14 +88,35 @@ function remoteMethod(prop, val) {
     }
   }
 }
+function changeSelect(prop, val) {
+  if (prop === 'organizationId') {
+    getNetworkOptions(val, networkOptions);
+    queryTable();
+  } else if (prop === 'networkId') {
+    if (val === '') {
+      remoteNetworkOptions.length = 0;
+    }
+  }
+}
 
 function toHistory() {
-  router.push('/network/switch-template-history')
+  const selection = compoTableRef.value.getMultipleSelection();
+  if (selection.length !== 1) {
+    return ElMessage.warning('请选择一条记录!');
+  }
+
+  const routeParams = {
+    name: selection[0].name,
+  }
+  router.push({
+    name: 'networkSwitchTemplateHistory',
+    params: routeParams,
+  });
 }
 
 function initQuery() {
   const queryForm = {
-    organizationId: organizationOptions.value = '76'
+    organizationId: organizationOptions.value = defaultOrg
   };
   compoTableRef.value.setForm(queryForm);
   queryTable();
@@ -94,11 +125,43 @@ function initQuery() {
 onMounted(() => {
   initQuery();
   getOrganizationOptions(organizationOptions);
-  getNetworkOptions(null, networkOptions);
+  getNetworkOptions(defaultOrg, networkOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();
   }
 });
+
+function syncNetwork() {
+  const selection = compoTableRef.value.getMultipleSelection();
+  if (selection.length !== 1) {
+    return ElMessage.warning('请选择一条记录!');
+  }
+  syncLoading.value = true;
+  // const syncNum = 4 + selection[0].routerNum + selection[0].wirelessNum * 4 + selection[0].connectClientNum * 2;
+
+  ElMessageBox({
+    title: '同步被选中网络以及关联的设备、客户端信息',
+    message: h('p', null, [
+      h('p', null, "网络：" + selection[0].networkName),
+      h('p', null, "交换机：" + selection[0].name),
+      // h('p', null, "预计：" + syncNum + "秒"),
+    ]),
+    confirmButtonText: '确定',
+  }).then(async () => {
+    const {data: res} = await http.post('/network/sync', {
+      networkIds: [selection[0].networkId],
+      organizationId: selection[0].organizationId
+    });
+    syncLoading.value = false;
+    if (!res.success) {
+      return ElMessage.error(res.msg);
+    }
+    ElMessage.success(res.msg);
+    queryTable();
+  }).catch(() => {
+    syncLoading.value = false;
+  })
+}
 
 </script>
 <template>
@@ -107,10 +170,17 @@ onMounted(() => {
     ref="compoTableRef"
     :table-params="table"
     @remoteMethod="remoteMethod"
+    @changeSelect="changeSelect"
     @reset="afterReset"
   >
+    <template #tableTextSlot="slotProps">
+      <div v-if="slotProps.prop === 'organizationId'">
+        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+      </div>
+    </template>
     <!-- 按钮插槽 -->
     <template #buttonSlot>
+      <el-button type="primary" plain :loading="syncLoading" @click="syncNetwork">同 步</el-button>
       <el-button type="primary" plain @click="toHistory">历史记录</el-button>
     </template>
   </compo-table>
