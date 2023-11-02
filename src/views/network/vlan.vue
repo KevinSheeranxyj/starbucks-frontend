@@ -1,10 +1,11 @@
 <script setup>
-import {ref, onMounted, reactive, h} from 'vue';
+import {ref, onMounted, reactive, h, computed} from 'vue';
 import {useRoute} from 'vue-router';
 import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 import tool from "@/utils/tool";
 import {ElMessage, ElMessageBox} from "element-plus/lib/components";
 import * as http from "http";
+import {createEnumByOptions} from "@/utils/enums";
 
 const route = useRoute();
 
@@ -14,6 +15,9 @@ const syncLoading = ref(false);
 const networkOptions = reactive([]);
 const remoteNetworkOptions = reactive([]);
 const cellWidth = 180;
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
 // 表格列
 const columns = [
   {label: '组织', prop: 'organizationId',width:cellWidth},
@@ -174,8 +178,14 @@ onMounted(() => {
     @remoteMethod="remoteMethod"
     @changeSelect="changeSelect"
   >
+    <template #tableTextSlot="slotProps">
+      <div v-if="slotProps.prop === 'organizationId'">
+      {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+     </div>
+    </template>
     <!-- 按钮插槽 -->
     <template #buttonSlot>
+
       <el-button type="primary" plain :loading="syncLoading" @click="syncNetwork">同 步</el-button>
     </template>
   </compo-table>
