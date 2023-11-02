@@ -39,7 +39,7 @@ const queryForm = [
     config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
-    label: '交换机', prop: 'switch', type: 'input'
+    label: '交换机', prop: 'name', type: 'input'
   },
   {label: '序列', prop: 'serial',  type: 'input'},
   {
