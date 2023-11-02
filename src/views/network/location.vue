@@ -41,7 +41,7 @@ const queryForm = [
 
 const table = {
   query: {
-    url: '/device/switch/table',
+    url: '/device/inventory/table',
     form: {formItems: queryForm}
   },
   columns: columns,
