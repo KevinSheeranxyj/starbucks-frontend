@@ -477,10 +477,12 @@ const routerPage = (row) => {
  * 跳转网络页
  */
 const routerNetworkPage = (networkId, networkName) => {
+  console.log("跳转前参数:",networkId)
   const routeParams = {
     networkId: networkId,
     networkName: networkName,
   }
+  console.log("跳转前参数:",routeParams)
   router.push({
     name: 'network',
     params: routeParams,
@@ -495,6 +497,7 @@ const routerDevicePage = (serial, deviceType) => {
     organizationId:orgId.value,
     serial: serial,
   }
+  console.log("跳转前参数:",routeParams)
   if (deviceType === 'switch') {
     router.push({
       name: 'switch',

@@ -620,6 +620,7 @@ const routParams = ref();
  */
 async function setupState() {
   if (Object.keys(route.params).length > 0) {
+    console.log("跳转if");
     const query = route.params;
     routParams.value = query;
     const networkId = query.networkId;
@@ -638,6 +639,7 @@ async function setupState() {
       remoteNetworkOptions.length = 0;
     }
   }
+  console.log("跳转else");
 }
 
 function initQuery() {
