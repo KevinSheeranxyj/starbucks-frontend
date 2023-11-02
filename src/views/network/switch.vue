@@ -8,7 +8,7 @@ import {ElMessage, ElMessageBox} from "element-plus/lib/components";
 import http from "http";
 
 const route = useRoute();
-const defaultOrg = '76';
+
 const compoTableRef = ref(null);
 const remoteNetworkOptions = reactive([]);
 const organizationOptions = reactive([]);
@@ -35,7 +35,7 @@ const queryForm = [
   },
   {
     label: '网络', prop: 'networkId', type: 'select',
-    config: {options: networkOptions, clearable: false},
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
     label: '交换机', prop: 'name', type: 'input',
@@ -133,7 +133,7 @@ onMounted(() => {
  * 重置后
  */
 function afterReset() {
-  getNetworkOptions(defaultOrg, networkOptions);
+  getNetworkOptions(tool.getDefaultOrgID(), networkOptions);
 }
 
 /**
@@ -154,7 +154,6 @@ function remoteMethod(prop, val) {
 function changeSelect(prop, val) {
   if (prop === 'organizationId') {
     getNetworkOptions(val, networkOptions);
-    queryTable();
   } else if (prop === 'networkId') {
     if (val === '') {
       remoteNetworkOptions.length = 0;

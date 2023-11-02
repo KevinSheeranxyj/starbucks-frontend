@@ -14,13 +14,13 @@ const remoteNetworkOptions = reactive([]);
 const networkOptions = reactive([]);
 const syncLoading = ref(false);
 const organizationOptions = reactive([]);
-const defaultOrg = '76';
+
 // 表格列
 const columns = [
   {label: '组织', prop: 'organizationId'},
   {label: '网络', prop: 'name'},
   {label: '网络类型', prop: 'productTypes'},
-  {label: '模板', prop: 'tagTemplateName'}
+  {label: '模板', prop: 'templateName'}
 ];
 
 /*
@@ -45,7 +45,7 @@ const queryForm = [
   },
   {
     label: '网络', prop: 'networkId', type: 'select',
-    config: {options: networkOptions, clearable: false},
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
     label: '模板', prop: 'templateName', type: 'input'
@@ -72,12 +72,6 @@ function queryTable() {
   compoTableRef.value.query();
 }
 
-/**
- * 重置后
- */
-function afterReset() {
-  getNetworkOptions(defaultOrg, networkOptions);
-}
 
 /**
  * 表单选择器远程方法
@@ -94,16 +88,24 @@ function remoteMethod(prop, val) {
     }
   }
 }
+/**
+ * 重置后
+ */
+function afterReset() {
+  getNetworkOptions(tool.getDefaultOrgID(), networkOptions);
+}
+
+
 function changeSelect(prop, val) {
   if (prop === 'organizationId') {
     getNetworkOptions(val, networkOptions);
-    queryTable();
   } else if (prop === 'networkId') {
-    if (val === '') {
+    if(val === ''){
       remoteNetworkOptions.length = 0;
     }
   }
 }
+
 function syncNetwork() {
   const selection = compoTableRef.value.getMultipleSelection();
   if (selection.length !== 1) {
@@ -169,7 +171,7 @@ function getProductTypesText(productTypes) {
 onMounted(() => {
   initQuery();
   getOrganizationOptions(organizationOptions);
-  getNetworkOptions(defaultOrg, networkOptions);
+  getNetworkOptions(tool.getDefaultOrgID(), networkOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();
   }

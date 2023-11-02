@@ -14,7 +14,7 @@ const compoTableRef = ref(null);
 const remoteNetworkOptions = reactive([]);
 const networkOptions = reactive([]);
 const organizationOptions = reactive([]);
-const defaultOrg = '76';
+
 const organizationEnum = computed(() => {
   return createEnumByOptions(organizationOptions);
 });
@@ -36,7 +36,7 @@ const queryForm = [
   },
   {
     label: '网络', prop: 'networkId', type: 'select',
-    config: {options: networkOptions, clearable: false},
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
     label: '交换机', prop: 'switch', type: 'input'
@@ -70,7 +70,7 @@ function queryTable() {
  * 重置后
  */
 function afterReset() {
-  getNetworkOptions(defaultOrg, networkOptions);
+  getNetworkOptions(tool.getDefaultOrgID(), networkOptions);
 }
 
 /**
@@ -116,7 +116,7 @@ function toHistory() {
 
 function initQuery() {
   const queryForm = {
-    organizationId: organizationOptions.value = defaultOrg
+    organizationId: organizationOptions.value = tool.getDefaultOrgID()
   };
   compoTableRef.value.setForm(queryForm);
   queryTable();
@@ -125,7 +125,7 @@ function initQuery() {
 onMounted(() => {
   initQuery();
   getOrganizationOptions(organizationOptions);
-  getNetworkOptions(defaultOrg, networkOptions);
+  getNetworkOptions(tool.getDefaultOrgID(), networkOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();
   }

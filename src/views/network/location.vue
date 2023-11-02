@@ -32,7 +32,7 @@ const queryForm = [
   },
   {
     label: '网络', prop: 'networkId', type: 'select',
-    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
     label: '序列', prop: 'serial', type: 'input'
@@ -83,7 +83,6 @@ function remoteMethod(prop, val) {
 function changeSelect(prop, val) {
   if (prop === 'organizationId') {
     getNetworkOptions(val, networkOptions);
-    queryTable();
   } else if (prop === 'networkId') {
     if (val === '') {
       remoteNetworkOptions.length = 0;
