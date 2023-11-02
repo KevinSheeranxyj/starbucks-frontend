@@ -7,7 +7,9 @@
               ref="organizationFormRef"
               :form-params="organizationSchema"
               form-type="table"
+              @remoteMethod="remoteMethod"
               @changeSelect="changeSelect"
+              @reset="afterReset"
               @disabledButton="handleDisabledButton"
           >
           </compo-form>
@@ -82,7 +84,7 @@ const organizationSchema = {
     },
     {
       label: '选择网络', prop: 'networkId', type: 'select',
-      config: {options: networkOptions,remote: true, placeholder: '请输入'},
+      config: {options: remoteNetworkOptions,remote: true, placeholder: '请输入'},
       rules: true,
     }]
 };
@@ -120,6 +122,34 @@ async  function changeSelect(prop, val) {
           netName.value = item.label;
         }
       });
+    }
+  }
+}
+function afterReset() {
+  getNetworkOptions(null, networkOptions);
+}
+
+// function changeSelect(prop, val) {
+//   if (prop === 'organizationId') {
+//     getNetworkOptions(val, networkOptions);
+//   } else if (prop === 'networkId') {
+//     if(val === ''){
+//       remoteNetworkOptions.length = 0;
+//     }
+//   }
+// }
+/**
+ * 表单选择器远程方法
+ */
+function remoteMethod(prop, val) {
+
+  if (val) {
+    if (prop === 'networkId') {
+      tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
+    }
+  } else if (typeof val === 'undefined') {
+    if (prop === 'networkId') {
+      remoteNetworkOptions.length = 0;
     }
   }
 }
