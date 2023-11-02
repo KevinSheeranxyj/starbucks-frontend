@@ -479,6 +479,7 @@ const routerPage = (row) => {
 const routerNetworkPage = (networkId, networkName) => {
   console.log("跳转前参数:",networkId)
   const routeParams = {
+    organizationId:orgId.value,
     networkId: networkId,
     networkName: networkName,
   }
