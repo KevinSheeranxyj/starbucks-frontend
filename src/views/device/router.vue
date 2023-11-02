@@ -526,7 +526,7 @@ async function setupState() {
     queryTable();
 
     if (networkId) {
-      await tool.setRemoteOptions(remoteNetworkOptions, networkName, networkId);
+      await tool.setRemoteOptions(remoteNetworkOptions, organizationId,networkName, networkId);
       changeSelect('networkId', networkId);
       changeSelect('organizationId', organizationId);
       remoteNetworkOptions.length = 0;
