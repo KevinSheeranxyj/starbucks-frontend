@@ -70,6 +70,9 @@ async function getNetworkOptions(organizationId, options) {
     //     text: '网络列表加载中...',
     //     background: 'rgba(0, 0, 0, 0.7)',
     // })
+    if(!organizationId){
+        organizationId = tool.getDefaultOrgID()
+    }
     let networkNameDict = {};
     if (organizationId){
         const { data: res } = await http.post('/sys/redis/value', {key: 'DICT:NETWORK_NAME:ORG_ID:'+ organizationId});

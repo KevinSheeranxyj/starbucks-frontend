@@ -503,17 +503,20 @@ const routerClientPage = (row) => {
   });
 
 };
-
+const routParams = ref();
 /**
  * 校验是否页面跳转，设置查询条件
  */
 async function setupState() {
   if (Object.keys(route.params).length > 0) {
     const query = route.params;
+    routParams.value = query;
     const networkName = query.networkName;
     const networkId = query.networkId;
     const serial = query.serial;
+    const organizationId = query.organizationId;
     const queryForm = {
+      organizationId:organizationId,
       serial: serial,
       networkId: networkId,
       statusList: query.status ? [query.status] : null,
@@ -523,8 +526,9 @@ async function setupState() {
     queryTable();
 
     if (networkId) {
-      await tool.setRemoteOptions(remoteNetworkOptions, networkName, networkId);
+      await tool.setRemoteOptions(remoteNetworkOptions, organizationId,networkName, networkId);
       changeSelect('networkId', networkId);
+      changeSelect('organizationId', organizationId);
       remoteNetworkOptions.length = 0;
     }
     if(serial){

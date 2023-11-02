@@ -20,7 +20,9 @@ const tool = {
     }
     return true;
   },
-
+  getDefaultOrgID(){
+    return "76";
+  },
   isDeepObjectEqual(obj1, obj2) {
     //1.如果是比较对象===，返回true
     if (obj1 === obj2) return true;

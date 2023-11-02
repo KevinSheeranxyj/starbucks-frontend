@@ -39,10 +39,9 @@ const queryForm = [
     config: {options: organizationOptions, clearable: false}
   },
   {
-    label: '网络', prop: 'network', type: 'select',
-    config: {options: networkOptions, clearable: false}
+    label: '网络', prop: 'networkId', type: 'input',
+    config: {options: networkOptions, remoteMethod:true, clearable: false},
   },
-
   {
     label: 'Vlan2', prop: 'vlan2', type: 'input'
   },
@@ -155,11 +154,11 @@ function initQuery() {
   compoTableRef.value.setForm(queryForm);
   queryTable();
 }
-const defaultOrg = '76';
+
 onMounted(() => {
   initQuery();
   getOrganizationOptions(organizationOptions);
-  getNetworkOptions(defaultOrg, networkOptions);
+  getNetworkOptions(tool.getDefaultOrgID(), networkOptions);
   if (Object.keys(route.params).length <= 0) {
     queryTable();
   }
