@@ -75,7 +75,7 @@
           </template>
           <template v-else-if="item.type === 'dns'" #default="scope">
             <slot name="tableDNSSlot" :scope="scope" :prop="item.prop"> </slot>
-            {{ '主:' + scope.row['primaryDns']}}<br>
+            {{ '主:' + (scope.row['primaryDns'] === null ? "" : scope.row['primaryDns'])}}<br>
             {{ '次:' + (scope.row['secondaryDns'] === null ? "" : scope.row['secondaryDns']) }}
           </template>
           <template v-else-if="item.type === 'usedStatus'" #default="scope">

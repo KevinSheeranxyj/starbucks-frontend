@@ -2,7 +2,7 @@
 import tool from '@/utils/tool';
 import {ref, onMounted, reactive, computed} from 'vue';
 import {useRoute} from 'vue-router';
-import { getNetworkOptions } from '../device/device';
+import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 import {createEnumByOptions} from "@/utils/enums";
 
 const route = useRoute();
@@ -62,14 +62,8 @@ function queryTable() {
 /**
  * 重置后
  */
-function afterReset() {
-  getNetworkOptions(null, networkOptions);
-}
-
-/**
- * 表单选择器远程方法
- */
 function remoteMethod(prop, val) {
+
   if (val) {
     if (prop === 'networkId') {
       tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
@@ -80,10 +74,27 @@ function remoteMethod(prop, val) {
     }
   }
 }
+function changeSelect(prop, val) {
+  if (prop === 'organizationId') {
+    getNetworkOptions(val, networkOptions);
+    queryTable();
+  } else if (prop === 'networkId') {
+    if (val === '') {
+      remoteNetworkOptions.length = 0;
+    }
+  }
+}
+
+/**
+ * 重置后
+ */
+function afterReset() {
+  getOrganizationOptions(organizationOptions);
+}
 
 
 onMounted(() => {
-  getNetworkOptions(null, networkOptions);
+  getOrganizationOptions(organizationOptions);
   getNetworkOptions(null, networkOptions);
 
   if (Object.keys(route.params).length <= 0) {
@@ -109,6 +120,7 @@ const organizationEnum = computed(() => {
     ref="compoTableRef"
     :table-params="table"
     @remoteMethod="remoteMethod"
+    @changeSelect="changeSelect"
     @reset="afterReset"
   >
     <template #tableTextSlot="slotProps">

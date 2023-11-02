@@ -2,7 +2,7 @@
 import tool from '@/utils/tool';
 import {ref, onMounted, reactive, onActivated, computed} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
-import { getNetworkOptions } from '../device/device';
+import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 import {createEnumByOptions} from "@/utils/enums";
 
 const route = useRoute();
@@ -55,6 +55,18 @@ function queryTable() {
   compoTableRef.value.query();
 }
 
+function changeSelect(prop, val) {
+  if (prop === 'organizationId') {
+    getNetworkOptions(val, networkOptions);
+    queryTable();
+  } else if (prop === 'networkId') {
+    if (val === '') {
+      remoteNetworkOptions.length = 0;
+    }
+  }
+}
+
+
 /**
  * 重置后
  */
@@ -81,8 +93,10 @@ function toHistory() {
 
 }
 const router = useRouter();
+const organizationOptions = reactive([]);
 
 onMounted(() => {
+  getOrganizationOptions(organizationOptions);
   getNetworkOptions(null, networkOptions);
 
   if (Object.keys(route.params).length <= 0) {
@@ -108,6 +122,7 @@ const organizationEnum = computed(() => {
       ref="compoTableRef"
       :table-params="table"
       @remoteMethod="remoteMethod"
+      @changeSelect="changeSelect"
       @reset="afterReset"
   >
     <template #tableTextSlot="slotProps">
