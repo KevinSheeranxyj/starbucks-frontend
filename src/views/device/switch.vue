@@ -116,7 +116,7 @@ const queryForm = [
     config: {options: organizationOptions, clearable: false},
   },
   {
-    label: '网络', prop: 'networkId', type: 'select',
+    label: '网络', prop: 'networkId', type: 'input',
     config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
@@ -161,9 +161,8 @@ const table = {
  * 表单选择器变动
  */
 function changeSelect(prop, val) {
-  console.log('changeSelect', prop, val)
   if (prop === 'organizationId') {
-    getNetworkOptions(val, networkOptions);
+    getNetworkOptions(val, remoteNetworkOptions);
     getDeviceOptions({'organizationId': val, productType: 'switch'}, deviceNameOptions, deviceSerialOptions, macOptions, publicIpOptions);
   } else if (prop === 'networkId') {
     getDeviceOptions({'networkId': val, productType: 'switch'}, deviceNameOptions, deviceSerialOptions, macOptions, publicIpOptions);
@@ -279,17 +278,20 @@ const routerClientPage = (row) => {
     params: routeParams,
   });
 };
-
+const routParams = ref();
 /**
  * 校验是否页面跳转，设置查询条件
  */
 async function setupState() {
   if (Object.keys(route.params).length > 0) {
     const query = route.params;
+    routParams.value = query;
     const networkId = query.networkId;
+    const organizationId = query.organizationId;
     const networkName = query.networkName;
     const serial = query.serial;
     const queryForm = {
+      organizationId:organizationId,
       networkId: networkId,
       serial: serial,
       statusList: query.status ? [query.status] : null,
@@ -311,7 +313,7 @@ async function setupState() {
 
 function initQuery() {
   const queryForm = {
-    organizationId: organizationOptions.value = '76'
+    organizationId: organizationOptions.value = routParams.organizationId?tool.getDefaultOrgID():'76'
   };
   compoTableRef.value.setForm(queryForm);
   queryTable();

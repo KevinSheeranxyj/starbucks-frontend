@@ -603,17 +603,20 @@ const routerClientPage = (row) => {
     params: routeParams
   });
 };
-
+const routParams = ref();
 /**
  * 校验是否页面跳转，设置查询条件
  */
 async function setupState() {
   if (Object.keys(route.params).length > 0) {
     const query = route.params;
+    routParams.value = query;
     const networkId = query.networkId;
     const networkName = query.networkName;
+    const organizationId = query.organizationId;
     const serial = query.serial;
     const queryForm = {
+      organizationId:organizationId,
       serial: serial,
       networkId: networkId,
       statusList: query.status ? [query.status] : null
@@ -635,7 +638,7 @@ async function setupState() {
 
 function initQuery() {
   const queryForm = {
-    organizationId: organizationOptions.value = '76'
+    organizationId: organizationOptions.value = routParams.organizationId?tool.getDefaultOrgID():'76'
   };
   compoTableRef.value.setForm(queryForm);
   queryTable();

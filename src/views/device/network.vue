@@ -614,16 +614,19 @@ const routerClientPage = (row) => {
     params: routeParams,
   });
 };
-
+const routParams = ref();
 /**
  * 校验是否页面跳转，设置查询条件
  */
 async function setupState() {
   if (Object.keys(route.params).length > 0) {
     const query = route.params;
+    routParams.value = query;
     const networkId = query.networkId;
+    const organizationId = query.organizationId;
     const networkName = query.networkName;
     const queryForm = {
+      organizationId:organizationId,
       networkId: networkId,
     };
     // 设置查询表单
@@ -639,7 +642,7 @@ async function setupState() {
 
 function initQuery() {
   const queryForm = {
-    organizationId: organizationOptions.value = '76'
+    organizationId: organizationOptions.value = routParams.organizationId?tool.getDefaultOrgID():'76'
   };
   compoTableRef.value.setForm(queryForm);
   queryTable();

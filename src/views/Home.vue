@@ -492,6 +492,7 @@ const routerNetworkPage = (networkId, networkName) => {
  */
 const routerDevicePage = (serial, deviceType) => {
   const routeParams = {
+    organizationId:orgId.value,
     serial: serial,
   }
   if (deviceType === 'switch') {
