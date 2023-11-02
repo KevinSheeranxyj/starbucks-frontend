@@ -149,23 +149,25 @@ function initQuery() {
   queryTable();
 }
 function getProductTypesText(productTypes) {
+  const TYPE_MAP = {
+    'appliance': '路由器',
+    'switch': '交换机',
+    'wireless': '无线'
+  };
   if (!productTypes) return '';
 
+  let types;
   try {
-    const types = JSON.parse(productTypes);
-    const typesString = types.sort().join(',');
-
-    switch(typesString) {
-      case 'appliance': return '路由器';
-      case 'switch': return '交换机';
-      case 'wireless': return '无线';
-      case 'appliance,switch,wireless': return '混合设备';
-      default: return '';
-    }
+    types = JSON.parse(productTypes);
   } catch (e) {
     console.error('Failed to parse productTypes:', e);
     return '';
   }
+
+  if (types.length > 1) return '混合设备';
+
+  const typeName = types[0];
+  return TYPE_MAP[typeName] || '';
 }
 
 onMounted(() => {

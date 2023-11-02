@@ -28,7 +28,7 @@ const queryForm = [
   },
   {
     label: '网络', prop: 'networkId', type: 'select',
-    config: {options: networkOptions, remote: true, placeholder: '请输入'}
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
     label: '序列', prop: 'sn', type: 'input'

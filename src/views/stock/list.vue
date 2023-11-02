@@ -1,13 +1,18 @@
 <script setup>
-import {ref, onMounted, reactive} from 'vue';
+import {ref, onMounted, reactive, computed} from 'vue';
 import {useRoute} from 'vue-router';
-import {getOrganizationOptions} from "@/views/device/device";
+import {getNetworkOptions, getOrganizationOptions} from "@/views/device/device";
 import tool from "@/utils/tool";
+import {createEnumByOptions} from "@/utils/enums";
 
 const route = useRoute();
-
+const remoteNetworkOptions = reactive([]);
+const networkOptions = reactive([]);
 const compoTableRef = ref(null);
 const organizationOptions = reactive([]);
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
 // 表格列
 const columns = [
   {label: '组织', prop: 'organizationId'},
@@ -25,8 +30,8 @@ const queryForm = [
     config: {options: organizationOptions, clearable: false},
   },
   {
-    label: '网络', prop: 'organizationId', type: 'select',
-    config: {options: organizationOptions, clearable: false},
+    label: '网络', prop: 'networkId', type: 'select',
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
     label: 'MAC', prop: 'mac', type: 'input',
@@ -76,16 +81,48 @@ onMounted(() => {
     queryTable();
   }
 });
+function afterReset() {
+  getNetworkOptions(null, networkOptions);
+}
 
+function changeSelect(prop, val) {
+  if (prop === 'organizationId') {
+    getNetworkOptions(val, networkOptions);
+  } else if (prop === 'networkId') {
+    if(val === ''){
+      remoteNetworkOptions.length = 0;
+    }
+  }
+}
+/**
+ * 表单选择器远程方法
+ */
+function remoteMethod(prop, val) {
+
+  if (val) {
+    if (prop === 'networkId') {
+      tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
+    }
+  } else if (typeof val === 'undefined') {
+    if (prop === 'networkId') {
+      remoteNetworkOptions.length = 0;
+    }
+  }
+}
 </script>
 <template>
   <!-- 表格组件 -->
   <compo-table
     ref="compoTableRef"
-    @changeSelect="queryTable"
+    @remoteMethod="remoteMethod"
+    @changeSelect="changeSelect"
+    @reset="afterReset"
     :table-params="table"
   >
     <template #tableTextSlot="slotProps">
+      <div v-if="slotProps.prop === 'organizationId'">
+        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+      </div>
       <div v-if="slotProps.prop === 'claimedAt'">
         {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
       </div>
