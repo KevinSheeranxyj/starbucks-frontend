@@ -50,7 +50,7 @@ const queryForm = [
 
 const table = {
   query: {
-    url: '/device/switch/table',
+    url: '/device/history/table',
     form: {formItems: queryForm}
   },
   columns: columns,
