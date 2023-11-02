@@ -303,6 +303,7 @@ async function setupState() {
     if (networkId) {
       await tool.setRemoteOptions(remoteNetworkOptions, networkName, networkId);
       changeSelect('networkId', networkId);
+      changeSelect('organizationId', organizationId);
       remoteNetworkOptions.length = 0;
     }
     if(serial){
@@ -313,7 +314,7 @@ async function setupState() {
 
 function initQuery() {
   const queryForm = {
-    organizationId: organizationOptions.value = routParams.organizationId?tool.getDefaultOrgID():'76'
+    organizationId: organizationOptions.value ='76'
   };
   compoTableRef.value.setForm(queryForm);
   queryTable();
