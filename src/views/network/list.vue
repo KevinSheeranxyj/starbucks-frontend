@@ -48,7 +48,7 @@ const queryForm = [
     config: {options: networkOptions, clearable: false},
   },
   {
-    label: '模板', prop: 'tagTemplateName', type: 'input'
+    label: '模板', prop: 'templateName', type: 'input'
   },
   {
     label: '网络类型', prop: 'productTypes', type: 'select',
