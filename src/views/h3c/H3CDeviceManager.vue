@@ -13,15 +13,10 @@ const networkOptions = reactive([]);
 const networkInput = ref('');
 // 表格列
 const columns = [
-  {label: '组织', prop: 'organizationId', minWidth: '100px'},
-  {label: '网络', prop: 'networkName', minWidth: '100px'},
-  {label: '交换机', prop: 'name', minWidth: '100px'},
-  {label: '序列', prop: 'serial', minWidth: '100px'},
-  {label: '公网IP', prop: 'publicIp', minWidth: '100px'},
-  {label: 'VLAN', prop: 'vlan', minWidth: '100px'},
-  {label: 'LAN IP', prop: 'lanIp', minWidth: '100px'},
-  {label: '网关', prop: 'gateway', minWidth: '100px'},
-  {label: 'DNS', prop: 'dns',type:'dns', minWidth: '100px'}
+  {label: '序列号', prop: 'devSn', minWidth: '100px'},
+  {label: '设备模型', prop: 'devModel', minWidth: '100px'},
+  {label: '别名', prop: 'aliasName', minWidth: '100px'},
+  {label: '设备类型', prop: 'devType', minWidth: '100px'}
 ];
 // 查询表单
 const queryForm = [
@@ -41,7 +36,7 @@ const queryForm = [
 
 const table = {
   query: {
-    url: '/device/history/switch/table',
+    url: '/h3c/device/table',
     form: {formItems: queryForm}
   },
   columns: columns,
