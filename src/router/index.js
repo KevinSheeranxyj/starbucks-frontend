@@ -180,6 +180,27 @@ export const layoutRoutes = [
     meta: { title: '交换机模板历史' },
     component: () => import('@/views/network/switch-template-history.vue')
   },
+  /**
+   * H3C
+   */
+  {
+    path: 'h3c/preview',
+    name: 'H3CPreview',
+    meta: { title: '总览统计' },
+    component: () => import('@/views/h3c/H3CPreview.vue')
+  },
+  {
+    path: 'h3c/location',
+    name: 'H3CLocation',
+    meta: { title: '场所管理' },
+    component: () => import('@/views/h3c/H3CShopManager.vue')
+  },
+  {
+    path: 'h3c/device',
+    name: 'H3CDevice',
+    meta: { title: '设备管理' },
+    component: () => import('@/views/h3c/H3CDeviceManager.vue')
+  },
 
   /**
    * 系统管理

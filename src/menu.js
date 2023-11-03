@@ -97,6 +97,16 @@ const menu = [
   },
   {
     index: '09',
+    icon: Switch,
+    title: 'H3C',
+    children: [
+      { icon: List, title: '总览统计', path: '/h3c/preview' },
+      { icon: Location, title: '场所管理', path: '/h3c/location' },
+      { icon: DataLine, title: '设备管理', path: '/h3c/device' },
+    ]
+  },
+  {
+    index: '10',
     icon: Setting,
     title: '系统管理',
     children: [
