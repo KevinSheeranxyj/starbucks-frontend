@@ -578,6 +578,7 @@ function getAreaChart(chart) {
 const routerDevicePage = (row, deviceType) => {
   const routeParams = {
     networkId: row.networkId,
+    organizationId:row.organizationId,
     networkName: row.name,
     status: row.status,
   }
@@ -606,6 +607,7 @@ const routerDevicePage = (row, deviceType) => {
 const routerClientPage = (row) => {
   const routeParams = {
     networkId: row.networkId,
+    organizationId:row.organizationId,
     networkName: row.name,
   }
 

@@ -1,8 +1,9 @@
 <script setup>
 import tool from '@/utils/tool';
-import {ref, onMounted, reactive} from 'vue';
+import {ref, onMounted, reactive, computed} from 'vue';
 import {useRoute} from 'vue-router';
 import {getNetworkOptions, getOrganizationOptions} from '../device/device';
+import {createEnumByOptions} from "@/utils/enums";
 
 const route = useRoute();
 const organizationOptions = reactive([]);
@@ -111,7 +112,9 @@ onMounted(() => {
     queryTable();
   }
 });
-
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
 </script>
 <template>
   <!-- 表格组件 -->
@@ -123,6 +126,9 @@ onMounted(() => {
     @reset="afterReset"
   >
     <template #tableTextSlot="slotProps">
+      <div v-if="slotProps.prop === 'organizationId'">
+        {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
+      </div>
       <div v-if="slotProps.prop === 'claimedAt'">
         {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
       </div>

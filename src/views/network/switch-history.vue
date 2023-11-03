@@ -1,6 +1,6 @@
 <script setup>
 import tool from '@/utils/tool';
-import {ref, onMounted, reactive, onActivated, computed} from 'vue';
+import {ref, onMounted, reactive, computed} from 'vue';
 import {useRoute, useRouter} from 'vue-router';
 import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 import {createEnumByOptions} from "@/utils/enums";
