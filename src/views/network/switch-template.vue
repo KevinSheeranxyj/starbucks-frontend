@@ -46,7 +46,7 @@ const queryForm = [
     label: '型号', prop: 'model', type: 'input'
   },
   {
-    label: '交换机模板', prop: 'template', type: 'input'
+    label: '交换机模板', prop: 'switchProfileName', type: 'input'
   }
 ];
 
