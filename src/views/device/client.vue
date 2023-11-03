@@ -72,6 +72,7 @@ const selected = reactive({
   clientId: "",
   organizationId: "",
 });
+const remoteNetworkOptions = reactive([]);
 const historyDialogRef = ref(null);
 const networkOptions = reactive([]);
 const deviceNameOptions = reactive([]);
@@ -139,7 +140,7 @@ const queryForm = [
   },
   {
     label: '网络', prop: 'networkId', type: 'select',
-    config: {options: networkOptions, },
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
     label: '连接设备', prop: 'deviceName', type: 'select',
@@ -238,6 +239,10 @@ function changeSelect(prop, val) {
   if (prop === 'deviceSerial') {
     getClientOptions({'deviceSerial': val});
   }
+  if (prop === 'organizationId') {
+    getNetworkOptions(val, networkOptions);
+    queryTable();
+  }
 }
 
 /**
@@ -255,6 +260,16 @@ function remoteMethod(prop, val) {
       remoteMacOptions.length = 0;
     } else if (prop === 'ip') {
       remoteIpOptions.length = 0;
+    }
+  }
+
+  if (val) {
+    if (prop === 'networkId') {
+      tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
+    }
+  } else if (typeof val === 'undefined') {
+    if (prop === 'networkId') {
+      remoteNetworkOptions.length = 0;
     }
   }
 }
@@ -337,6 +352,7 @@ function queryTable() {
 function afterReset() {
   getClientOptions({});
   getDeviceOptions();
+  getNetworkOptions(null, networkOptions);
 }
 
 async function syncNetwork() {

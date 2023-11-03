@@ -379,6 +379,7 @@ export default {
       });
     },
 
+
     exportData(form) {
       this.$refs.compoFormRef.validate(async(valid) => {
         if (valid) {
@@ -393,14 +394,24 @@ export default {
             this.queryForm = this.$refs.compoFormRef.getForm();
           }
           this.loading = true;
-          const { data: res } = await this.$http.post(
-            this.tableParams.export.url,
-            this.queryForm
-          );
+          // const { data: res }
+             const res = await this.$http.post(
+              this.tableParams.export.url,
+              this.queryForm,
+                 { responseType: 'blob' }
+             );
           this.loading = false;
-          if (!res.success) {
+          if (res.statusText.toLowerCase() !== "ok") {
             return this.$message.error(res.msg);
           }
+          // 使用Blob对象和a标签将文件流保存为文件
+          const blob = new Blob([res.data], { type: 'application/octet-stream' }); // 这里的类型可以根据实际情况更改
+          const link = document.createElement('a');
+          link.href = URL.createObjectURL(blob);
+          link.download = 'export.xlsx'; // 指定您想要的文件名和扩展名
+          document.body.appendChild(link);
+          link.click();
+          document.body.removeChild(link);
         }
       });
     },
