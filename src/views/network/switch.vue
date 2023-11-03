@@ -5,8 +5,7 @@ import {createEnumByOptions} from "@/utils/enums";
 import {getNetworkOptions, getOrganizationOptions} from "@/views/device/device";
 import tool from "@/utils/tool";
 import {ElMessage, ElMessageBox} from "element-plus/lib/components";
-import http from "http";
-
+import http from "@/utils/http";
 const route = useRoute();
 
 const compoTableRef = ref(null);
@@ -86,10 +85,15 @@ function syncNetwork() {
     ]),
     confirmButtonText: '确定',
   }).then(async () => {
-    const {data: res} = await http.post('/network/sync', {
-      networkIds: [selection[0].networkId],
-      organizationId: selection[0].organizationId
+    // const {data: res} = await http.post('/network/sync', {
+    //   networkIds: [selection[0].networkId],
+    //   organizationId: selection[0].organizationId
+    // });
+    console.log(selection[0].serial);
+    const {data: res} = await http.post('/device/syncSingle', {
+      serial: selection[0].serial,
     });
+    console.log(res)
     syncLoading.value = false;
     if (!res.success) {
       return ElMessage.error(res.msg);

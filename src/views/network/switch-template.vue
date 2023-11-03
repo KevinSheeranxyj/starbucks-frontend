@@ -5,6 +5,7 @@ import {useRoute, useRouter} from 'vue-router';
 import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 import {createEnumByOptions} from "@/utils/enums";
 import {ElMessage, ElMessageBox} from "element-plus/lib/components";
+import http from "@/utils/http";
 
 const route = useRoute();
 const router = useRouter();
@@ -148,8 +149,7 @@ function syncNetwork() {
     confirmButtonText: '确定',
   }).then(async () => {
     const {data: res} = await http.post('/device/syncSingle', {
-      networkIds: [selection[0].networkId],
-      organizationId: selection[0].organizationId
+      serial: [selection[0].serial],
     });
     syncLoading.value = false;
     if (!res.success) {

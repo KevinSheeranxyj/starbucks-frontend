@@ -4,7 +4,7 @@ import {useRoute} from 'vue-router';
 import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 import tool from "@/utils/tool";
 import {ElMessage, ElMessageBox} from "element-plus/lib/components";
-import * as http from "http";
+import http from "@/utils/http";
 import {createEnumByOptions} from "@/utils/enums";
 
 const route = useRoute();
@@ -127,18 +127,17 @@ function syncNetwork() {
   }
   syncLoading.value = true;
   // const syncNum = 4 + selection[0].routerNum + selection[0].wirelessNum * 4 + selection[0].connectClientNum * 2;
-
+  console.log(selection[0])
   ElMessageBox({
     title: '同步被选中网络以及关联的设备、客户端信息',
     message: h('p', null, [
-      h('p', null, "网络：" + selection[0].name),
+      h('p', null, "网络：" + selection[0].networkName),
       // h('p', null, "预计：" + syncNum + "秒"),
     ]),
     confirmButtonText: '确定',
   }).then(async () => {
-    const {data: res} = await http.post('/network/sync', {
+    const {data: res} = await http.post('/network/vlan/sync', {
       networkIds: [selection[0].networkId],
-      organizationId: selection[0].organizationId
     });
     syncLoading.value = false;
     if (!res.success) {
