@@ -26,7 +26,13 @@ const archiveFlagEnum = computed(() => {
 });
 
 const createdByOptions = reactive([]);
-
+const createdByEnum = computed(() => {
+  const enumData = {};
+  createdByOptions.forEach((o) => {
+    enumData[o.label] = [o.value, o.label];
+  });
+  return createEnum(enumData);
+});
 // 表格列
 const columns = [
   {label: '操作时间', prop: 'createdAt', width: '140px'},
@@ -138,6 +144,10 @@ onMounted(() => {
       <div v-else-if="slotProps.prop === 'createdAt'">
         {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
       </div>
+
+<!--      <div v-if="slotProps.prop === 'createdBy'">-->
+<!--        {{ createdByEnum.getDescsFromValues(slotProps.cellValue) }}-->
+<!--      </div>-->
     </template>
     <template #tableDefinedSlot="slotProps">
       <div v-if="slotProps.prop === 'operator'">
