@@ -88,13 +88,21 @@
                 <el-dialog
                     title="确认框"
                     v-model="dialogVisible"
-                    width="30%"
-                    :before-close="handleClose">
-                  <div class="dialog-content">请确认你所勾选的网络设备</div>
-                  <span slot="footer" class="dialog-footer">
+                    width="80%"
+                    :before-close="handleClose"
+                >
+                 <div class="centered-content">
+                   <div class="dialog-content">请确认你所勾选的网络设备</div>
+                   <compo-table
+                       :table-params="selectedTable"
+                       :default-table-data="selectedValues"
+                   >
+                   </compo-table>
+                   <span slot="footer" class="dialog-footer">
                 <el-button @click="dialogVisible = false">取消</el-button>
                 <el-button type="primary" @click="thirdStep">确认</el-button>
               </span>
+                 </div>
                 </el-dialog>
               </template>
             </compo-table>
@@ -102,7 +110,7 @@
           </div>
           <div class="button-section">
             <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
-            <el-button type="primary"  @click="promptConfirmationBeforeNext">{{ '下一步' }}</el-button>
+            <el-button type="primary" :disabled="!stepThree" @click="promptConfirmationBeforeNext">{{ '下一步' }}</el-button>
           </div>
         </el-collapse-item>
       </keep-alive>
@@ -273,6 +281,7 @@ import {useRouter} from "vue-router";
 import {getOrganizationOptions, getNetworkTemplateOptions, getSwitchTemplateOptions} from "@/views/device/device";
 import http from "@/utils/http";
 import {ElLoading, ElMessage} from "element-plus/lib/components";
+import logger from "@fortawesome/vue-fontawesome/src/logger";
 
 
 const active =  ref(0);
@@ -298,6 +307,10 @@ const step2NetTempStatus = ref(false);
 
 const stepTwo = computed(() => {
   return step2NetTempStatus.value && step2NetStatus.value && step2InputStatus.value;
+});
+
+const stepThree = computed(() => {
+  return selectedValues.value && selectedValues.value.length > 0;
 });
 
 function step2Input(val) {
@@ -334,6 +347,7 @@ function closeDialog() {
 }
 function removeSelected(index){
   selectedValues.value.splice(index, 1);
+
 }
 
 const { proxy } = getCurrentInstance();
@@ -899,6 +913,19 @@ const serials = ref([]);
 
 function promptConfirmationBeforeNext() {
 
+
+  const hasMXModel = selectedValues.value.some(item => item.model.startsWith('MX'));
+  if (!hasMXModel) {
+    ElMessage.error("至少选择一台 MX 类型设备");
+    return;
+  }
+  const hasUsed = selectedValues.value.some(item => item.usedStatus === 0);
+  if (hasUsed) {
+    ElMessage.error("选中设备被占用");
+    return;
+  }
+
+
   dialogVisible.value = true;
   submitData.networkDeviceAdd = selectedValues.value;
   submitData.networkDeviceAdd.map(item => {
@@ -1007,5 +1034,12 @@ async function submitAll() {
 }
 .valid-border {
   border-color: green !important;
+}
+.centered-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
 }
 </style>
