@@ -1,11 +1,11 @@
 <script setup>
 import tool from '@/utils/tool';
-import {ref, onMounted, reactive, computed} from 'vue';
+import {ref, onMounted, reactive, computed, h} from 'vue';
 import {useRoute} from 'vue-router';
 import {getNetworkOptions, getOrganizationOptions} from '../device/device';
 import {createEnumByOptions} from "@/utils/enums";
 import {ElMessage, ElMessageBox} from "element-plus/lib/components";
-
+import http from "@/utils/http";
 const route = useRoute();
 
 const compoTableRef = ref(null);
@@ -105,9 +105,8 @@ function syncNetwork() {
     ]),
     confirmButtonText: '确定',
   }).then(async () => {
-    const {data: res} = await http.post('/network/sync', {
-      networkIds: [selection[0].networkId],
-      organizationId: selection[0].organizationId
+    const {data: res} = await http.post('/device/syncSingle', {
+      serial: [selection[0].serial],
     });
     syncLoading.value = false;
     if (!res.success) {

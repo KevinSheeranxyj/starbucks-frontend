@@ -18,6 +18,7 @@
               :clearable="item.config.clearable!==false"
               :type="item.config.type"
               :disabled="item.config.disabled===true"
+              @input="((value) => {inputChange(value)})"
             ></el-input>
           </template>
           <template v-if="item.type === 'text'">
@@ -372,6 +373,9 @@ export default {
 
     remoteMethod(prop, val) {
       this.$emit('remoteMethod', prop, val);
+    },
+    inputChange(val){
+      this.$emit("inputChange",val)
     }
   }
 };
