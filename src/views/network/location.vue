@@ -106,7 +106,7 @@ function syncNetwork() {
     confirmButtonText: '确定',
   }).then(async () => {
     const {data: res} = await http.post('/device/syncSingle', {
-      serial: [selection[0].serial],
+      serial: selection[0].serial,
     });
     syncLoading.value = false;
     if (!res.success) {
