@@ -21,10 +21,11 @@ async function getOrganizationOptions(options) {
 export async function getUserListOptions(options) {
     const {data: res} = await http.post(`/sys/user/list`, {});
     options.length = 0;
+    console.log(res.data)
     res.data.forEach((user) => {
         options.push({
             value: user.email,
-            label: user.email
+            label: user.username
         });
     });
 }
@@ -70,14 +71,17 @@ async function getNetworkOptions(organizationId, options) {
     //     text: '网络列表加载中...',
     //     background: 'rgba(0, 0, 0, 0.7)',
     // })
+
     if(!organizationId){
         organizationId = tool.getDefaultOrgID()
     }
+
     let networkNameDict = {};
     if (organizationId){
         const { data: res } = await http.post('/sys/redis/value', {key: 'DICT:NETWORK_NAME:ORG_ID:'+ organizationId});
         networkNameDict = JSON.parse(res.data.value);
     } else {
+
         const { data: office } = await http.post('/sys/redis/value', {key: 'DICT:OFFICE_ORG_ID'});
         const officeOrgId = office.data.value;
         const { data: officeRes } = await http.post('/sys/redis/value', {key: 'DICT:NETWORK_NAME:ORG_ID:'+ officeOrgId});
@@ -87,6 +91,9 @@ async function getNetworkOptions(organizationId, options) {
         const storeOrgId = store.data.value;
         const { data: storeRes } = await http.post('/sys/redis/value', {key: 'DICT:NETWORK_NAME:ORG_ID:'+ storeOrgId});
         const storeNetworkNameDict = JSON.parse(storeRes.data.value);
+
+
+
         // JSON对象合并
         networkNameDict = Object.assign({}, officeNetworkNameDict, storeNetworkNameDict);
     }

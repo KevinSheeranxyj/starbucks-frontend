@@ -4,7 +4,7 @@
       <el-main class="el-main">
         <el-card class="box-card" @click="openStore">
           <div slot="header" class="clearfix">
-            <el-button style="float: right; padding: 3px 0" type="text" @click="openStore">开店</el-button>
+            <el-button style="float: right; padding: 3px 0" type="text" >开店</el-button>
           </div>
           <div class="section">
             <img class="logo-img" src="../../assets/open-store.png" alt="openStore"/>
@@ -83,13 +83,13 @@ function handleClose() {
 }
 
 function openStore() {
-  router.push('/store/open');
+  dialogVisible.value = true; // Show the dialog when clicking the image
+  content.value = '开店';
 }
 
 function closeStore() {
   dialogVisible.value = true; // Show the dialog when clicking the image
   content.value = '关店';
-
 }
 
 
@@ -104,7 +104,7 @@ const checked = ref(false);
 function handleChecked(val) {
   checked.value = val;
   dialogVisible.value = false;
-  console.log(content);
+  console.log(content.value)
   if (content.value === '关店') {
     router.push('/store/close');
   } else if(content.value === '维护') {
@@ -117,6 +117,8 @@ function handleChecked(val) {
     })
   } else if(content.value === '审批') {
     router.push('/store/audit');
+  } else if(content.value === '开店') {
+    router.push('/store/open');
   }
 }
 

@@ -401,10 +401,9 @@ export default {
                  { responseType: 'blob' }
              );
           this.loading = false;
-          console.log(res)
-          // if (res.statusText.toLowerCase() !== "ok") {
-          //   return this.$message.error(res.msg);
-          // }
+          if (!res.data) {
+            return this.$message.error('导出失败');
+          }
           // 使用Blob对象和a标签将文件流保存为文件
           const blob = new Blob([res.data], { type: 'application/octet-stream' }); // 这里的类型可以根据实际情况更改
           const link = document.createElement('a');

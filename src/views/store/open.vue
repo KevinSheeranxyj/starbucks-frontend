@@ -32,13 +32,15 @@
               ref="storeSchemaFormRef"
               :form-params="storeSchemaForm"
               form-type="table"
+              @inputChange = "step2Input"
+              @changeSelect = "step2changeSelect"
               @disabledButton="handleDisabledButton"
             >
             </compo-form>
           </div>
           <div class="button-section">
             <el-button type="primary" @click="previousStep">{{ '上一步' }}</el-button>
-            <el-button type="primary" :disabled="disabledButton" @click="secondStep">{{ '下一步' }}</el-button>
+            <el-button type="primary" :disabled="!stepTwo" @click="secondStep">{{ '下一步' }}</el-button>
           </div>
         </el-collapse-item>
       </keep-alive>
@@ -283,11 +285,32 @@ const segmentFormRef = ref(null);
 const organizationFormRef = ref(null);
 let storeData = ref(null);
 const disabledButton = ref(false);
+
 const dialogVisible = ref(false);
 const selectedValues = ref([]);
 const isManual = ref(false);
 const manualIP = ref('');
 
+
+const step2InputStatus = ref(false);
+const step2NetStatus = ref(false);
+const step2NetTempStatus = ref(false);
+
+const stepTwo = computed(() => {
+  return step2NetTempStatus.value && step2NetStatus.value && step2InputStatus.value;
+});
+
+function step2Input(val) {
+  step2InputStatus.value = Boolean(val);
+}
+
+function step2changeSelect(prop, val) {
+  console.log(`${prop}: ${val}`);
+  const statusRef = prop === 'templateId' ? step2NetStatus : prop === 'productTypes' ? step2NetTempStatus : null;
+  if (statusRef) {
+    statusRef.value = Boolean(val);
+  }
+}
 
 const segmentTypeData = ref('自动');
 let switchData = reactive([]);
@@ -411,6 +434,8 @@ function collectSwitchConfigInfo(val, idx) {
 let networkDeviceData = reactive([]);
 
 let segmentData = ref([]);
+
+
 
 const getApSchema = computed(() => {
   return {
