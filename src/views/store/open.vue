@@ -148,8 +148,9 @@
           </div>
           <div class="button-section">
             <el-button type="primary"  @click="previousStep">{{ '上一步' }}</el-button>
-            <el-button type="primary" :disabled="segmentData.every(item => item.pingResult === false)
-            ? disabledButton : disabledButton = true"  @click="fourthStep">{{ '下一步' }}</el-button>
+            <el-button type="primary"  @click="fourthStep">{{ '下一步' }}</el-button>
+<!--            :disabled="segmentData.every(item => item.pingResult === false)
+            ? disabledButton : disabledButton = true" -->
           </div>
         </el-collapse-item>
       </keep-alive>
@@ -860,6 +861,21 @@ async function updateVlanList() {
 }
 
 function fourthStep() {
+  if(!manualIP.value){
+    ElMessage.error("请手动输入网段信息");
+    return;
+  }
+  let isPingSuccess = false;
+  segmentData.value.forEach((item )=>{
+    if(item.pingResult){
+      isPingSuccess = true
+    }
+  });
+  if(isPingSuccess){
+    ElMessage.error("子网信息不可用, 请重试");
+    return;
+  }
+
   updateVlanList();
   networkDeviceData = submitData.networkDeviceAdd;
   submitData.segmentInfo = segmentData.value;
@@ -870,7 +886,8 @@ function fourthStep() {
 
 
 function finalStep() {
-
+  console.log(networkDeviceData)
+  return;
   updateDeviceInfo();
   active.value++;
   currentStep.value++;
