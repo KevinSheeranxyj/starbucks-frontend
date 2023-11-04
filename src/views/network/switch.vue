@@ -91,7 +91,7 @@ function syncNetwork() {
     // });
     console.log(selection[0].serial);
     const {data: res} = await http.post('/device/syncSingle', {
-      serials: selection[0].serial,
+      serial: selection[0].serial,
     });
     console.log(res)
     syncLoading.value = false;
