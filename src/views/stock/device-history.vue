@@ -32,7 +32,7 @@ const queryForm = [
     config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
-    label: '序列', prop: 'sn', type: 'input'
+    label: '序列', prop: 'serial', type: 'input'
   },
   {
     label: 'MAC', prop: 'mac', type: 'input'
