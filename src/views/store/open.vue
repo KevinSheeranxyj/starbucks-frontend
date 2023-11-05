@@ -865,6 +865,11 @@ function fourthStep() {
     ElMessage.error("请手动输入网段信息");
     return;
   }
+  if(segmentData.value.length<=0){
+    ElMessage.error("先 PING 测可用子网信息");
+    return;
+  }
+
   let isPingSuccess = false;
   segmentData.value.forEach((item )=>{
     if(item.pingResult){
@@ -887,7 +892,10 @@ function fourthStep() {
 
 function finalStep() {
   console.log(networkDeviceData)
-  return;
+  if(!validateNetworkDeviceData(networkDeviceData)){
+    return;
+  }
+
   updateDeviceInfo();
   active.value++;
   currentStep.value++;
@@ -899,6 +907,29 @@ function finalStep() {
     preview()
   }
 }
+
+function validateNetworkDeviceData(networkDeviceData) {
+  for (let device of networkDeviceData) {
+    if (device.model.startsWith('MX')) {
+      if (!device.address || !device.name) {
+        ElMessage.error('请输入路由设备的必填信息');
+        return false;
+      }
+    } else if (device.model.startsWith('MS')) {
+      if (!device.address || !device.name || !device.primaryDns) {
+        ElMessage.error('请输入交换机设备的必填信息');
+        return false;
+      }
+    } else {
+      if (!device.address || !device.name || !device.primaryDns) {
+        ElMessage.error('请检查设备的必填信息');
+        return false;
+      }
+    }
+  }
+  return true;
+}
+
 
 
 async function updateDeviceInfo() {
