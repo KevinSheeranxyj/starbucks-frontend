@@ -25,7 +25,7 @@ const columns = [
   {label: 'LAN IP', prop: 'lanIp', minWidth: '100px'},
   {label: '网关', prop: 'gateway', minWidth: '100px'},
   {label: 'DNS', prop: 'dns',type:'dns', minWidth: '100px'},
-  {label: '快照时间', prop: 'claimedAt',minWidth: '100px'},
+  {label: '快照时间', prop: 'createdAt',minWidth: '100px'},
 ];
 // 查询表单
 const queryForm = [
@@ -149,7 +149,7 @@ const organizationEnum = computed(() => {
       <div v-if="slotProps.prop === 'organizationId'">
         {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
       </div>
-      <div v-if="slotProps.prop === 'claimedAt'">
+      <div v-if="slotProps.prop === 'createdAt'">
         {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
       </div>
     </template>
