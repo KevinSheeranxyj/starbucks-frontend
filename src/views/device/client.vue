@@ -60,7 +60,7 @@ import {ElMessage, ElMessageBox} from 'element-plus/lib/components';
 import tool from "@/utils/tool";
 import {createEnumByOptions} from "@/utils/enums";
 import * as echarts from "echarts";
-import {getOrganizationOptions, getTimespanOptions} from './device';
+import {getNetworkOptions, getOrganizationOptions, getTimespanOptions} from './device';
 
 const router = useRouter();
 const route = useRoute();
