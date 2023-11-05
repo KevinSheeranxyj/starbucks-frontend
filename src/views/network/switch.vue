@@ -173,10 +173,11 @@ function toSwitchHistory() {
 
   const routeParams = {
     name: selection[0].name,
+    organizationId: selection[0].organizationId,
   }
   router.push({
     name: 'networkSwitchHistory',
-    params: routeParams,
+    query: routeParams,
   });
 }
 

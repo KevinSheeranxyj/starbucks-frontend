@@ -11,6 +11,9 @@ const compoTableRef = ref(null);
 const remoteNetworkOptions = reactive([]);
 const networkOptions = reactive([]);
 const networkInput = ref('');
+const router = useRouter();
+const organizationOptions = reactive([]);
+
 // 表格列
 const columns = [
   {label: '组织', prop: 'organizationId', minWidth: '100px'},
@@ -21,31 +24,48 @@ const columns = [
   {label: 'VLAN', prop: 'vlan', minWidth: '100px'},
   {label: 'LAN IP', prop: 'lanIp', minWidth: '100px'},
   {label: '网关', prop: 'gateway', minWidth: '100px'},
-  {label: 'DNS', prop: 'dns',type:'dns', minWidth: '100px'}
+  {label: 'DNS', prop: 'dns',type:'dns', minWidth: '100px'},
+  {label: '快照时间', prop: 'claimedAt',minWidth: '100px'},
 ];
 // 查询表单
 const queryForm = [
   {
-    label: '网络', prop: 'network', type: 'input'
+    label: '组织', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions, clearable: false},
   },
   {
-    label: '交换机', prop: 'name', type: 'input',defaultValue:networkInput
+    label: '网络', prop: 'networkId', type: 'select',
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
-    label: '型号', prop: 'model', type: 'input'
+    label: '交换机', prop: 'name', type: 'input',
+    config: {placeholder: '请输入',},
   },
   {
-    label: '交换机模板', prop: 'template', type: 'input'
+    label: '序列', prop: 'serial', type: 'input',
+    config: {placeholder: '请输入',},
+  },
+  {
+    label: 'vlan', prop: 'vlan', type: 'input',
+    config: {placeholder: '请输入',},
+  },
+  {
+    label: 'LanIp', prop: 'lanIp', type: 'input',
+    config: {placeholder: '请输入',},
+  },
+  {
+    label: '公网IP', prop: 'publicIp', type: 'input',
+    config: {placeholder: '请输入',},
   }
-];
 
+];
 const table = {
   query: {
     url: '/device/history/switch/table',
     form: {formItems: queryForm}
   },
   columns: columns,
-  config: {page: true, multipleTable: true}
+  config: {page: true}
 };
 
 /**
@@ -92,20 +112,20 @@ function remoteMethod(prop, val) {
 function toHistory() {
 
 }
-const router = useRouter();
-const organizationOptions = reactive([]);
 
 onMounted(() => {
   getOrganizationOptions(organizationOptions);
   getNetworkOptions(null, networkOptions);
 
-  if (Object.keys(route.params).length <= 0) {
+  if (Object.keys(route.query).length <= 0) {
     queryTable();
   }else{
-    const query = route.params;
+    const query = route.query;
     const name = query.name;
+    const organizationId = query.organizationId;
     const queryForm = {
       name: name,
+      organizationId:organizationId
     };
     compoTableRef.value.setForm(queryForm);
     queryTable();
@@ -129,10 +149,9 @@ const organizationEnum = computed(() => {
       <div v-if="slotProps.prop === 'organizationId'">
         {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
       </div>
-    </template>
-    <!-- 按钮插槽 -->
-    <template #buttonSlot>
-      <el-button type="primary" plain @click="toHistory">历史记录</el-button>
+      <div v-if="slotProps.prop === 'claimedAt'">
+        {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
+      </div>
     </template>
   </compo-table>
 </template>

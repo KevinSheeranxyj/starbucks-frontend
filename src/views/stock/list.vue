@@ -20,7 +20,7 @@ const columns = [
   {label: '序列', prop: 'serial'},
   {label: '网络', prop: 'networkName'},
   {label: '型号', prop: 'model'},
-  {label: '申领时间', prop: 'claimedAt'}
+  {label: '快照时间', prop: 'claimedAt'}
 ];
 
 // 查询表单

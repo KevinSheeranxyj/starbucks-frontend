@@ -42,10 +42,10 @@ const queryForm = [
     label: '型号', prop: 'model', type: 'input'
   },
   {
-    label: '开始日期', prop: 'startDate', type: 'date',
+    label: '快照开始日期', prop: 'startDate', type: 'date',
     config: {valueFormat: "YYYY-MM-DD"},
   },
-  {label: '结束日期', prop: 'endDate', type: 'date',
+  {label: '快照结束日期', prop: 'endDate', type: 'date',
     config: {valueFormat: "YYYY-MM-DD"},
   },
 ];
@@ -131,6 +131,9 @@ const organizationEnum = computed(() => {
         {{ organizationEnum.getDescFromValue(slotProps.cellValue) }}
       </div>
       <div v-if="slotProps.prop === 'claimedAt'">
+        {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
+      </div>
+      <div v-if="slotProps.prop === 'createdAt'">
         {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
       </div>
     </template>

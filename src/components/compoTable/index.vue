@@ -404,14 +404,30 @@ export default {
           if (!res.data) {
             return this.$message.error('导出失败');
           }
-          // 使用Blob对象和a标签将文件流保存为文件
-          const blob = new Blob([res.data], { type: 'application/octet-stream' }); // 这里的类型可以根据实际情况更改
+
+          const contentDisposition = res.headers['content-disposition'];
+          let filename = 'export.xlsx';  // 设置默认文件名
+
+          if (contentDisposition) {
+            const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
+            if (filenameMatch && filenameMatch[1]) {
+              filename = filenameMatch[1];  // 如果找到文件名，则更新 filename 变量的值
+            } else {
+              console.warn('Filename not found in response headers, using default filename.');
+            }
+          } else {
+            console.warn('Content-Disposition header not found, using default filename.');
+          }
+
+// 使用 Blob 对象和 a 标签将文件流保存为文件
+          const blob = new Blob([res.data], { type: 'application/octet-stream' });  // 这里的类型可以根据实际情况更改
           const link = document.createElement('a');
           link.href = URL.createObjectURL(blob);
-          link.download = 'export.xlsx'; // 指定您想要的文件名和扩展名
+          link.download = filename;  // 使用从响应头中解析出的文件名，或者使用默认文件名
           document.body.appendChild(link);
           link.click();
           document.body.removeChild(link);
+
         }
       });
     },
