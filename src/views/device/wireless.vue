@@ -580,6 +580,7 @@ function getAreaChart(chart) {
 const routerNetworkPage = (row) => {
   const routeParams = {
     networkId: row.networkId,
+    organizationId:row.organizationId,
     networkName: row.networkName
   }
   router.push({
@@ -595,6 +596,7 @@ const routerNetworkPage = (row) => {
 const routerClientPage = (row) => {
   const routeParams = {
     recentDeviceType: 'wireless',
+    organizationId:row.organizationId,
     deviceSerial: row.serial
   }
 
