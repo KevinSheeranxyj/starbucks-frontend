@@ -574,12 +574,13 @@ async function getOfficeNetworkOptions(options) {
 async function setupState() {
   if (Object.keys(route.params).length > 0) {
     const query = route.params;
+    console.log("====setupState====",query)
     const networkId = query.networkId;
     const organizationId = query.organizationId;
     const deviceSerial = query.deviceSerial;
     const queryForm = {
-      networkId: networkId,
       organizationId:organizationId,
+      networkId: networkId,
       recentDeviceType: query.recentDeviceType,
       deviceSerial: deviceSerial,
     };
@@ -590,11 +591,15 @@ async function setupState() {
     if (networkId) {
       changeSelect('networkId', networkId);
     }
+    if (organizationId) {
+      changeSelect('organizationId', organizationId);
+    }
     if (deviceSerial) {
       getDeviceOptions();
       changeSelect('deviceSerial', deviceSerial);
     }
   }
+  console.log("====setupState==== else")
 }
 
 function initQuery() {
