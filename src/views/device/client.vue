@@ -574,10 +574,10 @@ async function getOfficeNetworkOptions(options) {
 async function setupState() {
   if (Object.keys(route.params).length > 0) {
     const query = route.params;
-    console.log("====setupState====",query)
     const networkId = query.networkId;
     const organizationId = query.organizationId;
     const deviceSerial = query.deviceSerial;
+    const networkName = query.networkName;
     const queryForm = {
       organizationId:organizationId,
       networkId: networkId,
@@ -589,17 +589,16 @@ async function setupState() {
     queryTable();
 
     if (networkId) {
+      await tool.setRemoteOptions(remoteNetworkOptions, organizationId,networkName, networkId);
       changeSelect('networkId', networkId);
-    }
-    if (organizationId) {
       changeSelect('organizationId', organizationId);
+      remoteNetworkOptions.length = 0;
     }
     if (deviceSerial) {
       getDeviceOptions();
       changeSelect('deviceSerial', deviceSerial);
     }
   }
-  console.log("====setupState==== else")
 }
 
 function initQuery() {

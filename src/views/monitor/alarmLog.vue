@@ -4,6 +4,7 @@
     ref="compoTableRef"
     :table-params="table"
     @remoteMethod="remoteMethod"
+    @changeSelect="changeSelect"
     @reset="afterReset"
   >
     <!-- 按钮插槽 -->
@@ -119,17 +120,18 @@ const columns = [
     config: {options: alarmStatusOptions}
   },
   {label: '告警时间', prop: 'alarmTime', minWidth: '150px' },
-  {label: '网络名称', prop: 'networkName', minWidth: '200px' },
-  {label: '序列号', prop: 'serial', minWidth:  '120px'},
+  {label: '组织', prop: 'organizationId', minWidth: '150px' },
+  {label: '网络', prop: 'networkId', minWidth: '200px' },
   {label: '设备类型', prop: 'alarmType', minWidth: '120px' },
+  {label: '序列号', prop: 'serial', minWidth:  '120px'},
+  {label: 'MAC', prop: 'mac', minWidth:  '120px'},
   {label: '2.4G信道利用率', prop: 'utilization2g', minWidth:  '120px'},
   {label: '5G信道利用率', prop: 'utilization5g', minWidth:  '120px'},
-  {label: '连接终端数量', prop: 'connectClientNum', minWidth:  '120px'},
-  {label: 'Mac地址', prop: 'mac', minWidth:  '120px'},
-  {label: '流量', prop: 'netflow', minWidth:  '120px'},
-  // {label: '信噪比', prop: 'snr', minWidth:  '120px'},
-  {label: '信号强度', prop: 'rssi', minWidth:  '120px'},
-  // {label: '延迟', prop: 'latency', minWidth:  '120px'},
+  {label: '延时/ms', prop: 'latency', minWidth:  '120px'},
+  {label: '客户端连接数', prop: 'connectClientNum', minWidth:  '120px'},
+  {label: '信噪比/db', prop: 'snr', minWidth:  '120px'},
+  {label: '信号强度/dbm', prop: 'rssi', minWidth:  '120px'},
+  {label: '流量?MB', prop: 'netflow', minWidth:  '120px'},
   {label: '处理人', prop: 'updatedBy', minWidth: '100px' },
   {label: '处理时间', prop: 'updatedAt', minWidth: '150px' }
 ];
@@ -140,14 +142,14 @@ const queryForm = [
     label: '组织', prop: 'organizationId', type: 'select',
     config: {options: organizationOptions, clearable: false},
   },
+  {
+    label: '网络', prop: 'networkId', type: 'select',
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
+  },
   {label: '告警配置ID', prop: 'alarmCfgId', type: 'input' },
   {
     label: '告警状态', prop: 'alarmStatusList', type: 'select',
     config: {options: alarmStatusOptions, multiple: true, collapseTags: true}
-  },
-  {
-    label: '网络名称', prop: 'networkId', type: 'select',
-    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
   },
   {
     label: '路由器', prop: 'router', type: 'input'
@@ -212,6 +214,20 @@ function initQuery() {
 function queryTable() {
   compoTableRef.value.query();
 }
+
+
+function changeSelect(prop, val) {
+  if (prop === 'organizationId') {
+    getNetworkOptions(val, networkOptions);
+  } else if (prop === 'networkId') {
+    if(val === ''){
+      remoteNetworkOptions.length = 0;
+    }
+  }
+}
+/**
+ * 表单选择器远程方法
+ */
 
 function remoteMethod(prop, val) {
   console.log(prop, val, networkOptions)
