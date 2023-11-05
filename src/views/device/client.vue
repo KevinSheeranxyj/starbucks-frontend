@@ -575,9 +575,11 @@ async function setupState() {
   if (Object.keys(route.params).length > 0) {
     const query = route.params;
     const networkId = query.networkId;
+    const organizationId = query.organizationId;
     const deviceSerial = query.deviceSerial;
     const queryForm = {
       networkId: networkId,
+      organizationId:organizationId,
       recentDeviceType: query.recentDeviceType,
       deviceSerial: deviceSerial,
     };
