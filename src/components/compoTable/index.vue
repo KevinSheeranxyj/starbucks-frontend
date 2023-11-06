@@ -409,11 +409,10 @@ export default {
           let filename = 'export.xlsx';  // 设置默认文件名
 
           if (contentDisposition) {
-            const filenameMatch = contentDisposition.match(/filename="([^"]+)"/);
-            if (filenameMatch && filenameMatch[1]) {
-              filename = filenameMatch[1];  // 如果找到文件名，则更新 filename 变量的值
-            } else {
-              console.warn('Filename not found in response headers, using default filename.');
+            const matches = contentDisposition.match(/filename\*?=(?:UTF-8'')?([^;]+)/i);
+            if (matches && matches[1]) {
+              // 提取文件名并解码
+              filename = decodeURIComponent(matches[1]);
             }
           } else {
             console.warn('Content-Disposition header not found, using default filename.');

@@ -426,7 +426,6 @@ async function queryHistoryData() {
     value3Data: [],
     xAxis: []
   };
-  console.log(chart)
   // 根据选择的数据类型设置单位
   const unit = getUnitForDataType(form.wirelessDataType);
 

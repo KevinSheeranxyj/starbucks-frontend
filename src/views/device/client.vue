@@ -407,6 +407,28 @@ async function openHistoryDialog() {
   }
 }
 
+
+// 根据数据类型获取单位
+function getUnitForDataType(dataType) {
+  const option = dataTypeOptions.find(opt => opt.value === dataType);
+  switch (option.value) {
+    case 'utilization2g':
+    case 'utilization5g':
+      return '%';
+    case 'snr':
+    case 'rssi':
+      return 'dB';
+    case 'latency':
+      return 'ms';
+    case 'usage':
+      return 'MB';
+    case 'clientCount':
+      return '个';
+    default:
+      return '';
+  }
+}
+
 /**
  * 查询历史数据
  */
@@ -427,6 +449,7 @@ async function queryHistoryData() {
   if (!res.success) {
     return ElMessage.error(res.msg);
   }
+  const unit = getUnitForDataType(form.wirelessDataType);
   const chart = {
     title: dataTypeEnum.value.getDescFromValue(form.wirelessDataType),
     data: [],
@@ -438,13 +461,13 @@ async function queryHistoryData() {
     chart.xAxis.push(history.endTime);
   })
 
-  getAreaChart(chart);
+  getAreaChart(chart,unit);
 }
 
 /**
  * 面积图
  */
-function getAreaChart(chart) {
+function getAreaChart(chart,unit) {
   const chartDom = document.getElementById('areaChart');
   const chartOption = echarts.init(chartDom);
   chartOption.setOption({
@@ -452,6 +475,11 @@ function getAreaChart(chart) {
       trigger: 'axis',
       position: function (pt) {
         return [pt[0], '10%'];
+      },
+      formatter: function (params) {
+        return params.map(param => {
+          return `${param.seriesName}: ${param.value} ${unit}`;
+        }).join('<br>');
       }
     },
     title: {
