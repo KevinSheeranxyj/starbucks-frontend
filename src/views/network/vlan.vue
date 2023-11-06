@@ -77,7 +77,7 @@ const table = {
     form: {formItems: queryForm}
   },
   export: {
-    url: '/alarm/log/export'
+    url: '/network/vlan/export'
   },
   columns: columns,
   hideAllowed: true,
