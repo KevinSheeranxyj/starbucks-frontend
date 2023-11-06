@@ -320,7 +320,7 @@ async function backAction() {
   const {data:res} = http.post('operate/audit/rollback',{id: selectedID.value})
   const loading =  ElLoading.service({
     lock: true,
-    text: 'ping检测中...',
+    text: '回退中...',
     background: 'rgba(0, 0, 0, 0.7)',
   })
   if (res.success) {
