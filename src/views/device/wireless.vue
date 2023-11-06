@@ -362,6 +362,27 @@ async function openHistoryDialog() {
   }
 }
 
+// 根据数据类型获取单位
+function getUnitForDataType(dataType) {
+  const option = dataTypeOptions.find(opt => opt.value === dataType);
+  switch (option.value) {
+    case 'utilization2g':
+    case 'utilization5g':
+      return '%';
+    case 'snr':
+    case 'rssi':
+      return 'dB';
+    case 'latency':
+      return 'ms';
+    case 'usage':
+      return 'MB';
+    case 'clientCount':
+      return '个';
+    default:
+      return '';
+  }
+}
+
 /**
  * 查询历史数据
  */
@@ -376,42 +397,64 @@ async function queryHistoryData() {
     timespan: form.timespan,
     wirelessDataType: form.wirelessDataType
   }
+  console.log(historyBody)
   const {data: res} = await http.post('/device/wireless/history', historyBody);
   chartLoading.value = false;
   if (!res.success) {
     return ElMessage.error(res.msg);
   }
+  // 根据选择的数据类型设置标题
+  let titles;
+  if (form.wirelessDataType === 'usage') {
+    titles = {
+      title1: '上行流量',
+      title2: '下行流量',
+      title3: '总流量',
+    };
+  } else {
+    titles = {
+      title1: '',
+      title2: '',
+      title3: '',
+    };
+  }
   const chart = {
     title: dataTypeEnum.value.getDescFromValue(form.wirelessDataType),
-    title1: '上行流量',
-    title2: '下行流量',
-    title3: '总流量',
+    ...titles,
     valueData: [],
     value2Data: [],
     value3Data: [],
     xAxis: []
   };
+  console.log(chart)
+  // 根据选择的数据类型设置单位
+  const unit = getUnitForDataType(form.wirelessDataType);
 
   chart.xAxis = res.data.map(item => item.endTime);
   chart.valueData = res.data.map(item => item.value);
   chart.value2Data = res.data.map(item => item.value2);
   chart.value3Data = res.data.map(item => item.value3);
   if (res.data.every(item => item.value2 == null) && res.data.every(item => item.value3 == null)) {
-    getAreaChart(chart);
+    getAreaChart(chart,unit);
   } else {
-    getAPUsageAreaChart(chart);
+    getAPUsageAreaChart(chart,unit);
   }
 
 }
 
-function getAPUsageAreaChart(chart) {
+function getAPUsageAreaChart(chart,unit) {
   const chartDom = document.getElementById('areaChart');
   const chartOption = echarts.init(chartDom);
+  chartOption.clear();
   chartOption.setOption({
     tooltip: {
       trigger: 'axis',
       position: function(pt) {
         return [pt[0], '10%'];
+      },formatter: function (params) {
+        return params.map(param => {
+          return `${param.seriesName}: ${param.value} ${unit}`;
+        }).join('<br>');
       }
     },
     title: {
@@ -425,6 +468,9 @@ function getAPUsageAreaChart(chart) {
     },
     yAxis: {
       type: 'value',
+      axisLabel: {
+        formatter: '{value} MB'
+      },
       boundaryGap: [0, '100%']
     },
     dataZoom: [
@@ -512,14 +558,20 @@ function getAPUsageAreaChart(chart) {
 /**
  * 面积图
  */
-function getAreaChart(chart) {
+function getAreaChart(chart,unit) {
   const chartDom = document.getElementById('areaChart');
   const chartOption = echarts.init(chartDom);
+  chartOption.clear();
   chartOption.setOption({
     tooltip: {
       trigger: 'axis',
       position: function(pt) {
         return [pt[0], '10%'];
+      },
+      formatter: function (params) {
+        return params.map(param => {
+          return `${param.seriesName}: ${param.value} ${unit}`;
+        }).join('<br>');
       }
     },
     title: {
@@ -533,8 +585,12 @@ function getAreaChart(chart) {
     },
     yAxis: {
       type: 'value',
+      axisLabel: {
+        formatter: '{value} MB'
+      },
       boundaryGap: [0, '100%']
     },
+
     dataZoom: [
       {
         type: 'inside',

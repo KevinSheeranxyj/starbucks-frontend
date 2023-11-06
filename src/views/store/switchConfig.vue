@@ -219,10 +219,6 @@ function afterReset() {
 
 }
 
-
-
-
-
 ///
 function changePort(row){
   /// 跳转到端口修改

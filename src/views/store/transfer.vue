@@ -71,6 +71,7 @@ import {onMounted, reactive, ref} from "vue";
 import {getNetworkOptions, getOrganizationOptions} from "@/views/device/device";
 import {ElLoading, ElMessage} from 'element-plus/lib/components';
 import http from "@/utils/http";
+import {useRouter} from "vue-router";
 
 export default {
   name: "TransferPage",
@@ -91,8 +92,12 @@ export default {
     const fromOrgLabel = ref('待选择');
     const fromNetWorkLabel = ref('待选择');
     const toOrgLabel = ref('');
-
+    const router = useRouter();
     const showDetails = async () => {
+      if(fromOrg.value === toOrg.value){
+        ElMessage.error("转移前后组织不能一致")
+        return;
+      }
 
       const loading = ElLoading.service({
         lock: true,
@@ -106,6 +111,7 @@ export default {
       loading.close();
       if(res.success){
         ElMessage.success('转移成功');
+        window.location.reload();
       }else{
         ElMessage.error(res.msg);
       }

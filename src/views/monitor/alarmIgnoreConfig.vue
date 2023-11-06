@@ -50,6 +50,8 @@ async function getAlarmOptions() {
 const columns = [
   {label: 'ID', prop: 'id', width: '40px'},
   {label: '启用状态', prop: 'enableFlag', type: 'switch', width: '60px',},
+  {label: '组织', prop: 'organizationId',},
+  {label: '网络', prop: 'networkId',},
   {label: '告警名称', prop: 'alarmCfgId', minWidth: '120px', showOverflowTooltip: true},
   {label: '忽略值', prop: 'ignoreValue', type: 'input', showOverflowTooltip: true},
   {

@@ -128,7 +128,6 @@ const res =  await http.post('/operate/maintain/updateSwitchPort',params);
   alert(res.data.msg);
   dialogTableVisible.value = false;
 
-
 }
 
 let dialogTableVisible = ref(false)

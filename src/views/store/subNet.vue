@@ -28,7 +28,7 @@ export default {
       console.log(selectedRow);
     };
     const updateData = async () => {
-      // 在这里你可以更新 `data.value` 或发送更新给后端
+      console.log(selectedRow.value);
       const params = {...selectedRow.value};
       params.organizationId = subnetParam.value.organizationId;
       const res = await http.post("operate/maintain/updateVlan",params);

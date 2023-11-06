@@ -3,6 +3,9 @@
   <compo-table
       :tableParams="table"
       ref="compoTableRef"
+      @remoteMethod="remoteMethod"
+      @changeSelect="changeSelect"
+      @reset="afterReset"
   >
 
     <template #tableTextSlot="slotProps">
@@ -30,7 +33,7 @@ import {ref, onMounted, onActivated, computed, reactive,} from 'vue';
 import {useRoute, useRouter} from "vue-router";
 import tool from "@/utils/tool";
 import {createEnumByOptions} from "@/utils/enums";
-import {getOrganizationOptions} from "@/views/device/device";
+import {getNetworkOptions, getOrganizationOptions} from "@/views/device/device";
 
 const route = useRoute();
 const router = useRouter();
@@ -40,10 +43,13 @@ const organizationOptions = reactive([]);
 const organizationEnum = computed(() => {
   return createEnumByOptions(organizationOptions);
 });
-
+const networkOptions = reactive([]);
+const remoteNetworkOptions = reactive([]);
 // 表格列
 const columns = [
   {label: '告警配置ID', prop: 'alarmCfgId',},
+  {label: '组织', prop: 'organizationId',},
+  {label: '网络', prop: 'networkId',},
   {label: '告警名称', prop: 'alarmName',},
   {label: '告警日期', prop: 'alarmDate',},
   {label: '告警总数', prop: 'alarmTotal',},
@@ -55,6 +61,10 @@ const queryForm = [
   {
     label: '组织', prop: 'organizationId', type: 'select',
     config: {options: organizationOptions, clearable: false},
+  },
+  {
+    label: '网络', prop: 'networkId', type: 'select',
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'}
   },
   {label: '告警配置ID', prop: 'alarmCfgId', type: 'input',},
   {
@@ -88,6 +98,34 @@ function initQuery() {
   };
   compoTableRef.value.setForm(queryForm);
   queryTable();
+}
+function afterReset() {
+  getNetworkOptions(null, networkOptions);
+}
+
+function changeSelect(prop, val) {
+  if (prop === 'organizationId') {
+    getNetworkOptions(val, networkOptions);
+  } else if (prop === 'networkId') {
+    if(val === ''){
+      remoteNetworkOptions.length = 0;
+    }
+  }
+}
+/**
+ * 表单选择器远程方法
+ */
+function remoteMethod(prop, val) {
+
+  if (val) {
+    if (prop === 'networkId') {
+      tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
+    }
+  } else if (typeof val === 'undefined') {
+    if (prop === 'networkId') {
+      remoteNetworkOptions.length = 0;
+    }
+  }
 }
 
 /**

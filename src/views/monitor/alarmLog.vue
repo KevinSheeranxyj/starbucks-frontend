@@ -81,6 +81,7 @@ const alarmStatusOptions = reactive([
   {label: '已解决', value: 'RESOLVED' },
   {label: '已忽略', value: 'IGNORE' }
 ]);
+
 const notificationStatusOptions = reactive([
   {label: '待通知', value: 'WAITING' },
   {label: '通知成功', value: 'SUCCESS' },
@@ -121,7 +122,7 @@ const columns = [
   },
   {label: '告警时间', prop: 'alarmTime', minWidth: '150px' },
   {label: '组织', prop: 'organizationId', minWidth: '150px' },
-  {label: '网络', prop: 'networkId', minWidth: '200px' },
+  {label: '网络', prop: 'networkName', minWidth: '200px' },
   {label: '设备类型', prop: 'alarmType', minWidth: '120px' },
   {label: '序列号', prop: 'serial', minWidth:  '120px'},
   {label: 'MAC', prop: 'mac', minWidth:  '120px'},
@@ -131,7 +132,7 @@ const columns = [
   {label: '客户端连接数', prop: 'connectClientNum', minWidth:  '120px'},
   {label: '信噪比/db', prop: 'snr', minWidth:  '120px'},
   {label: '信号强度/dbm', prop: 'rssi', minWidth:  '120px'},
-  {label: '流量?MB', prop: 'netflow', minWidth:  '120px'},
+  {label: '流量/MB', prop: 'netflow', minWidth:  '120px'},
   {label: '处理人', prop: 'updatedBy', minWidth: '100px' },
   {label: '处理时间', prop: 'updatedAt', minWidth: '150px' }
 ];
@@ -152,6 +153,10 @@ const queryForm = [
     config: {options: alarmStatusOptions, multiple: true, collapseTags: true}
   },
   {
+    label: '设备类型', prop: 'productType', type: 'select',
+    config: {options: alarmTypeOptions, multiple: true, collapseTags: true}
+  },
+  {
     label: '路由器', prop: 'router', type: 'input'
   },
   {
@@ -162,6 +167,9 @@ const queryForm = [
   },
   {
     label: '序列号', prop: 'serial', type: 'input'
+  },
+  {
+    label: 'MAC', prop: 'mac', type: 'input'
   },
   {
     label: '客户端', prop: 'client', type: 'input'
