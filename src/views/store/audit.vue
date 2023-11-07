@@ -1,83 +1,9 @@
-<template>
+<template xmlns="">
+
+
   <div class="container" style="color:#00ff00;">
     <el-container class="el-container">
       <el-main class="el-main">
-
-        <!-- 新增的筛选区域 -->
-        <el-form :inline="true" class="filter-form">
-          <el-row>
-            <el-col :span="4">
-              <el-form-item label="操作类型">
-                <el-select v-model="searchForm.selectedOperationType" placeholder="选择操作类型" @change="getNetData">
-                  <el-option
-                      v-for="item in operationTypesOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-
-            <el-col :span="4">
-              <el-form-item label="状态类型">
-                <el-select v-model="searchForm.selectedStatusType" placeholder="选择审核状态"
-                           @change="getNetData">
-                  <el-option
-                      v-for="item in auditStatusOptions"
-                      :key="item.value"
-                      :label="item.label"
-                      :value="item.value">
-                  </el-option>
-                </el-select>
-              </el-form-item>
-            </el-col>
-
-            <el-col :span="5">
-              <el-form-item label="开始时间">
-                <el-date-picker
-                    v-model="searchForm.createdStart"
-                    type="date"
-                    placeholder="Pick a day"
-                    @change="changeTime"
-                />
-              </el-form-item>
-            </el-col>
-            <el-col :span="5">
-              <el-form-item label="结束时间">
-                <el-date-picker
-                    v-model="searchForm.createdEnd"
-                    type="date"
-                    placeholder="Pick a day"
-                    @change="changeTime"
-                />
-              </el-form-item>
-            </el-col>
-
-            <el-col :span="4">
-              <el-form-item label="处理人">
-                <el-input v-model="searchForm.auditPerson" placeholder="请输入..."  @blur="getNetData"></el-input>
-              </el-form-item>
-            </el-col>
-
-            <el-col :span="4">
-              <el-form-item label="提交人">
-                <el-input v-model="searchForm.submitPerson" placeholder="请输入..." @blur="getNetData"></el-input>
-              </el-form-item>
-            </el-col>
-
-          </el-row>
-        </el-form>
-
-        <el-row>
-          <el-col :span="20"></el-col>
-          <el-col :span="4">
-            <el-button-group class="compo-button-group">
-              <el-button type="primary" plain @click="queryTable">查 询</el-button>
-              <el-button @click="resetSearch">重 置</el-button>
-            </el-button-group>
-          </el-col>
-        </el-row>
 
         <el-tabs
             v-model="activeName"
@@ -86,79 +12,78 @@
             @tab-click="handleClick"
         >
           <el-tab-pane label="待审核" name="readyAudit">
-            <el-table :data="filteredData" class="table,el-table" align="center" header-align="center">
-              <el-table-column prop="createdBy" label="提交人"></el-table-column>
-              <el-table-column prop="createdAt" label="提交日期"></el-table-column>
-              <el-table-column prop="type" label="操作类型"></el-table-column>
-              <el-table-column prop="auditStatus" label="操作状态"></el-table-column>
-              <el-table-column prop="updatedBy" label="处理人"></el-table-column>
-              <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
-              <el-table-column label="操作" width="180">
-                <template #default="scope">
-                  <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row)">查看详情</el-link>
-                  <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="success"
-                           @click="approveDialog(scope.row.id)">通过
-                  </el-link>
-                  <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="danger"
-                           @click="rejectDialog(scope.row.id)">拒绝
-                  </el-link>
-                </template>
-              </el-table-column>
-            </el-table>
-            <el-pagination
-                :current-page="pagination.currentPage"
-                :page-sizes="[10, 20, 50, 100]"
-                :page-size="pagination.pageSize"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="pagination.totalItems"
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                class="el-pagination"
+            <compo-table
+              ref="compoTableReadyRef"
+              @reset="afterReset"
+              :table-params="table"
             >
-            </el-pagination>
+            <template #tableDefinedSlot="slotProps">
+              <div v-if="slotProps.prop === 'operator'">
+                <el-link class="action-link" type="primary" @click="openDetailDialog(slotProps.scope.row)">查看详情</el-link>
+
+                <el-link v-if="slotProps.scope.row.auditStatus === 1" class="action-link" type="success"
+                         @click="approveDialog(slotProps.scope.row.id)">通过
+                </el-link>
+                <el-link v-if="slotProps.scope.row.auditStatus === 1" class="action-link" type="danger"
+                         @click="rejectDialog(slotProps.scope.row.id)">拒绝
+                </el-link>
+              </div>
+            </template>
+            <template #tableTextSlot="slotProps">
+              <div v-if="slotProps.prop === 'createdAt'">
+                {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
+              </div>
+
+              <div v-if="slotProps.prop === 'updatedAt'">
+                {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
+              </div>
+              <div v-if="slotProps.prop === 'type'">
+                {{getDescFromValue(operationTypesOptions,slotProps.cellValue)}}
+              </div>
+              <div v-if="slotProps.prop === 'auditStatus'">
+                {{getDescFromValue(auditStatusOptions,slotProps.cellValue)}}
+              </div>
+            </template>
+            </compo-table>
           </el-tab-pane>
 
           <el-tab-pane label="已审核" name="audited">
-            <el-table :data="auditedData" class="table,el-table" align="center" header-align="center">
-              <el-table-column prop="createdBy" label="提交人"></el-table-column>
-              <el-table-column prop="createdAt" label="提交日期"></el-table-column>
-              <el-table-column prop="type" label="操作类型"></el-table-column>
-              <el-table-column prop="auditStatus" label="操作状态"></el-table-column>
-              <el-table-column prop="updatedBy" label="处理人"></el-table-column>
-              <el-table-column prop="updatedAt" label="处理时间"></el-table-column>
-              <el-table-column label="操作" width="180">
-                <template #default="scope">
-                  <el-link class="action-link" type="primary" @click="openDetailDialog(scope.row)">查看详情</el-link>
-                  <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="success"
-                           @click="approveDialog(scope.row.id)">通过
-                  </el-link>
-                  <el-link v-if="scope.row.auditStatus === '初始化'" class="action-link" type="danger"
-                           @click="rejectDialog(scope.row.id)">拒绝
-                  </el-link>
-                </template>
-              </el-table-column>
-            </el-table>
-            <el-pagination
-                :current-page="auditPagination.currentPage"
-                :page-sizes="[10, 20, 50, 100]"
-                :page-size="pagination.pageSize"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="pagination.totalItems"
-                @size-change="handleSizeChange"
-                @current-change="handleCurrentChange"
-                class="el-pagination"
+            <compo-table
+                ref="compoTableRef"
+                @reset="afterReset"
+                :table-params="table"
             >
-            </el-pagination>
+              <template #tableDefinedSlot="slotProps">
+                <div v-if="slotProps.prop === 'operator'">
+                  <el-link class="action-link" type="primary" @click="openDetailDialog(slotProps.scope.row)">查看详情</el-link>
+
+                  <el-link v-if="slotProps.scope.row.auditStatus === 1" class="action-link" type="success"
+                           @click="approveDialog(slotProps.scope.row.id)">通过
+                  </el-link>
+                  <el-link v-if="slotProps.scope.row.auditStatus === 1" class="action-link" type="danger"
+                           @click="rejectDialog(slotProps.scope.row.id)">拒绝
+                  </el-link>
+                </div>
+              </template>
+              <template #tableTextSlot="slotProps">
+                <div v-if="slotProps.prop === 'createdAt'">
+                  {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
+                </div>
+
+                <div v-if="slotProps.prop === 'updatedAt'">
+                  {{ tool.dateFormat(slotProps.cellValue, 'yyyy-MM-dd hh:mm:ss') }}
+                </div>
+                <div v-if="slotProps.prop === 'type'">
+                  {{getDescFromValue(operationTypesOptions,slotProps.cellValue)}}
+                </div>
+                <div v-if="slotProps.prop === 'auditStatus'">
+                  {{getDescFromValue(auditStatusOptions,slotProps.cellValue)}}
+                </div>
+              </template>
+            </compo-table>
           </el-tab-pane>
-
-
         </el-tabs>
-
-
-
-
       </el-main>
-
     </el-container>
   </div>
 
@@ -251,10 +176,79 @@
 import {onMounted, reactive, ref} from "vue";
 import http from "@/utils/http";
 import {ElLoading,ElMessage} from "element-plus/lib/components";
+import tool from "@/utils/tool";
+
+
+const operationTypesOptions = reactive([
+  {label: '开店', value: 1},
+  {label: '关店', value: 2},
+  {label: '转移', value: 3},
+  {label: '回退', value: 4},
+]);
+const auditStatusOptions = reactive([
+  {label: '初始化', value: 1},
+  {label: '同意', value: 2},
+  {label: '驳回', value: 3},
+  {label: '自动同意', value: 4},
+]);
+
 
 onMounted(() => {
-  getNetData();
+  activeName.value = "readyAudit";
+  queryTable();
 });
+function afterReset(){
+  queryTable()
+}
+
+
+// 表格列
+const columns = [
+  {label: '提交人', prop: 'createdBy'},
+  {label: '提交日期', prop: 'createdAt' },
+  {label: '操作类型', prop: 'type'},
+  {label: '操作状态', prop: 'auditStatus'},
+  {label: '处理人', prop: 'updatedBy'},
+  {label: '处理时间', prop: 'updatedAt'},
+  {label: '操作', prop: 'operator', type: 'defined'}
+];
+
+// 查询表单
+const queryForm = [
+  {
+    label: '提交人', prop: 'submitPerson', type: 'input',
+  },
+  {
+    label: '开始日期', prop: 'createdStart', type: 'date',
+     config: {valueFormat: "YYYY-MM-DD"},
+  },
+  {
+    label: '结束日期', prop: 'createdEnd', type: 'date',
+     config: {valueFormat: "YYYY-MM-DD"},
+  },
+  {
+    label: '操作类型', prop: 'selectedStatusType', type: 'select',
+    config: {options: operationTypesOptions, placeholder: '请输入',},
+  },
+  {
+    label: '操作状态', prop: 'selectedStatusType', type: 'select',
+    config: {options: auditStatusOptions, placeholder: '请输入',},
+  },
+  {
+    label: '处理人', prop: 'auditPerson', type: 'input',
+    config: {placeholder: '请输入',},
+  },
+];
+const table = {
+  query: {
+    url: '/operate/audit/table',
+    form: {formItems: queryForm},
+  },
+  columns: columns,
+  config: {page: true,},
+};
+const compoTableRef = ref(null);
+const compoTableReadyRef = ref(null);
 
 const centerDialogVisible = ref(false);
 const dialogTitle = ref('');
@@ -271,7 +265,20 @@ const activeName = ref('readyAudit')
 
 
 const handleClick = (tab, event) => {
-  console.log(tab.props.name);
+
+  if(tab.props.name === "audited"){
+    const  queryForm = {
+      auditStatus:2,
+    };
+    compoTableRef.value.setForm(queryForm);
+    compoTableRef.value.query()
+  }else{
+    const queryForm = {
+      auditStatus:1,
+    };
+    compoTableReadyRef.value.setForm(queryForm);
+    compoTableReadyRef.value.query();
+  }
 }
 
 
@@ -280,11 +287,7 @@ function openDetailDialog(row) {
   isDetail.value = true;
   dialogContent.value = '';
   dialogWidth.value = "70%";
-
-
   isCanBack.value = (row.value === 2 || row.value === 3) && row.executeStatus === 2;
-
-
   showAuditDetail(row.id);
 }
 
@@ -330,7 +333,7 @@ async function backAction() {
     loading.close();
     ElMessage.error(res.msg);
   }
-  getNetData();
+  queryTable()
 }
 
 function setDialogConfig(title, content, action, width, isShow, id) {
@@ -344,7 +347,6 @@ function setDialogConfig(title, content, action, width, isShow, id) {
 }
 
 function doApprove() {
-  // 你可以在这里进行实际的"通过"操作，如API调用等
   centerDialogVisible.value = false;
   updataStatus(2, selectedID.value);
 }
@@ -354,156 +356,31 @@ function doReject() {
   updataStatus(3, selectedID.value);
 }
 
-function changeTime(){
 
-  if (searchForm.value.createdStart && searchForm.value.createdEnd) {
-    getNetData();
-  }
-}
-
-const searchForm = ref({
-  selectedOperationType: '',
-  selectedStatusType: '',
-  auditStatus: '',
-  createdStart: Date(),
-  createdEnd: Date(),
-  auditPerson: '',
-  submitPerson: '',
-})
-
-
-const operationTypesOptions = reactive([
-  {label: '开店', value: 1},
-  {label: '关店', value: 2},
-  {label: '转移', value: 3},
-  {label: '回退', value: 4},
-]);
-const auditStatusOptions = reactive([
-  {label: '初始化', value: 1},
-  {label: '同意', value: 2},
-  {label: '驳回', value: 3},
-  {label: '自动同意', value: 4},
-]);
-
-
-const filteredData = ref([]);
-
-const auditedData = ref([]);
-
-
-async function getNetData() {
-  var params = {
-    type: searchForm.value.selectedOperationType,
-    auditStatus: searchForm.value.selectedStatusType,
-    createStart: searchForm.value.createdStart,
-    createEnd: searchForm.value.createdEnd,
-    createdBy:  searchForm.value.submitPerson,
-    updatedBy: searchForm.value.auditPerson
-  };
-
-  const res = await http.post("/operate/audit/table" + '?page=' + pagination.currentPage + '&limit=' + pagination.pageSize, params);
-  auditedData.value = [];
-  filteredData.value = [];
-  if (res.data && res.data.data) {
-    res.data.data.forEach(item => {
-
-      // 格式化时间
-      if (item.createdAt) {
-        item.createdAt = formatDate(item.createdAt);
-      }
-      if (item.updatedAt) {
-        item.updatedAt = formatDate(item.updatedAt);
-      }
-
-      if (item.type) {
-        item.value = item.type;
-        item.type = getDescFromValue(operationTypesOptions, item.type);
-      }
-
-      if (item.auditStatus !== 1) {
-        item.auditStatus = getDescFromValue(auditStatusOptions, item.auditStatus);
-        auditedData.value.push(item);
-      } else {
-        if (item.auditStatus) {
-          item.auditStatus = getDescFromValue(auditStatusOptions, item.auditStatus);
-        }
-        filteredData.value.push(item);
-      }
-    });
-
-    pagination.totalItems = res.data.count;
-    auditPagination.totalItems = res.data.count;
-
-
-  }
-}
 
 function getDescFromValue(arr, value) {
   const found = arr.find(item => item.value === value);
   return found ? found.label : value;
 }
 
-function formatDate(date) {
-  const dt = new Date(date);
-  const y = dt.getFullYear();
-  const m = String(dt.getMonth() + 1).padStart(2, '0');
-  const d = String(dt.getDate()).padStart(2, '0');
-  const hh = String(dt.getHours()).padStart(2, '0');
-  const ss = String(dt.getMinutes()).padStart(2, '0');
-  return `${y}-${m}-${d} ${hh}:${ss}`;
+async function queryTable() {
+  await compoTableRef.value.query();
+  await compoTableReadyRef.value.query();
+  // compoTableRef.value.reload();
 }
 
-const pagination = reactive({
-  currentPage: 1,
-  pageSize: 10,
-  totalItems: 0
-});
 
-const auditPagination = reactive({
-  currentPage: 1,
-  pageSize: 10,
-  totalItems: 0
-});
-
-// 当更改分页大小时的处理函数
-function handleSizeChange(newSize) {
-  pagination.pageSize = newSize;
-  getNetData();  // 重新获取数据
-}
-
-// 当更改当前页时的处理函数
-function handleCurrentChange(newPage) {
-  pagination.currentPage = newPage;
-  getNetData();  // 重新获取数据
-}
-
-function queryTable() {
-  getNetData();
-}
-
-function resetSearch() {
-  searchForm.value = {
-    selectedOperationType: '',
-    selectedStatusType: '',
-    auditStatus: '',
-    createdStart: '',
-    createdEnd: '',
-    auditPerson: '',
-    submitPerson: '',
-  }
-  getNetData();
-}
 
 const auditUpdateURL = "/operate/audit/updateAuditStatus";
 
 async function updataStatus(type, id) {
-  var parasm = {
+  const params = {
     'id': id,
     'auditStatus': type
-  }
-  let res = await http.post(auditUpdateURL, parasm)
+  };
+  let res = await http.post(auditUpdateURL, params)
 
-  getNetData();
+  queryTable();
   alert(res.data.msg);
 }
 
@@ -536,30 +413,11 @@ async function showAuditDetail(id) {
   flex-direction: column;
 }
 
-.el-table {
-  flex: 1;
-  overflow: auto;
-}
-
-.el-pagination {
-  margin-top: 20px; /* 增加上边距，确保与表格有间距 */
-}
-
-.dialog-span {
-  font-size: 20px;
-  color: white;
-  display: block;
-  margin-bottom: 15px;
-}
-
 /* 新添加的样式 */
 .el-container {
   padding: 20px;
 }
 
-.table {
-  margin-top: 20px;
-}
 
 .action-link {
   margin-right: 10px;
