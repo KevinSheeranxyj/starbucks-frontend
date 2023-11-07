@@ -28,7 +28,7 @@ const queryForm = [
     label: '网络', prop: 'network', type: 'input'
   },
   {
-    label: '交换机', prop: 'switch', type: 'input'
+    label: '交换机', prop: 'name', type: 'input'
   },
   {
     label: '型号', prop: 'model', type: 'input'
