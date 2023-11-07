@@ -24,7 +24,7 @@ export async function getUserListOptions(options) {
     console.log(res.data)
     res.data.forEach((user) => {
         options.push({
-            value: user.email,
+            value: user.username,
             label: user.username
         });
     });

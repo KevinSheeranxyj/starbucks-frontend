@@ -55,10 +55,10 @@ const queryForm = [
   //   label: '操作', prop: 'action', type: 'input'
   // },
   {
-    label: '结果', prop: 'result', type: 'input'
+    label: '页面', prop: 'result', type: 'input'
   },
   {
-    label: '操作人', prop: 'name', type: 'select',
+    label: '操作人', prop: 'createdBy', type: 'select',
     config: {options: createdByOptions, clearable: false},
   },
   {
