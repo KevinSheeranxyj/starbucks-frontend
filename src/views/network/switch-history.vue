@@ -56,8 +56,14 @@ const queryForm = [
   {
     label: '公网IP', prop: 'publicIp', type: 'input',
     config: {placeholder: '请输入',},
+  },
+  {
+    label: '快照开始日期', prop: 'startDate', type: 'date',
+    config: {valueFormat: "YYYY-MM-DD"},
+  },
+  {label: '快照结束日期', prop: 'endDate', type: 'date',
+    config: {valueFormat: "YYYY-MM-DD"},
   }
-
 ];
 const table = {
   query: {

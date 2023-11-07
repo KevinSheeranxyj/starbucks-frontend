@@ -43,8 +43,8 @@ const queryForm = [
     config: {options: organizationOptions, clearable: false}
   },
   {
-    label: '网络', prop: 'networkId', type: 'input',
-    config: {options: networkOptions, remoteMethod:true, clearable: false},
+    label: '网络', prop: 'networkId', type: 'select',
+    config: {options: remoteNetworkOptions, remote: true, placeholder: '请输入'},
   },
   {
     label: 'Vlan2', prop: 'vlan2', type: 'input'
@@ -91,9 +91,10 @@ function queryTable() {
   compoTableRef.value.query();
 }
 function remoteMethod(prop, val) {
-
+  console.log(prop,val)
   if (val) {
     if (prop === 'networkId') {
+      console.log(val,remoteNetworkOptions,networkOptions)
       tool.getRemoteOptions(val, remoteNetworkOptions, networkOptions);
     }
   } else if (typeof val === 'undefined') {

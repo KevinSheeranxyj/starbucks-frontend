@@ -110,7 +110,7 @@ function toHistory() {
   }
   router.push({
     name: 'networkSwitchTemplateHistory',
-    params: routeParams,
+    query: routeParams,
   });
 }
 

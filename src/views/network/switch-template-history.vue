@@ -102,7 +102,7 @@ onMounted(() => {
   if (Object.keys(route.params).length <= 0) {
     queryTable();
   }else{
-    const query = route.params;
+    const query = route.query;
     const name = query.name;
     const queryForm = {
       name: name,
