@@ -102,83 +102,83 @@ export const layoutRoutes = [
     path: 'org/info',
     name: 'orgInfo',
     meta: { title: 'org信息' },
-    component: () => import('@/views/org/info')
+    component: () => import('@/views/org/orgInfo.vue')
   },
   {
     path: 'org/review',
     name: 'orgReview',
     meta: { title: '审批' },
-    component: () => import('@/views/org/review')
+    component: () => import('@/views/org/orgReview.vue')
   },
 
   {
     path: 'logs/history',
     name: 'logsHistory',
     meta: { title: '变更日志' },
-    component: () => import('@/views/logs/history')
+    component: () => import('@/views/logs/logsHistory.vue')
   },
 
   {
     path: 'stock/list',
     name: 'stockList',
     meta: { title: '库存信息' },
-    component: () => import('@/views/stock/list')
+    component: () => import('@/views/stock/stockList.vue')
   },
   {
     path: 'stock/device-history',
     name: 'deviceHistory',
     meta: { title: '设备历史记录' },
-    component: () => import('@/views/stock/device-history')
+    component: () => import('@/views/stock/deviceHistory.vue')
   },
 
   {
     path: 'template/list',
     name: 'templateList',
     meta: { title: '模板信息' },
-    component: () => import('@/views/template/list')
+    component: () => import('@/views/template/templateList.vue')
   },
 
   {
     path: 'network/list',
     name: 'networkList',
     meta: { title: '网络基本信息' },
-    component: () => import('@/views/network/list')
+    component: () => import('@/views/network/networkList.vue')
   },
   {
     path: 'network/location',
     name: 'networkLocation',
     meta: { title: '地理位置信息' },
-    component: () => import('@/views/network/location')
+    component: () => import('@/views/network/networkLocation.vue')
   },
   {
     path: 'network/vlan',
     name: 'networkVlan',
     meta: { title: '子网管理' },
-    component: () => import('@/views/network/vlan')
+    component: () => import('@/views/network/networkVlan.vue')
   },
   {
     path: 'network/switch',
     name: 'networkSwitch',
     meta: { title: '交换机管理' },
-    component: () => import('@/views/network/switch')
+    component: () => import('@/views/network/networkSwitch.vue')
   },
   {
     path: 'network/switch-history',
     name: 'networkSwitchHistory',
     meta: { title: '交换机历史' },
-    component: () => import('@/views/network/switch-history.vue')
+    component: () => import('@/views/network/networkSwitchHistory.vue')
   },
   {
     path: 'network/switch-template',
     name: 'networkSwitchTemplate',
     meta: { title: '交换机模板管理' },
-    component: () => import('@/views/network/switch-template.vue')
+    component: () => import('@/views/network/networkSwitchTemplate.vue')
   },
   {
     path: 'network/switch-template-history',
     name: 'networkSwitchTemplateHistory',
     meta: { title: '交换机模板历史' },
-    component: () => import('@/views/network/switch-template-history.vue')
+    component: () => import('@/views/network/networkSwitchTemplateHistory.vue')
   },
   /**
    * H3C
@@ -199,7 +199,7 @@ export const layoutRoutes = [
     path: 'h3c/device',
     name: 'H3CDevice',
     meta: { title: '设备管理' },
-    component: () => import('@/views/h3c/H3CDeviceManager.vue')
+    component: () => import('@/views/h3c/H3CDevice.vue')
   },
 
   /**

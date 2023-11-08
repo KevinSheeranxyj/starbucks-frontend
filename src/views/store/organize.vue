@@ -66,31 +66,9 @@ const treeData = ref([
         ]
       }
     ]
-  },
-  {
-    label: 'Region 2',
-    children: [
-      {
-        label: 'City A',
-        children: [
-          { label: 'Store 1', type: 'store', devices: [
-              { name: 'Router', type: 'Router', ip: '192.168.1.1' },
-              { name: 'Switch', type: 'Switch', ip: '192.168.1.2' },
-            ]}
-        ]
-      },
-      {
-        label: 'City B',
-        children: [
-          { label: 'Store 2', type: 'store', devices: [
-              { name: 'Router', type: 'Router', ip: '192.168.2.1' },
-              { name: 'Switch', type: 'Switch', ip: '192.168.2.2' },
-            ]}
-        ]
-      }
-    ]
   }
 ]);
+
 
 const defaultProps = ref({
   children: 'children',

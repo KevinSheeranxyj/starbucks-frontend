@@ -107,7 +107,10 @@ function toHistory() {
 
   const routeParams = {
     name: selection[0].name,
+    networkId: selection[0].networkId,
+    organizationId: selection[0].organizationId,
   }
+  console.log(selection[0])
   router.push({
     name: 'networkSwitchTemplateHistory',
     query: routeParams,

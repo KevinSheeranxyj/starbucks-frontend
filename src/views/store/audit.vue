@@ -113,6 +113,29 @@
 
 
     <div v-if="isDetail">
+
+      <div v-if="Object.keys(detailModel.operateNetworkInfoVo).length>0 && isDetail">
+
+        <el-divider content-position="left">网络信息</el-divider>
+        <el-row>
+          <el-col :span="4"><strong>网络名</strong></el-col>
+          <el-col :span="4"><strong>设备类型</strong></el-col>
+        </el-row>
+
+          <el-form label-width="120px" class="horizontal-form">
+
+            <el-row>
+              <el-col :span="4">{{ detailModel.operateNetworkInfoVo.networkName }}</el-col>
+              <el-col :span="4">{{ getProductTypesText(detailModel.operateNetworkInfoVo.networkType) }}</el-col>
+            </el-row>
+          </el-form>
+      </div>
+
+      <div v-else style="text-align: center;">
+        <el-divider/>
+        <strong>暂无网络信息</strong>
+      </div>
+
       <div v-if="detailModel.operateDeviceInfoVoList.length>0 && isDetail">
 
         <el-divider content-position="left">网络设备信息</el-divider>
@@ -177,6 +200,27 @@ import {onMounted, reactive, ref} from "vue";
 import http from "@/utils/http";
 import {ElLoading,ElMessage} from "element-plus/lib/components";
 import tool from "@/utils/tool";
+function getProductTypesText(productTypes) {
+  const TYPE_MAP = {
+    'appliance': '路由器',
+    'switch': '交换机',
+    'wireless': '无线'
+  };
+  if (!productTypes) return '';
+
+  let types;
+  try {
+    types = JSON.parse(productTypes);
+  } catch (e) {
+    console.error('Failed to parse productTypes:', e);
+    return '';
+  }
+
+  if (types.length > 1) return '混合设备';
+
+  const typeName = types[0];
+  return TYPE_MAP[typeName] || '';
+}
 
 
 const operationTypesOptions = reactive([
@@ -391,6 +435,7 @@ const detailModel = ref({
   type: null,
   auditStatus: null,
   parentId: null,
+  operateNetworkInfoVo:{},
   operateDeviceInfoVoList: [],
   operateNetworkVlanVOList: [],
 });

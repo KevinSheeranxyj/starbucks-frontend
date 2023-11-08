@@ -652,6 +652,7 @@ function initQuery() {
 }
 
 onMounted(() => {
+  console.log("network page onMounted")
   initQuery();
   tool.getOptions(networkStatusOptions, 'DEVICE_STATUS');
   getTimespanOptions(timespanOptions);
@@ -664,6 +665,7 @@ onMounted(() => {
 });
 
 onActivated(() => {
+  console.log("network page onActivated")
   setupState()
 });
 

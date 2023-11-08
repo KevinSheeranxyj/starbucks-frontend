@@ -30,6 +30,7 @@ export default {
   },
   watch: {
     cachedViews() {
+
       this.refreshIframeComponents();
     }
   },
@@ -65,7 +66,6 @@ export default {
       if (this.isIframe) {
         this.iframeComponents.push(this.$route);
       }
-
       // 删除缓存中没有组件
       let i = this.iframeComponents.length;
       while (i--) {

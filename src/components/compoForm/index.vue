@@ -277,11 +277,14 @@ export default {
         if (row.isVlan === true) {
           const vlanValidator = {
             validator: (rule, value, callback) => {
-              const vlanPattern = /^[1-9][0-9]*$/;  // 正整数
-              if (vlanPattern.test(value)) {
+              // 正整数，范围为1-4094
+              const vlanPattern = /^(?:[1-9]|[1-9]\d{1,2}|[1-3]\d{3}|40[0-9][0-4])$/;
+              if (value === '' || value === undefined || value === null) {
+                callback(); // 如果是非必填项，空值也是允许的
+              } else if (vlanPattern.test(value)) {
                 callback(); // 符合规则
               } else {
-                callback(new Error('请输入有效的VLAN ID')); // 不符合规则
+                callback(new Error('请输入有效的VLAN ID (1-4094)')); // 不符合规则
               }
             },
             trigger: 'blur'

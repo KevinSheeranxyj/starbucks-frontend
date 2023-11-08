@@ -485,12 +485,14 @@ const getApSchema = computed(() => {
       {
         label: 'VLAN', prop: 'vlan', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        rules: true,
         isVlan:true
 
       },
       {
         label: '网关', prop: 'gateway', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        rules: true,
         isIp:true
       }
     ]
@@ -533,11 +535,13 @@ const getSwitchSchema = computed(() => {
       {
         label: 'VLAN', prop: 'vlan', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        rules: true,
         isVlan:true,
       },
       {
         label: '网关', prop: 'staticGatewayIp', type: 'input',
         config: activeNames.value.every((val, index) => val === finalActiveNames[index]) ? {disabled: true} : {},
+        rules: true,
         isIp:true
       }
     ]

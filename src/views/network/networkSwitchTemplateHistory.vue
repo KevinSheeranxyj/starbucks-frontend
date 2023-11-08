@@ -10,7 +10,10 @@ const route = useRoute();
 const compoTableRef = ref(null);
 const remoteNetworkOptions = reactive([]);
 const networkOptions = reactive([]);
-
+const organizationOptions = reactive([]);
+const organizationEnum = computed(() => {
+  return createEnumByOptions(organizationOptions);
+});
 // 表格列
 const columns = [
   {label: '组织', prop: 'organizationId', minWidth: '100px'},
@@ -24,6 +27,10 @@ const columns = [
 
 // 查询表单
 const queryForm = [
+  {
+    label: '组织', prop: 'organizationId', type: 'select',
+    config: {options: organizationOptions, clearable: false},
+  },
   {
     label: '网络', prop: 'network', type: 'input'
   },
@@ -99,22 +106,23 @@ onMounted(() => {
   getOrganizationOptions(organizationOptions);
   getNetworkOptions(null, networkOptions);
 
-  if (Object.keys(route.params).length <= 0) {
+  if (Object.keys(route.query).length <= 0) {
     queryTable();
   }else{
     const query = route.query;
     const name = query.name;
+    const networkId = query.networkId;
+    const organizationId = query.organizationId;
     const queryForm = {
       name: name,
+      networkId:networkId,
+      organizationId:organizationId
     };
     compoTableRef.value.setForm(queryForm);
     queryTable();
   }
 });
-const organizationOptions = reactive([]);
-const organizationEnum = computed(() => {
-  return createEnumByOptions(organizationOptions);
-});
+
 </script>
 <template>
   <!-- 表格组件 -->

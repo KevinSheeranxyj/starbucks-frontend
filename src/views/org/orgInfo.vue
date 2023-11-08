@@ -1,9 +1,12 @@
 <script setup>
-import {ref, onMounted, reactive, computed} from 'vue';
+import {ref, onMounted, reactive, computed, onActivated} from 'vue';
 import {useRoute} from 'vue-router';
 import {ElMessage} from 'element-plus/lib/components';
 import {createEnum, createEnumByOptions} from '@/utils/enums';
 import {getOrganizationOptions} from "@/views/device/device";
+onActivated(()=>{
+  console.log("onActivated called")
+});
 
 const route = useRoute();
 const organizationOptions = reactive([]);
@@ -99,7 +102,6 @@ onMounted(() => {
     queryTable();
   }
 });
-
 
 </script>
 <template>

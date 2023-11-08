@@ -173,6 +173,7 @@ function toSwitchHistory() {
 
   const routeParams = {
     name: selection[0].name,
+    networkId: selection[0].networkId,
     organizationId: selection[0].organizationId,
   }
   router.push({

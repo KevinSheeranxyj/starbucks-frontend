@@ -128,9 +128,11 @@ onMounted(() => {
   }else{
     const query = route.query;
     const name = query.name;
+    const networkId = query.networkId;
     const organizationId = query.organizationId;
     const queryForm = {
       name: name,
+      networkId:networkId,
       organizationId:organizationId
     };
     compoTableRef.value.setForm(queryForm);
