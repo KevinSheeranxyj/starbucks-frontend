@@ -193,7 +193,7 @@ export const layoutRoutes = [
     path: 'h3c/location',
     name: 'H3CLocation',
     meta: { title: '场所管理' },
-    component: () => import('@/views/h3c/H3CShopManager.vue')
+    component: () => import('@/views/h3c/H3CLocation.vue')
   },
   {
     path: 'h3c/device',
