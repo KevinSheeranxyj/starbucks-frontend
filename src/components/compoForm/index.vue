@@ -357,8 +357,8 @@ export default {
     setForm(form) {
       const that = this;
       this.$nextTick(() => {
-        // that.form = form
-        this.form = {...this.form, ...form};
+        that.form = form
+        console.log(form);
       })
     },
 

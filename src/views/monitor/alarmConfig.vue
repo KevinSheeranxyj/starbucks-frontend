@@ -55,7 +55,8 @@
 
     <template #dialog>
       <!-- 新增对话框 -->
-      <compo-dialog ref="addDialogRef" :dialog-params="addDialog" @initDialog="initAddDialog" @confirmSuccess="addSuccess">
+      <compo-dialog ref="addDialogRef" :dialog-params="addDialog" :prevent-submit="true"
+                    @initDialog="initAddDialog" @beforeSubmit="beforeAdd" @confirmSuccess="addSuccess">
         <template #dialogSlot>
           <el-button class="add-button" type="primary" plain @click="addItems">+</el-button>
           <template v-if="extraItems.length > 3">
@@ -64,8 +65,8 @@
         </template>
       </compo-dialog>
       <!-- 更新对话框 -->
-      <compo-dialog ref="updateDialogRef" :dialog-params="updateDialog"
-                    @initDialog="initUpdateDialog" @confirmSuccess="updateSuccess">
+      <compo-dialog ref="updateDialogRef" :dialog-params="updateDialog" :prevent-submit="true"
+                    @initDialog="initUpdateDialog"  @confirmSuccess="updateSuccess">
         <template #dialogSlot>
           <el-button class="add-button" type="primary" plain @click="addItems">+</el-button>
           <template v-if="extraItems.length > 3">
@@ -79,7 +80,7 @@
 </template>
 
 <script setup>
-import {ref, reactive, onMounted, computed } from 'vue';
+import {ref, reactive, onMounted, computed, nextTick} from 'vue';
 import {useRouter} from 'vue-router';
 import http from '@/utils/http';
 import {ElMessage} from 'element-plus/lib/components';
@@ -269,13 +270,96 @@ function addItems() {
     {
     label: '阈值', prop: `highThreshold${index}`, type: 'input', rules: true, fixedSpan: 12,
     config: {placeholder: '请输入整数'}
-  }
+    }
   );
 }
 
 function removeItems() {
     extraItems.value = extraItems.value.slice(0, -3);
 }
+
+
+// function beforeUpdate(form) {
+//   const formList = assembleDTOList(form);
+//   console.log(formList);
+//   let ids = form.alarmConfigDetailDTOList.map(item => item.id);
+//   let formIds = formList.map(item => item.id);
+//   let updatedDetailDTOList = formList;
+//   formList.forEach(item => {
+//     if (formIds.length >= ids.length && !ids.includes(item.id)) {
+//       delete item.id;
+//     } else if(ids.includes(item.id) && formIds.length < ids.length) {
+//       updatedDetailDTOList = formList;
+//     }
+//   })
+//   console.log(updatedDetailDTOList);
+//   return;
+//     updateDialogRef.value.confirm({
+//       ...updateDialogRef.value.getForm(),
+//       alarmConfigDetailDTOList: updatedDetailDTOList
+//     });
+// }
+
+
+function assembleDTOList(obj) {
+  const filtered = Object.entries(obj)
+      .filter(([key]) => key.startsWith('checkField') ||
+          key.startsWith('thresholdOperator') ||
+          key.startsWith('highThreshold'))
+      .map(([key, value]) => ({key, value}));
+
+  const alarmConfigDetailDTOList = [];
+  let currentObj = {};
+  if (Array.isArray(filtered) && filtered.length >= 0) {
+    filtered.forEach(item => {
+      let numberInKey = item.key.match(/\d+/);
+      currentObj.id = Number(numberInKey[0]);
+      if(item.key.startsWith('checkField')) {
+        currentObj.checkField = item.value;
+      } else if(item.key.startsWith('thresholdOperator')) {
+        currentObj.thresholdOperator = item.value;
+      } else if(item.key.startsWith('highThreshold')) {
+        currentObj.highThreshold = Number(item.value);
+        alarmConfigDetailDTOList.push(currentObj);
+        currentObj = {};
+      }
+    });
+  }
+  return alarmConfigDetailDTOList;
+}
+
+function beforeAdd(form) {
+  console.log(form);
+  const filteredArray = Object.entries(form)
+      .filter(([key]) => key.startsWith('checkField') ||
+          key.startsWith('thresholdOperator') ||
+          key.startsWith('highThreshold'))
+      .map(([key, value]) => ({key, value}));
+
+  const alarmConfigDetailDTOList = [];
+  let currentObj = {};
+  if (Array.isArray(filteredArray) && filteredArray.length >= 0) {
+    filteredArray.forEach(item => {
+      if(item.key.startsWith('checkField')) {
+        currentObj.checkField = item.value;
+      } else if(item.key.startsWith('thresholdOperator')) {
+        currentObj.thresholdOperator = item.value;
+      } else if(item.key.startsWith('highThreshold')) {
+        currentObj.highThreshold = Number(item.value);
+        alarmConfigDetailDTOList.push(currentObj);
+        currentObj = {}
+      }
+    });
+  }
+  console.log(alarmConfigDetailDTOList);
+  return;
+    addDialogRef.value.confirm({
+      ...addDialogRef.value.getForm(),
+      alarmConfigDetailDTOList: alarmConfigDetailDTOList
+    })
+
+}
+
 
 /**
  * 初始化查询

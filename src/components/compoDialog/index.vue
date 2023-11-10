@@ -31,9 +31,10 @@ export default {
   name: 'CompoDialog',
   components: {},
   props: {
-    dialogParams: { type: Object }
+    dialogParams: { type: Object },
+    preventSubmit: false,
   },
-  emits: ['confirmSuccess', 'initDialog'],
+  emits: ['confirmSuccess', 'initDialog', 'beforeSubmit'],
   data() {
     return {
       dialogForm: {},
@@ -55,35 +56,7 @@ export default {
 
     // 获取表单组件form对象
     getForm() {
-      // console.log(this.$refs.compoFormRef.form)
-      let finalForm = {}
-      const obj = this.$refs.compoFormRef.form;
-      const filtered = Object.entries(obj)
-          .filter(([key]) => key.startsWith('checkField') ||
-              key.startsWith('thresholdOperator') ||
-              key.startsWith('highThreshold'))
-          .map(([key, value]) => ({key, value}));
-      const alarmConfigDetailDTOList = [];
-      let currentObj = {};
-      if (Array.isArray(filtered) && filtered.length >= 0) {
-        filtered.forEach(item => {
-          if(item.key.startsWith('checkField')) {
-            currentObj.checkField = item.value;
-          } else if(item.key.startsWith('thresholdOperator')) {
-            currentObj.thresholdOperator = item.value;
-          } else if(item.key.startsWith('highThreshold')) {
-            currentObj.highThreshold = Number(item.value);
-            alarmConfigDetailDTOList.push(currentObj);
-            currentObj = {};
-          }
-        });
-      }
-      finalForm = {
-        ...this.$refs.compoFormRef.getForm(),
-        alarmConfigDetailDTOList
-      };
-
-      return finalForm;
+      return this.$refs.compoFormRef.getForm();
     },
 
     // 设置表单组件form对象
@@ -107,12 +80,21 @@ export default {
     /**
      * 确定
      */
-    confirm() {
+    confirm(form) {
+      // if (!form && this.preventSubmit) {
+      //   this.$emit('beforeSubmit', this.getForm())
+      //   return;
+      // }
       // 表单检验
       this.$refs.compoFormRef.validate(async(valid) => {
         if (valid) {
-          this.dialogForm = this.getForm();
+          if (this.preventSubmit) {
+            this.dialogForm = form;
+          } else {
+            this.dialogForm = this.getForm();
+          }
           this.dialogLoading = true;
+          console.log(this.dialogForm)
           const { data: res } = await this.$http.post(this.dialogParams.url, this.dialogForm);
           this.dialogLoading = false;
           if (!res.success) {
